@@ -71,6 +71,40 @@ export const getByAttribute = async (collection, attribute, value) => {
   return data;
 };
 
+export const getByAttributeOrderingBy = async (
+  collection,
+  attribute,
+  value,
+  orderBy
+) => {
+  console.log(
+    '[Firebase - getByAttribute] collection: ' +
+      collection +
+      '; attribute: ' +
+      attribute +
+      '; value: ' +
+      value +
+      '; orderBy: ' +
+      orderBy
+  );
+
+  const db = firebase.firestore();
+  const ref = db.collection(collection);
+  const data = [];
+
+  await ref
+    .where(attribute, '==', value)
+    .get()
+    .then((snapshot) => {
+      snapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+    })
+    .catch((err) => console.log('Error while getting data by attribute', err));
+
+  return data;
+};
+
 export const getById = async (collection, id) => {
   console.log('[Firebase - getById] collection: ' + collection + '; id: ' + id);
 

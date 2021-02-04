@@ -195,7 +195,7 @@ const CreateExtraItemScreen = ({ navigation }) => {
         keyboardVerticalOffset={Platform.OS === 'ios' ? -50 : 100}
         behavior={Platform.OS === 'ios' ? 'position' : 'height'}
       >
-        <View style={{ justifyContent: 'flex-end' }}>
+        <View style={{ flex: 1 }}>
           <ScrollView>
             <View style={styles.titleContainer}>
               <Text style={styles.title}>
@@ -254,7 +254,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 7,
     marginHorizontal: 10,
-    marginBottom: -10,
   },
   titleContainer: {
     flexDirection: 'row',

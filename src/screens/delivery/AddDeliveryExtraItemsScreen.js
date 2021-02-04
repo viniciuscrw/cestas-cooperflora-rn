@@ -27,6 +27,27 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const [checkedItems, setCheckedItems] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState(null);
   const [filterText, setFilterText] = useState('');
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   const searchProductsByFilter = () => {
     setFilteredProducts(
@@ -163,7 +184,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
             Nenhum produto encontrado por este nome.
           </Text>
         ) : (
-          <View style={{ flex: 0.85 }}>
+          <View style={{ flex: 0.88 }}>
             <FlatList
               data={
                 filteredProducts && filteredProducts.length
@@ -175,9 +196,8 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
             />
           </View>
         )}
-        {filterText.length &&
-        filteredProducts &&
-        !filteredProducts.length ? null : (
+        {(filterText.length && filteredProducts && !filteredProducts.length) ||
+        isKeyboardVisible ? null : (
           <View style={{ flex: 0.15, justifyContent: 'center' }}>
             <LoadingButton
               loading={state.loading}

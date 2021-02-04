@@ -2,9 +2,9 @@ import createDataContext from './createDataContext';
 import {
   deleteDoc,
   getFirstByAttribute,
-  getByAttribute,
   insertDoc,
   updateDoc,
+  getByAttributeOrderingBy,
 } from '../api/firebase';
 import { navigate } from '../navigationRef';
 import GLOBALS from '../Globals';
@@ -34,20 +34,22 @@ const userReducer = (state, action) => {
 
 const fetchConsumers = (dispatch) => async () => {
   dispatch({ type: 'loading' });
-  const consumers = await getByAttribute(
+  const consumers = await getByAttributeOrderingBy(
     GLOBALS.COLLECTION.USERS,
     GLOBALS.USER.ATTRIBUTE.ROLE,
-    GLOBALS.USER.ROLE.CONSUMER
+    GLOBALS.USER.ROLE.CONSUMER,
+    'name'
   );
   dispatch({ type: 'fetch_users', payload: consumers });
 };
 
 const fetchOrganizers = (dispatch) => async () => {
   dispatch({ type: 'loading' });
-  const organizers = await getByAttribute(
+  const organizers = await getByAttributeOrderingBy(
     GLOBALS.COLLECTION.USERS,
     GLOBALS.USER.ATTRIBUTE.ROLE,
-    GLOBALS.USER.ROLE.ORGANIZER
+    GLOBALS.USER.ROLE.ORGANIZER,
+    'name'
   );
   dispatch({ type: 'fetch_users', payload: organizers });
 };

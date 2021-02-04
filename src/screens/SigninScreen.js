@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Keyboard,
   StyleSheet,
@@ -28,6 +28,27 @@ const SigninScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true); // or some other action
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false); // or some other action
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   const renderLoginButton = () => {
     if (state.loading) {
@@ -127,7 +148,9 @@ const SigninScreen = ({ navigation }) => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.backGroundView}>
         <View style={styles.container}>
-          <Text style={styles.title}>Cestas Cooperflora</Text>
+          <Text style={isKeyboardVisible ? styles.smallTitle : styles.title}>
+            Cestas Cooperflora
+          </Text>
           <Card style={styles.card}>
             <CardSection>
               <Input
@@ -175,11 +198,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    bottom: 30,
+    // bottom: 10,
   },
   title: {
     fontSize: 30,
     bottom: 40,
+    textAlign: 'center',
+  },
+  smallTitle: {
+    fontSize: 20,
+    bottom: 20,
     textAlign: 'center',
   },
   loginButton: {

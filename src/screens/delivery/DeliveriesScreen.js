@@ -15,14 +15,33 @@ import { NavigationEvents, withNavigation } from 'react-navigation';
 import { Card, Divider } from 'react-native-elements';
 import { format } from 'date-fns';
 import GLOBALS from '../../Globals';
+import useUser from '../../hooks/useUser';
 
 const DeliveriesScreen = ({ navigation }) => {
-  // const user = useUser();
-  // console.log('userrolele: ' + user.role);
+  const user = useUser();
   const { state, fetchDeliveries } = useContext(DeliveryContext);
 
   const formatBaseProducts = (delivery) => {
     return delivery.baseProducts.toLowerCase().replace(/\n/g, ', ');
+  };
+
+  const renderButtonOrMessage = () => {
+    if (user && user.role === 'organizer') {
+      return (
+        <Button
+          style={styles.nextDeliveryButton}
+          onPress={() => navigation.navigate('CreateDelivery')}
+        >
+          Adicionar próxima entrega
+        </Button>
+      );
+    } else {
+      return (
+        <Text style={styles.nextDeliveryButton}>
+          A próxima entrega ainda não foi agendada.
+        </Text>
+      );
+    }
   };
 
   const renderNextDelivery = () => {
@@ -67,12 +86,7 @@ const DeliveriesScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         ) : (
-          <Button
-            style={styles.nextDeliveryButton}
-            onPress={() => navigation.navigate('CreateDelivery')}
-          >
-            Adicionar próxima entrega
-          </Button>
+          renderButtonOrMessage()
         )}
         {lastDeliveries && lastDeliveries.length ? (
           <View>
@@ -115,18 +129,20 @@ const DeliveriesScreen = ({ navigation }) => {
     );
   };
 
-  return !state.loading ? (
+  return (
     <View style={styles.container}>
       <NavigationEvents onWillFocus={fetchDeliveries} />
-      <FlatList
-        data={state.lastDeliveries}
-        ListHeaderComponent={renderNextDelivery}
-        renderItem={renderLastDeliveriesItem}
-        keyExtractor={(item) => item.id}
-      />
+      {!state.loading && user ? (
+        <FlatList
+          data={state.lastDeliveries}
+          ListHeaderComponent={renderNextDelivery}
+          renderItem={renderLastDeliveriesItem}
+          keyExtractor={(item) => item.id}
+        />
+      ) : (
+        <Spinner />
+      )}
     </View>
-  ) : (
-    <Spinner />
   );
 };
 

@@ -86,16 +86,6 @@ const setDeliveryInfo = (dispatch) => async (
     ordersTimeLimit.getMinutes()
   );
 
-  console.log(
-    'Setting delivery info: {deliveryDate: ' +
-      deliveryDate.toString() +
-      '; limitDate: ' +
-      limitDateTime.toString() +
-      '; baseProducts: ' +
-      baseProducts +
-      '}'
-  );
-
   dispatch({
     type: 'set_info',
     payload: {
