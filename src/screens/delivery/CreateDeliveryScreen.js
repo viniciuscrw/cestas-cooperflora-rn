@@ -23,9 +23,13 @@ import GLOBALS from '../../Globals';
 
 const CreateDeliveryScreen = ({ navigation }) => {
   const { state, setDeliveryInfo } = useContext(DeliveryContext);
-  const [deliveryDate, setDeliveryDate] = useState(new Date());
+  const delivery = navigation.getParam('delivery');
+  const [deliveryDate, setDeliveryDate] = useState(
+    delivery ? delivery.deliveryDate : new Date()
+  );
   const [showDeliveryDate, setShowDeliveryDate] = useState(false);
   const [ordersLimitDate, setOrdersLimitDate] = useState(
+    delivery ? delivery.limitDate :
     new Date(
       deliveryDate.getFullYear(),
       deliveryDate.getMonth(),
@@ -43,7 +47,7 @@ const CreateDeliveryScreen = ({ navigation }) => {
   );
   const [showOrdersDateTime, setShowOrdersDateTime] = useState(false);
   const [dateTimeMode, setDateTimeMode] = useState('date');
-  const [baseProducts, setBaseProducts] = useState('');
+  const [baseProducts, setBaseProducts] = useState(delivery ? delivery.baseProducts : '');
 
   useEffect(() => {
     setDeliveryInfo(

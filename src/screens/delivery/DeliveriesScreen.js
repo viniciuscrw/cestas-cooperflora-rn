@@ -44,6 +44,10 @@ const DeliveriesScreen = ({ navigation }) => {
     }
   };
 
+  const editDelivery = (delivery) => {
+    navigation.navigate('CreateDelivery', { delivery });
+  };
+
   const renderNextDelivery = () => {
     let nextDelivery = state.nextDelivery;
     let lastDeliveries = state.lastDeliveries;
@@ -53,7 +57,9 @@ const DeliveriesScreen = ({ navigation }) => {
         <Text style={styles.text}>Próxima entrega</Text>
         {nextDelivery ? (
           <View style={styles.nextDeliveryItem}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => editDelivery(nextDelivery)}
+            >
               <Card
                 containerStyle={{
                   borderWidth: 0.25,
@@ -145,6 +151,7 @@ const DeliveriesScreen = ({ navigation }) => {
     </View>
   );
 };
+
 
 export const deliveriesNavigationOptions = () => {
   return {

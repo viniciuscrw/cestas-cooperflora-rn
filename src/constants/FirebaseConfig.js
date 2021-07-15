@@ -1,11 +1,11 @@
 export default {
   FirebaseConfig: {
-    apiKey: 'AIzaSyAfv6kGFWJnCgj_K7bib0edzjFghqfICXs',
-    authDomain: 'cestas-cooperflora-dev.firebaseapp.com',
-    databaseURL: 'https://cestas-cooperflora-dev.firebaseio.com',
-    projectId: 'cestas-cooperflora-dev',
-    storageBucket: 'cestas-cooperflora-dev.appspot.com',
-    messagingSenderId: '63180465170',
-    appId: '1:63180465170:web:0b3dec157aacbeecd0a4cb',
+    apiKey: 'AIzaSyAOyjOVcCZnHRzATllhAh8x48sg8kMFphY',
+    authDomain: 'cestas-cooperflora-dev-1375c.firebaseapp.com',
+    databaseURL: 'https://cestas-cooperflora-dev-1375c.firebaseio.com',
+    projectId: 'cestas-cooperflora-dev-1375c',
+    storageBucket: 'cestas-cooperflora-dev-1375c.appspot.com',
+    messagingSenderId: '68980862546',
+    appId: '1:68980862546:web:69a7625891fc43eb3a798b',
   },
 };
