@@ -14,6 +14,9 @@ import { setNavigator } from './src/navigationRef';
 const App = createAppContainer(MainNavigation);
 
 export default () => {
+
+  LogBox.ignoreLogs(['Setting a timer']);
+
   if (!firebase.apps.length) {
     firebase.initializeApp(FirebaseConfig.FirebaseConfig);
   }
