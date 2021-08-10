@@ -235,6 +235,38 @@ export const insertIntoSubcollection = async (
   return data;
 };
 
+export const updateDocInSubcollection = async (
+  collection,
+  doc,
+  subcollection,
+  subcollectionDoc,
+  data
+) => {
+  console.log(
+    '[Firebase - updateDocInSubcollection] collection: ' +
+      collection +
+      '; doc: ' +
+      doc +
+      '; subcollection: ' +
+      subcollection +
+      '; subcollection doc: ' +
+      subcollectionDoc
+  );
+
+  const db = firebase.firestore();
+  const ref = db.collection(collection);
+  await ref
+    .doc(doc)
+    .collection(subcollection)
+    .doc(subcollectionDoc)
+    .set(data)
+    .catch((err) =>
+      console.log('Error while updating doc in subcollection', err)
+    );
+
+  return data;
+};
+
 export const updateDocAttribute = async (collection, doc, attribute, value) => {
   console.log(
     '[Firebase - updateDocAttribute] collection: ' +
