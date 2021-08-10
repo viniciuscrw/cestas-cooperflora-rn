@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   StyleSheet,
-  Text,
   TextInput,
   TouchableWithoutFeedback,
   TouchableOpacity,
@@ -11,14 +10,13 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from 'react-native';
-import { Context as DeliveryContext } from '../../context/DeliveryContext';
+import { format } from 'date-fns';
+import { withNavigation } from 'react-navigation';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import FormInput from '../../components/FormInput';
 import Spacer from '../../components/Spacer';
-import { FontAwesome5 } from '@expo/vector-icons';
-import TextLink from '../../components/TextLink';
-import { withNavigation } from 'react-navigation';
-import { format } from 'date-fns';
 import GLOBALS from '../../Globals';
 
 const CreateDeliveryScreen = ({ navigation }) => {
@@ -29,13 +27,14 @@ const CreateDeliveryScreen = ({ navigation }) => {
   );
   const [showDeliveryDate, setShowDeliveryDate] = useState(false);
   const [ordersLimitDate, setOrdersLimitDate] = useState(
-    delivery ? delivery.limitDate :
-    new Date(
-      deliveryDate.getFullYear(),
-      deliveryDate.getMonth(),
-      deliveryDate.getDate() - 1,
-      18
-    )
+    delivery
+      ? delivery.limitDate
+      : new Date(
+          deliveryDate.getFullYear(),
+          deliveryDate.getMonth(),
+          deliveryDate.getDate() - 1,
+          18
+        )
   );
   const [ordersLimitTime, setOrdersLimitTime] = useState(
     new Date(
@@ -184,7 +183,7 @@ const CreateDeliveryScreen = ({ navigation }) => {
                   dateTimeMode === 'date' ? ordersLimitDate : ordersLimitTime
                 }
                 mode={dateTimeMode}
-                is24Hour={true}
+                is24Hour
                 display="default"
                 minimumDate={dateTimeMode === 'date' ? new Date() : null}
                 maximumDate={dateTimeMode === 'date' ? deliveryDate : null}
@@ -209,7 +208,7 @@ const CreateDeliveryScreen = ({ navigation }) => {
                 placeholder="Composição da cesta"
                 placeholderTextColor="grey"
                 numberOfLines={10}
-                multiline={true}
+                multiline
               />
             </View>
           </ScrollView>

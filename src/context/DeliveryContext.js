@@ -1,5 +1,5 @@
 import createDataContext from './createDataContext';
-import { getGroupDeliveries, insertIntoSubcollection } from '../api/firebase';
+import { getGroupDeliveries, insertIntoSubcollection, updateDocInSubcollection } from '../api/firebase';
 import { navigate } from '../navigationRef';
 import GLOBALS from '../Globals';
 
@@ -111,12 +111,29 @@ const createDelivery = (dispatch) => async ({ delivery }) => {
   });
 };
 
+const updateDelivery = (dispatch) => async ({ deliveryId, delivery }) => {
+  dispatch({ type: 'loading' });
+  console.log('Updating delivery: ' + JSON.stringify(delivery));
+
+  updateDocInSubcollection(
+    GLOBALS.COLLECTION.GROUPS,
+    GLOBALS.CONSUMER_GROUP.ID,
+    GLOBALS.COLLECTION.DELIVERIES,
+    deliveryId,
+    delivery
+  ).then(() => {
+    dispatch({ type: 'add_delivery' });
+    navigate('Deliveries');
+  });
+};
+
 export const { Provider, Context } = createDataContext(
   deliveryReducer,
   {
     fetchDeliveries,
     setDeliveryInfo,
     createDelivery,
+    updateDelivery,
   },
   { deliveries: null, loading: false }
 );

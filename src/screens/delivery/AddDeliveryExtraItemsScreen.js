@@ -1,30 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  FlatList,
-  Keyboard,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { FlatList, Keyboard, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import endOfDay from 'date-fns/endOfDay';
+import { Input, ListItem } from 'react-native-elements';
+import { NavigationEvents } from 'react-navigation';
 import { Context as ProductContext } from '../../context/ProductContext';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
-import { NavigationEvents } from 'react-navigation';
 import Spinner from '../../components/Spinner';
-import { Input, ListItem } from 'react-native-elements';
 import TextLink from '../../components/TextLink';
 import { formatCurrency, showAlert } from '../../helper/HelperFunctions';
 import LoadingButton from '../../components/LoadingButton';
-import endOfDay from 'date-fns/endOfDay';
 
 const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const {
     state: { loading, products },
     fetchProducts,
   } = useContext(ProductContext);
-  const { state, createDelivery } = useContext(DeliveryContext);
-  const [checkedItems, setCheckedItems] = useState([]);
+  const { state, createDelivery, updateDelivery } = useContext(DeliveryContext);
+
+  const [checkedItems, setCheckedItems] = useState(
+    state.nextDelivery && state.nextDelivery.extraProducts
+      ? state.nextDelivery.extraProducts.map((product) => product.id)
+      : []
+  );
   const [filteredProducts, setFilteredProducts] = useState(null);
   const [filterText, setFilterText] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -85,7 +82,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
     }
   };
 
-  const validateAndCreateDelivery = () => {
+  const validateAndCreateOrUpdateDelivery = () => {
     if (!state.deliveryDate) {
       showAlert('A data da entrega deve ser informada.');
     } else {
@@ -99,7 +96,11 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         extraProducts,
       };
 
-      createDelivery({ delivery });
+      if (state.nextDelivery) {
+        updateDelivery({ deliveryId: state.nextDelivery.id, delivery });
+      } else {
+        createDelivery({ delivery });
+      }
     }
   };
 
@@ -111,9 +112,13 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
           {item.maxOrderQuantity.toLocaleString()} por pedido
         </Text>
       );
-    } else if (item.availableQuantity && !item.maxOrderQuantity) {
+    }
+
+    if (item.availableQuantity && !item.maxOrderQuantity) {
       return <Text>{item.availableQuantity.toLocaleString()} disponíveis</Text>;
-    } else if (!item.availableQuantity && item.maxOrderQuantity) {
+    }
+
+    if (!item.availableQuantity && item.maxOrderQuantity) {
       return (
         <Text>Máx. {item.maxOrderQuantity.toLocaleString()} por pedido</Text>
       );
@@ -201,9 +206,9 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
           <View style={{ flex: 0.15, justifyContent: 'center' }}>
             <LoadingButton
               loading={state.loading}
-              onPress={validateAndCreateDelivery}
+              onPress={validateAndCreateOrUpdateDelivery}
             >
-              Criar entrega
+              {state.nextDelivery ? 'Atualizar entrega' : 'Criar entrega'}
             </LoadingButton>
           </View>
         )}

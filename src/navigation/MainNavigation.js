@@ -1,18 +1,11 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation-stack';
-import DeliveriesScreen, {
-  deliveriesNavigationOptions,
-} from '../screens/delivery/DeliveriesScreen';
-import ConsumerGroupInfoScreen, {
-  consumerGroupInfoNavigationOptions,
-} from '../screens/ConsumerGroupInfoScreen';
-import {
-  createBottomTabNavigator,
-  createMaterialTopTabNavigator,
-} from 'react-navigation-tabs';
+import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import { FontAwesome5 } from '@expo/vector-icons';
-import PaymentsScreen from '../screens/PaymentsScreen';
 import { createSwitchNavigator } from 'react-navigation';
+import DeliveriesScreen, { deliveriesNavigationOptions } from '../screens/delivery/DeliveriesScreen';
+import ConsumerGroupInfoScreen, { consumerGroupInfoNavigationOptions } from '../screens/ConsumerGroupInfoScreen';
+import PaymentsScreen from '../screens/PaymentsScreen';
 import SigninScreen from '../screens/SigninScreen';
 import InitialScreen from '../screens/InitialScreen';
 import ConsumersScreen from '../screens/ConsumersScreen';
@@ -24,9 +17,7 @@ import EditConsumerGroupInfoScreen from '../screens/EditConsumerGroupScreen';
 import UpdateAccountInfoScreen from '../screens/UpdateAccountInfoScreen';
 import AccountOptionsScreen from '../screens/AccountOptionsScreen';
 import UpdatePasswordScreen from '../screens/UpdatePasswordScreen';
-import CreateDeliveryScreen, {
-  createDeliveryNavigationOptions,
-} from '../screens/delivery/CreateDeliveryScreen';
+import CreateDeliveryScreen, { createDeliveryNavigationOptions } from '../screens/delivery/CreateDeliveryScreen';
 import AddDeliveryExtraItemsScreen from '../screens/delivery/AddDeliveryExtraItemsScreen';
 import CreateExtraItemScreen from '../screens/delivery/CreateExtraItemScreen';
 
@@ -103,7 +94,7 @@ const consumerGroupTopTabNavigator = createMaterialTopTabNavigator(
       },
     },
   },
-  { ...topTabConfig, swipeEnabled: false }
+  { ...topTabConfig, swipeEnabled: false },
 );
 
 const extraItemsStackNavigator = createStackNavigator({
