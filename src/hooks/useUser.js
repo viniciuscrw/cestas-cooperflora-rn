@@ -8,15 +8,20 @@ export default () => {
   const getUser = async () => {
     const userId = await AsyncStorage.getItem('userId');
     const userRole = await AsyncStorage.getItem('userRole');
+    const userName = await AsyncStorage.getItem('userName');
+    console.log("---", userRole);
 
     if (!(userId && userRole)) {
       const user = await getById('users', userId);
       await AsyncStorage.setItem('userId', user.id);
       await AsyncStorage.setItem('userRole', user.role);
+      await AsyncStorage.setItem('userName', user.name);
 
       setCurrentUser(user);
+
     } else {
       setCurrentUser({ id: userId, role: userRole });
+
     }
   };
 

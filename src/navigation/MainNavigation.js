@@ -20,6 +20,8 @@ import UpdatePasswordScreen from '../screens/UpdatePasswordScreen';
 import CreateDeliveryScreen, { createDeliveryNavigationOptions } from '../screens/delivery/CreateDeliveryScreen';
 import AddDeliveryExtraItemsScreen from '../screens/delivery/AddDeliveryExtraItemsScreen';
 import CreateExtraItemScreen from '../screens/delivery/CreateExtraItemScreen';
+import ConsumerOrderScreen, {ConsumerOrderScreenOptions} from '../screens/consumer/ConsumerOrderScreen';
+
 
 const defaultStackNavOptions = {
   headerTitleAlign: 'center',
@@ -142,11 +144,34 @@ const deliveryStackNavigator = createStackNavigator(
       screen: ConsumerGroupInfoScreen,
       navigationOptions: consumerGroupInfoNavigationOptions,
     },
+    ConsumerOrder: {
+      screen: ConsumerOrderScreen,
+      navigationOptions: ConsumerOrderScreenOptions,
+    }
   },
   {
     defaultNavigationOptions: defaultStackNavOptions,
   }
 );
+
+//Screen added by André/Rafa/Yasmin
+// const consumerOrderStackNavigator = createStackNavigator(
+//   {
+//     Deliveries: {
+//       screen: DeliveriesScreen,
+//       navigationOptions: deliveriesNavigationOptions,
+//     },
+//     Order: {
+//       screen: ConsumerOrderScreen,
+//       navigationOptions: ScreenOptions,
+//     }
+//   },
+//   {
+//     defaultNavigationOptions: defaultStackNavOptions,
+//   }
+// );
+
+// ==================
 
 const switchNavigator = createSwitchNavigator({
   Initial: InitialScreen,

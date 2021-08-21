@@ -48,6 +48,11 @@ const DeliveriesScreen = ({ navigation }) => {
     navigation.navigate('CreateDelivery', { delivery });
   };
 
+  const orderConsumer = (delivery) => {
+    console.log("Order Consumer");
+    navigation.navigate('ConsumerOrder', { user, delivery });
+  };
+
   const renderNextDelivery = () => {
     let nextDelivery = state.nextDelivery;
     let lastDeliveries = state.lastDeliveries;
@@ -58,7 +63,10 @@ const DeliveriesScreen = ({ navigation }) => {
         {nextDelivery ? (
           <View style={styles.nextDeliveryItem}>
             <TouchableOpacity
-              onPress={() => editDelivery(nextDelivery)}
+              onPress={ 
+                user.role === 'organizer' 
+                ? () => editDelivery(nextDelivery) 
+                : () => orderConsumer(nextDelivery) }
             >
               <Card
                 containerStyle={{
