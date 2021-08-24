@@ -1,29 +1,18 @@
 import React, { useContext } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { NavigationEvents, withNavigation } from 'react-navigation';
+import { Divider } from 'react-native-elements';
 import Spinner from '../../components/Spinner';
 import ConsumerGroupDetails from '../../components/ConsumerGroupDetails';
 import MainHeader from '../../components/MainHeader';
 import Button from '../../components/Button';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
-import { NavigationEvents, withNavigation } from 'react-navigation';
-import { Card, Divider } from 'react-native-elements';
-import { format } from 'date-fns';
-import GLOBALS from '../../Globals';
 import useUser from '../../hooks/useUser';
+import DeliveryCard from '../../components/DeliveryCard';
 
 const DeliveriesScreen = ({ navigation }) => {
   const user = useUser();
   const { state, fetchDeliveries } = useContext(DeliveryContext);
-
-  const formatBaseProducts = (delivery) => {
-    return delivery.baseProducts.toLowerCase().replace(/\n/g, ', ');
-  };
 
   const renderButtonOrMessage = () => {
     if (user && user.role === 'organizer') {
@@ -35,13 +24,12 @@ const DeliveriesScreen = ({ navigation }) => {
           Adicionar próxima entrega
         </Button>
       );
-    } else {
-      return (
-        <Text style={styles.nextDeliveryButton}>
-          A próxima entrega ainda não foi agendada.
-        </Text>
-      );
     }
+    return (
+      <Text style={styles.nextDeliveryButton}>
+        A próxima entrega ainda não foi agendada.
+      </Text>
+    );
   };
 
   const editDelivery = (delivery) => {
@@ -49,47 +37,22 @@ const DeliveriesScreen = ({ navigation }) => {
   };
 
   const renderNextDelivery = () => {
-    let nextDelivery = state.nextDelivery;
-    let lastDeliveries = state.lastDeliveries;
+    const { nextDelivery } = state;
+    const { lastDeliveries } = state;
 
     return (
       <View style={styles.deliveriesListHeader}>
         <Text style={styles.text}>Próxima entrega</Text>
         {nextDelivery ? (
           <View style={styles.nextDeliveryItem}>
-            <TouchableOpacity
-              onPress={() => editDelivery(nextDelivery)}
-            >
-              <Card
-                containerStyle={{
-                  borderWidth: 0.25,
-                  borderRadius: 5,
-                  borderColor: 'darkolivegreen',
-                  backgroundColor: '#ebebeb',
-                }}
-                title={format(nextDelivery.deliveryDate, 'dd/MM/yyyy')}
-                dividerStyle={{ backgroundColor: 'darkolivegreen' }}
-              >
-                <Text>
-                  <Text style={styles.cardTextStrong}>Pedidos até: </Text>
-                  <Text style={styles.cardText}>
-                    {format(
-                      nextDelivery.limitDate,
-                      GLOBALS.FORMAT.DEFAULT_DATE
-                    )}{' '}
-                    às {format(nextDelivery.limitDate, 'HH:mm')}
-                  </Text>
-                </Text>
-                <Text numberOfLines={3} style={styles.cardTextContainer}>
-                  <Text style={styles.cardTextStrong}>
-                    Composição da cesta:{' '}
-                  </Text>
-                  <Text style={styles.cardText}>
-                    {formatBaseProducts(nextDelivery)}
-                  </Text>
-                </Text>
-              </Card>
-            </TouchableOpacity>
+            <DeliveryCard
+              delivery={nextDelivery}
+              ordersDateText="Pedidos até:"
+              borderColor="darkolivegreen"
+              onPress={() => navigation.navigate('OrdersManagement')}
+              showEditButton
+              onEditButtonPress={() => editDelivery(nextDelivery)}
+            />
           </View>
         ) : (
           renderButtonOrMessage()
@@ -107,30 +70,12 @@ const DeliveriesScreen = ({ navigation }) => {
   const renderLastDeliveriesItem = ({ item }) => {
     return (
       <View style={styles.lastDeliveriesItem}>
-        <TouchableOpacity>
-          <Card
-            containerStyle={{
-              borderWidth: 0.25,
-              borderRadius: 5,
-              borderColor: 'darkorange',
-              backgroundColor: '#ebebeb',
-            }}
-            title={format(item.deliveryDate, GLOBALS.FORMAT.DEFAULT_DATE)}
-            dividerStyle={{ backgroundColor: 'darkorange' }}
-          >
-            <Text>
-              <Text style={styles.cardTextStrong}>Pedidos encerrados em: </Text>
-              <Text style={styles.cardText}>
-                {format(item.limitDate, 'dd/MM/yyyy')} às{' '}
-                {format(item.limitDate, 'HH:mm')}
-              </Text>
-            </Text>
-            <Text numberOfLines={3} style={styles.cardTextContainer}>
-              <Text style={styles.cardTextStrong}>Composição da cesta: </Text>
-              <Text style={styles.cardText}>{formatBaseProducts(item)}</Text>
-            </Text>
-          </Card>
-        </TouchableOpacity>
+        <DeliveryCard
+          delivery={item}
+          ordersDateText="Pedidos encerrados em:"
+          borderColor="darkorange"
+          onPress={() => navigation.navigate('OrdersManagement')}
+        />
       </View>
     );
   };
@@ -151,7 +96,6 @@ const DeliveriesScreen = ({ navigation }) => {
     </View>
   );
 };
-
 
 export const deliveriesNavigationOptions = () => {
   return {
@@ -191,16 +135,6 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 20,
     marginHorizontal: -10,
-  },
-  cardTextStrong: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cardText: {
-    fontSize: 15,
-  },
-  cardTextContainer: {
-    marginTop: 5,
   },
 });
 
