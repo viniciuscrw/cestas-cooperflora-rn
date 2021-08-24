@@ -37,8 +37,7 @@ const DeliveriesScreen = ({ navigation }) => {
   };
 
   const renderNextDelivery = () => {
-    const { nextDelivery } = state;
-    const { lastDeliveries } = state;
+    const { nextDelivery, lastDeliveries } = state;
 
     return (
       <View style={styles.deliveriesListHeader}>
