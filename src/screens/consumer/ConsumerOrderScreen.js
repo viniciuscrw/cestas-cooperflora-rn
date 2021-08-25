@@ -1,51 +1,75 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { withNavigation } from 'react-navigation';
-import { FlatList, StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Button, Alert } from 'react-native'
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
+import useUser from '../../hooks/useUser';
+import OrderContext from '../../context/OrderContext';
 
-import CartContext from '../../context/CartContext';
-
-const ConsumerOrderScreen = () => {
+const ConsumerOrderScreen = (props) => {
 
     const [baseProducts, setBaseProducts] = useState();
-    const [cartProducts, setCartProducts] = useState([]);
+    const [orderProducts, setOrderProducts] = useState([]);
 
-    const { cart, startCart, addBasicProductsToCart, removeBasicProductsFromCart, addProductToCart, removeProductFromCart } = useContext(CartContext);
+    const { order, startOrder, addBaseProductsToOrder, removeBaseProductsFromOrder, addProductToOrder, removeProductFromOrder, addOrder } = useContext(OrderContext);
+    const user = useUser();
 
-    // console.log('[Consumer Screen] - Transformed CartProducts', cartProducts);
+    // console.log('[Consumer Screen] - Order', order);
+
+    // console.log('[Consumer Screen] - Transformed orderProducts', orderProducts);
     // console.log('-----');
 
-    const transformCartProducts = () => {
-        let transformedCartProducts = [];
-        for (const key in cart.products) {
-            transformedCartProducts.push({
+    const transformOrderProducts = () => {
+        // console.log("Products from reducer", order);
+        let transformedOrderProducts = [];
+        for (const key in order.extraProducts) {
+            transformedOrderProducts.push({
                 productId: key,
-                productTitle: cart.products[key].productTitle,
-                productPrice: cart.products[key].productPrice,
-                quantity: cart.products[key].quantity,
+                productTitle: order.extraProducts[key].productTitle,
+                productPrice: order.extraProducts[key].productPrice,
+                quantity: order.extraProducts[key].quantity,
             })
         }
-        transformedCartProducts.sort((a, b) => { 
+        transformedOrderProducts.sort((a, b) => {
             return (a.productId > b.productId ? 1 : -1)
         });
-        setCartProducts(() => transformedCartProducts);
+        setOrderProducts(() => transformedOrderProducts);
     }
 
-    // console.log('[Consumer Screen] - Cart', cart);
+    // console.log('[Consumer Screen] - order', order);
 
     const delivery = useContext(DeliveryContext);
-
     // console.log('[Consumer Screen] - Delivery', delivery.state.nextDelivery);
 
     useEffect(() => {
         setBaseProducts(delivery.state.nextDelivery.baseProducts);
-        // console.log('[Consumer Screen] - Cart',cart);
-        startCart(delivery.state.nextDelivery.extraProducts);
+        startOrder(delivery.state.nextDelivery.extraProducts);
     }, []);
 
     useEffect(() => {
-        transformCartProducts();
-    }, [cart.products])
+        transformOrderProducts();
+    }, [order.extraProducts]);
+
+    const onHandleNewOrder = () => {
+        console.log('[Consumer Order Screen] Finishing new order');
+        addOrder(user.id, delivery.state.nextDelivery.id, orderProducts);
+        startOrder(delivery.state.nextDelivery.extraProducts);
+        props.navigation.navigate('ConsumerGroup');
+    }
+
+    const confirmOrder = () => {
+        Alert.alert(
+            "Confirma a inclusão do pedido?",
+            "Fique atento/a para a data da entrega !!!",
+            [
+                {
+                    text: "Cancelar",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                { text: "Confirmar", onPress: () => onHandleNewOrder() }
+            ]
+        );
+    }
 
     return (
         <View styles={styles.screen}>
@@ -55,15 +79,15 @@ const ConsumerOrderScreen = () => {
                     <View style={styles.button}>
                         <Button
                             style={styles.button}
-                            onPress={() => removeBasicProductsFromCart()}
+                            onPress={() => removeBaseProductsFromOrder()}
                             title="-"
                             color="darkolivegreen"
                         />
                     </View>
-                    <Text style={styles.quantity}>{cart.basicProducts}</Text>
+                    <Text style={styles.quantity}>{order.baseProducts}</Text>
                     <View style={styles.button}>
                         <Button
-                            onPress={() => { addBasicProductsToCart() }}
+                            onPress={() => { addBaseProductsToOrder() }}
                             title="+"
                             color="darkolivegreen"
                         />
@@ -79,18 +103,22 @@ const ConsumerOrderScreen = () => {
             />
             <View style={styles.extraProducts}>
                 <Text style={styles.title}>Itens extras</Text>
-                {/* {Object.values(cart.products).map((item, index) => { */}
-                {cartProducts.map((item, index) => {
+                {/* {Object.values(order.products).map((item, index) => { */}
+                {orderProducts.map((item, index) => {
                     return (
                         <View key={index} style={styles.extraProductItems}>
                             <View style={styles.item}>
-                                <Text>{item.productTitle}</Text>
+                                <View style={styles.line}>
+                                    <Text>{item.productTitle}</Text>
+                                    <Text> (R${item.productPrice.toFixed(2)})</Text>
+                                </View>
+
                             </View>
                             <View style={styles.controls}>
                                 <View style={styles.button}>
                                     <Button
                                         style={styles.button}
-                                        onPress={() => { removeProductFromCart(item) }}
+                                        onPress={() => { removeProductFromOrder(item) }}
                                         title="-"
                                         color="darkolivegreen"
                                     />
@@ -99,7 +127,7 @@ const ConsumerOrderScreen = () => {
                                 <View style={styles.button}>
                                     <Button
                                         onPress={() => {
-                                            addProductToCart(item)
+                                            addProductToOrder(item)
                                         }}
                                         title="+"
                                         color="darkolivegreen"
@@ -110,13 +138,21 @@ const ConsumerOrderScreen = () => {
                     )
                 })}
             </View>
-            <Button title="Confirmar" color='darkolivegreen' onPress={() => { }} />
+            <Button
+                title="Confirmar"
+                color='darkolivegreen'
+                onPress={() => { confirmOrder() }} 
+            />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     baseProducts: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    line: {
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
