@@ -183,6 +183,25 @@ const deliveryStackNavigator = createStackNavigator(
   }
 );
 
+//Screen added by André/Rafa/Yasmin
+// const consumerOrderStackNavigator = createStackNavigator(
+//   {
+//     Deliveries: {
+//       screen: DeliveriesScreen,
+//       navigationOptions: deliveriesNavigationOptions,
+//     },
+//     Order: {
+//       screen: ConsumerOrderScreen,
+//       navigationOptions: ScreenOptions,
+//     }
+//   },
+//   {
+//     defaultNavigationOptions: defaultStackNavOptions,
+//   }
+// );
+
+// ==================
+
 const switchNavigator = createSwitchNavigator({
   Initial: InitialScreen,
   LoginFlow: createStackNavigator({

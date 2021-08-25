@@ -36,6 +36,11 @@ const DeliveriesScreen = ({ navigation }) => {
     navigation.navigate('CreateDelivery', { delivery });
   };
 
+  const orderConsumer = (delivery) => {
+    console.log("Order Consumer");
+    navigation.navigate('ConsumerOrder', { user, delivery });
+  };
+
   const renderNextDelivery = () => {
     const { nextDelivery, lastDeliveries } = state;
 
