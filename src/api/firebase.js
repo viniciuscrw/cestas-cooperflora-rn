@@ -334,6 +334,30 @@ export const deleteDoc = async (collection, doc) => {
     });
 };
 
+export const deleteDocInSubcollection = async (
+  collection,
+  doc,
+  subcollection,
+  subcollectionDoc
+) => {
+  console.log(
+    `[Firebase - deleteDocInSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}; doc: ${subcollectionDoc}`
+  );
+
+  const db = firebase.firestore();
+  const ref = db.collection(collection);
+
+  await ref
+    .doc(doc)
+    .collection(subcollection)
+    .doc(subcollectionDoc)
+    .delete()
+    .catch((err) => {
+      console.log('Error deleting document in subcollection: ' + doc, err);
+      navigate('Signin');
+    });
+};
+
 export const resetPassword = (email) => {
   return firebase.auth().sendPasswordResetEmail(email);
 };

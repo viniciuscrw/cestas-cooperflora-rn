@@ -1,5 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FlatList, Keyboard, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import endOfDay from 'date-fns/endOfDay';
 import { Input, ListItem } from 'react-native-elements';
 import { NavigationEvents } from 'react-navigation';
@@ -15,7 +24,9 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
     state: { loading, products },
     fetchProducts,
   } = useContext(ProductContext);
-  const { state, createDelivery, updateDelivery } = useContext(DeliveryContext);
+  const { state, createDelivery, updateDelivery, deleteDelivery } = useContext(
+    DeliveryContext
+  );
 
   const [checkedItems, setCheckedItems] = useState(
     state.nextDelivery && state.nextDelivery.extraProducts
@@ -104,6 +115,25 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
     }
   };
 
+  const deleteCurrentDelivery = () => {
+    Alert.alert(
+      'Excluir entrega',
+      'Você tem certeza que deseja excluir esta próxima entrega?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Confirmar',
+          onPress: () => {
+            deleteDelivery({ deliveryId: state.nextDelivery.id });
+          },
+        },
+      ]
+    );
+  };
+
   const renderQuantityInfoText = (item) => {
     if (item.availableQuantity && item.maxOrderQuantity) {
       return (
@@ -165,6 +195,44 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
     );
   };
 
+  const renderConfirmButton = () => {
+    return (filterText.length &&
+      filteredProducts &&
+      !filteredProducts.length) ||
+      isKeyboardVisible ? null : (
+      <View style={styles.mainButtonContainer}>
+        <LoadingButton
+          loading={state.loading}
+          onPress={validateAndCreateOrUpdateDelivery}
+        >
+          {state.nextDelivery ? 'Atualizar entrega' : 'Criar entrega'}
+        </LoadingButton>
+      </View>
+    );
+  };
+
+  const renderDeleteButton = () => {
+    if (
+      (filterText.length && filteredProducts && !filteredProducts.length) ||
+      isKeyboardVisible ||
+      !state.nextDelivery
+    ) {
+      return null;
+    }
+
+    return (
+      <View style={styles.mainButtonContainer}>
+        <LoadingButton
+          loading={state.loading}
+          color="darkorange"
+          onPress={deleteCurrentDelivery}
+        >
+          Excluir entrega
+        </LoadingButton>
+      </View>
+    );
+  };
+
   return !loading ? (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -201,17 +269,8 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
             />
           </View>
         )}
-        {(filterText.length && filteredProducts && !filteredProducts.length) ||
-        isKeyboardVisible ? null : (
-          <View style={{ flex: 0.15, justifyContent: 'center' }}>
-            <LoadingButton
-              loading={state.loading}
-              onPress={validateAndCreateOrUpdateDelivery}
-            >
-              {state.nextDelivery ? 'Atualizar entrega' : 'Criar entrega'}
-            </LoadingButton>
-          </View>
-        )}
+        {renderConfirmButton()}
+        {renderDeleteButton()}
       </View>
     </TouchableWithoutFeedback>
   ) : (
@@ -241,6 +300,10 @@ const styles = StyleSheet.create({
   productNotFoundText: {
     margin: 10,
     fontSize: 16,
+  },
+  mainButtonContainer: {
+    flex: 0.15,
+    justifyContent: 'center',
   },
 });
 
