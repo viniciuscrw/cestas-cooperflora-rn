@@ -1,5 +1,10 @@
 import createDataContext from './createDataContext';
-import { getGroupDeliveries, insertIntoSubcollection, updateDocInSubcollection } from '../api/firebase';
+import {
+  deleteDocInSubcollection,
+  getGroupDeliveries,
+  insertIntoSubcollection,
+  updateDocInSubcollection,
+} from '../api/firebase';
 import { navigate } from '../navigationRef';
 import GLOBALS from '../Globals';
 
@@ -20,6 +25,8 @@ const deliveryReducer = (state, action) => {
         baseProducts: action.payload.baseProducts,
       };
     case 'add_delivery':
+      return { ...state, loading: false };
+    case 'delete_delivery':
       return { ...state, loading: false };
     case 'loading':
       return { ...state, loading: true };
@@ -127,6 +134,21 @@ const updateDelivery = (dispatch) => async ({ deliveryId, delivery }) => {
   });
 };
 
+const deleteDelivery = (dispatch) => async ({ deliveryId }) => {
+  dispatch({ type: 'loading' });
+  console.log('Deleting delivery with id: ' + deliveryId);
+
+  deleteDocInSubcollection(
+    GLOBALS.COLLECTION.GROUPS,
+    GLOBALS.CONSUMER_GROUP.ID,
+    GLOBALS.COLLECTION.DELIVERIES,
+    deliveryId
+  ).then(() => {
+    dispatch({ type: 'delete_delivery' });
+    navigate('Deliveries');
+  });
+};
+
 export const { Provider, Context } = createDataContext(
   deliveryReducer,
   {
@@ -134,6 +156,7 @@ export const { Provider, Context } = createDataContext(
     setDeliveryInfo,
     createDelivery,
     updateDelivery,
+    deleteDelivery,
   },
   { deliveries: null, loading: false }
 );
