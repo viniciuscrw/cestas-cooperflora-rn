@@ -1,117 +1,193 @@
 import React, { useReducer, useState } from 'react';
 import OrderProduct from '../../models/order-product';
 import Order from '../../models/order';
+import {
+    insertDoc,
+    getByAttribute,
+    updateDoc
+} from '../api/firebase';
+import GLOBALS from '../Globals';
 
 const initialState = {
-    userId: '',
-    deliveryId: '',
-    baseProducts: 0,
-    extraProducts: [],
-    totalAmount: 0,
-    date: ''
+    isLoading: false,
+    order: {
+        userId: '',
+        deliveryId: '',
+        baseProducts: 0,
+        extraProducts: [],
+        totalAmount: 0,
+        date: ''
+    }
+}
+
+const calcTotalAmount = (order, baseProductsPrice) => {
+    let totalAmount = 0;
+    order.extraProducts.forEach(item => {
+        totalAmount = totalAmount + (item.quantity * item.productPrice)
+    });
+    totalAmount = totalAmount + (order.baseProducts * baseProductsPrice); 
+    return totalAmount;
 }
 
 const OrderContext = React.createContext();
 const OrderReducer = (state, action) => {
     switch (action.type) {
+        case 'IS_LOADING':
+            return ({ ...state, isLoading: true });
         case 'START_ORDER':
+            // console.log('[Start order] Reducer');
+            // console.log('[Start order] Reducer - state', state);
+            // console.log('[Start order] Reducer - extra products in action', action.extraProducts)
             // console.log('[Order reducer - Start Order] - action', action);
-            let updatedOrder = { extraProducts: [], totalAmount: 0 };
+            let newExtraProducts = [];
             action.extraProducts.map((extraProduct) => {
-                const newProduct = new OrderProduct(0, extraProduct.price, extraProduct.name);
-                updatedOrder = {
-                    ...updatedOrder,
-                    extraProducts: { ...updatedOrder.extraProducts, [extraProduct.id]: newProduct },
-                    baseProducts: 0
-                };
+                newExtraProducts.push({
+                    productTitle: extraProduct.name,
+                    productPrice: extraProduct.price,
+                    quantity: 0
+                });
                 // console.log('[Order Context - Start Order] updatedOrder in loop', updatedOrder);
                 // console.log('[Order Context - Start Order] in loop', Order);
             });
-            // console.log('[Order reducer - Start Order] updatedOrder', updatedOrder);
-
-            return (updatedOrder);
-        case 'ADD_BASE_PRODUCTS_TO_ORDER':
-            let updatedOrNewBaseProducts;
-            if (state.baseProducts) {
-                //Base Products já existe
-                console.log("Base Products already exists");
-                updatedOrNewBaseProducts = state.baseProducts + 1;
-            } else {
-                updatedOrNewBaseProducts = 1;
+            // console.log('[Order reducer - Start Order] new extra products', newExtraProducts);
+            let updatedOrder = {
+                ...state.order,
+                baseProducts: 0,
+                extraProducts: newExtraProducts
             }
-            updatedOrder = {
+            let updatedState = {
                 ...state,
+                isLoading: false,
+                order: updatedOrder
+            }
+            return (updatedState);
+        case 'ADD_BASE_PRODUCTS_TO_ORDER':
+            // let updatedOrNewBaseProducts;
+            // if (state.baseProducts) {
+            //     updatedOrNewBaseProducts = state.order.baseProducts + 1;
+            // } else {
+            //     updatedOrNewBaseProducts = 1;
+            // }
+            let updatedOrNewBaseProducts = state.order.baseProducts + 1;
+
+            // console.log('[Order Context - Reducer Add base products to order - bef]', state);
+            // let totalAmount = calcTotalAmount(state.order, action.baseProductsPrice);
+            let totalAmount = state.order.totalAmount + action.baseProductsPrice;
+            updatedOrder = {
+                ...state.order,
+                totalAmount: totalAmount,
                 baseProducts: updatedOrNewBaseProducts
             };
-            return updatedOrder;
+            updatedState = {
+                ...state,
+                order: updatedOrder
+            }
+            // console.log('[Order Context - Reducer Add base products to order - after]', updatedState);
+
+            return (updatedState);
         // console.log('[Order Context] exit', Order.products);
         case 'REMOVE_BASE_PRODUCTS_FROM_ORDER':
-            updatedOrder = { ...state };
-            if (state.baseProducts > 0) {
-                console.log("Base Products already exists");
-                updatedBaseProducts = state.baseProducts - 1;
+            // console.log('[Order Context - Reducer Remove base products to order - bef]', state);
+            updatedState = { ...state };
+            if (state.order.baseProducts > 0) {
+                let updatedBaseProducts = state.order.baseProducts - 1;
+                totalAmount = state.order.totalAmount - action.baseProductsPrice;
                 updatedOrder = {
-                    ...state,
+                    ...state.order,
+                    totalAmount: totalAmount,
                     baseProducts: updatedBaseProducts
                 };
-            }
-            return (updatedOrder);
-        case 'ADD_PRODUCT_TO_ORDER':
-            // console.log('[Order Context - Reducer Add produce to order - action]',action);
-            let extraProductId = action.extraProduct.productId;
-            let newExtraProduct;
-            if (state.extraProducts[extraProductId]) {
-                //Item já existe
-                console.log("Product already exists");
-                newExtraProduct = new OrderProduct(
-                    state.extraProducts[extraProductId].quantity + 1,
-                    action.extraProduct.productPrice,
-                    action.extraProduct.productTitle
-                );
-                // console.log('[New Product]',newExtraProduct);
-            } else {
-                newExtraProduct = new OrderProduct(1, action.extraProduct.price, action.extraProduct.name);
-            }
-            updatedOrder = {
-                ...state,
-                extraProducts: { ...state.extraProducts, [extraProductId]: newExtraProduct }
-            };
-            return (updatedOrder);
-        case 'REMOVE_PRODUCT_FROM_ORDER':
-            extraProductId = action.extraProduct.productId;
-            updatedOrder = { ...state };
-            let updatedExtraProduct;
-            if (state.extraProducts[extraProductId].quantity > 0) {
-                updatedExtraProduct = new OrderProduct(
-                    state.extraProducts[extraProductId].quantity - 1,
-                    action.extraProduct.productPrice,
-                    action.extraProduct.productTitle
-                );
-                updatedOrder = {
+                udpatedState = {
                     ...state,
-                    extraProducts: { ...state.extraProducts, [extraProductId]: updatedExtraProduct }
-                };
+                    order: updatedOrder
+                }
             }
-            return (updatedOrder);
-        case 'ADD_ORDER':
-            // console.log('[Order Reducer] add order - state', state.extraProducts);
-            const extraProductsTransformed = action.orderProducts.filter(prod => prod.quantity != 0);
-            let totalAmount = 0;
-            extraProductsTransformed.forEach(item => {
-                totalAmount = totalAmount + item.quantity * item.productPrice
-            });
-            totalAmount = totalAmount + state.baseProducts * 37; //Consumer group context tem essa informação. 
+            // console.log('[Or/der Context - Reducer Remove base products to order - after updatedState]', udpatedState);
+            return (udpatedState);
+        case 'ADD_PRODUCT_TO_ORDER':
+            // console.log('[Order Context - Reducer Add produce to order - action]', state);
+            updatedExtraProducts = state.order.extraProducts;
+            let productIndex = updatedExtraProducts.findIndex(prod => prod.productTitle === action.extraProduct.productTitle);
+            updatedExtraProducts[productIndex].quantity++;
+            totalAmount = state.order.totalAmount + updatedExtraProducts[productIndex].productPrice;
             updatedOrder = {
-                ...state,
-                extraProducts: extraProductsTransformed,
-                userId: action.userId,
-                deliveryId: action.deliveryId,
+                ...state.order,
                 totalAmount: totalAmount,
-                date: Date()
+                extraProducts: updatedExtraProducts
+            };
+            updatedState = {
+                ...state,
+                order: updatedOrder
             }
-            console.log('[Order Reducer] Order ended', updatedOrder);
-
-            return (updatedOrder);
+            // console.log('[Order Context - Reducer Add produce to order - action]', updatedOrder);
+            return (updatedState);
+        case 'REMOVE_PRODUCT_FROM_ORDER':
+            updatedExtraProducts = state.order.extraProducts;
+            // console.log('[Order Context] updatedExtraProducts', updatedExtraProducts);
+            productIndex = updatedExtraProducts.findIndex(prod => prod.productTitle === action.extraProduct.productTitle);
+            if (updatedExtraProducts[productIndex].quantity > 0) {
+                updatedExtraProducts[productIndex].quantity--;
+                totalAmount = state.order.totalAmount - updatedExtraProducts[productIndex].productPrice;
+            }
+            // console.log('[Order Context] updatedExtraProducts', updatedExtraProducts[productIndex]);
+            updatedOrder = {
+                ...state.order,
+                totalAmount: totalAmount,
+                extraProducts: updatedExtraProducts
+            };
+            updatedState = {
+                ...state,
+                order: updatedOrder
+            }
+            return (updatedState);
+        case 'FETCH_ORDER':
+            console.log('[Fetch order] Reducer');
+            // console.log('[Order Reducer - Fetch Order] state', state.extraProducts);
+            // console.log('[Order Reducer - Fetch Order] action.orderData', action.orderData[0].extraProducts);
+            let extraProducts = action.extraProducts;
+            // console.log('[Order Reducer - Fetch Order] extraProducts', extraProducts);
+            newExtraProducts = action.orderData[0].extraProducts;
+            // console.log('[Order Reducer - Fetch Order] action newextraProducts', newExtraProducts);
+            extraProducts.map((item) => {
+                // console.log(item + " = " + extraProducts[item]);
+                let isProduct = false;
+                newExtraProducts.map((prod) => {
+                    if (prod.productTitle === item.name) {
+                        // console.log("Produto já existe");
+                        isProduct = true;
+                    }
+                });
+                if (!isProduct) {
+                    newExtraProducts.push({
+                        productPrice: item.price,
+                        productTitle: item.name,
+                        quantity: 0
+                    })
+                }
+            });
+            updatedOrder = {
+                userId: action.orderData[0].userId,
+                deliveryId: action.orderData[0].deliveryId,
+                baseProducts: action.orderData[0].baseProducts,
+                extraProducts: newExtraProducts,
+                totalAmount: action.orderData[0].totalAmount,
+                date: action.orderData[0].date
+            }
+            updatedState = {
+                ...state,
+                isLoading: false,
+                order: updatedOrder
+            }
+            // console.log('[Order Reducer - Fetch Order] updated order', updatedOrder);
+            return (updatedState);
+        case 'ADD_ORDER':
+            console.log('[Order Reducer - Add Order] state', state);
+            updatedState = {
+                ...state,
+                isLoading: false
+            }
+            console.log('[Order Reducer - Add Order] updated state', updatedState);
+            return (updatedState);
         default:
             return state;
     }
@@ -124,19 +200,22 @@ export const OrderProvider = ({ children }) => {
     // const [order, setOrder] = useState();
 
     const startOrder = (extraProducts) => {
+        dispatch({ type: 'IS_LOADING' });
         dispatch({ type: 'START_ORDER', extraProducts: extraProducts });
     }
 
-    const addBaseProductsToOrder = () => {
-        dispatch({ type: 'ADD_BASE_PRODUCTS_TO_ORDER' });
+    const addBaseProductsToOrder = (baseProductsPrice) => {
+        console.log('[Order Context addBaseProductsToOrder] totalAmount', order);
+        dispatch({ type: 'ADD_BASE_PRODUCTS_TO_ORDER', baseProductsPrice: baseProductsPrice });
+        console.log('[Order Context addBaseProductsToOrder] totalAmount', order);
     }
 
-    const removeBaseProductsFromOrder = () => {
-        dispatch({ type: 'REMOVE_BASE_PRODUCTS_FROM_ORDER' });
+    const removeBaseProductsFromOrder = (baseProductsPrice) => {
+        dispatch({ type: 'REMOVE_BASE_PRODUCTS_FROM_ORDER',  baseProductsPrice: baseProductsPrice  });
     }
 
     const addProductToOrder = (extraProduct) => {
-        // console.log('[Order Provider] - state before add product to order', order);
+        // console.log('[Order Provider] - state before add product to order', extraProduct);
         dispatch({ type: 'ADD_PRODUCT_TO_ORDER', extraProduct: extraProduct });
         // console.log('[Order Provider] - state after add product to order', order);
     }
@@ -145,11 +224,91 @@ export const OrderProvider = ({ children }) => {
         dispatch({ type: 'REMOVE_PRODUCT_FROM_ORDER', extraProduct: extraProduct });
     }
 
-    const addOrder = (userId, deliveryId, orderProducts) => {
-        dispatch({ type: 'ADD_ORDER', userId: userId, deliveryId: deliveryId, orderProducts: orderProducts});
+    // const createProduct = (dispatch) => async ({ product }) => {
+
+    const fetchOrder = (userId, deliveryId, extraProducts) => {
+        dispatch({ type: 'IS_LOADING' });
+        console.log('[Order Context] fetchOrder function');
+        // console.log('[Order Context] fetchOrder', deliveryId);
+        //Read the user Order from Firebase
+        getByAttribute(GLOBALS.COLLECTION.ORDERS, 'userId', userId)
+            .then((data) => {
+                const orderData = data.filter(order => order.deliveryId === deliveryId);
+                // console.log('[Order Context] fetchOrder order', orderData);
+                if (orderData.length > 0) {
+                    dispatch({ type: 'FETCH_ORDER', orderData: orderData, extraProducts: extraProducts });
+                } else {
+                    startOrder(extraProducts);
+                }
+            })
+            .catch((error) => {
+                console.log('[Order Context - Fetching order] - ERRO', error);
+            });
     }
 
-    return <OrderContext.Provider value={{ order: order, addBaseProductsToOrder, removeBaseProductsFromOrder, addProductToOrder, startOrder, removeProductFromOrder, addOrder }}>
+    const addOrder = (userId, deliveryId, baseProductsPrice) => {
+        dispatch({ type: 'IS_LOADING' });
+        console.log('[Order Context] adding Order -----------------------------------');
+        // console.log('Order Context - add order - order', order);
+
+        const extraProductsTransformed = order.order.extraProducts.filter(prod => prod.quantity > 0);
+        let totalAmount = 0;
+        extraProductsTransformed.forEach(item => {
+            totalAmount = totalAmount + (item.quantity * item.productPrice)
+        });
+        totalAmount = totalAmount + (order.order.baseProducts * baseProductsPrice); //Consumer group context tem essa informação. 
+        // console.log('Order Context - add order - extra products transformed', extraProductsTransformed);
+
+        const date = new Date()
+        const newOrder = {
+            userId: userId,
+            deliveryId: deliveryId,
+            extraProducts: extraProductsTransformed,
+            baseProducts: order.order.baseProducts,
+            totalAmount: totalAmount,
+            date: date.toISOString()
+        }
+
+        // console.log('Order Context - add order - newOrder before store', newOrder);
+
+        getByAttribute(GLOBALS.COLLECTION.ORDERS, 'userId', userId)
+            .then((data) => {
+                // console.log('[Order Context] addorUpdateOrder data', data);
+                const orderData = data.filter(order => order.deliveryId === deliveryId);
+                if (orderData.length > 0) {
+                    //Update order
+                    console.log('[Add order] update order');
+                    const orderId = orderData[0].id;
+                    updateDoc(GLOBALS.COLLECTION.ORDERS, orderId, newOrder)
+                } else {
+                    //New order
+                    console.log('[Add order] new order');
+                    insertDoc(GLOBALS.COLLECTION.ORDERS, newOrder)
+                        .then((data) => {
+                            // console.log('[Order Context] addOrder - order included', data);
+                        }).catch((error) => {
+                            console.log('[Order Context - Add order] - ERRO', error);
+                        });
+                }
+                dispatch({ type: 'ADD_ORDER', totalAmount: totalAmount });
+            })
+            .catch((error) => {
+                console.log('[Order Context - Read orders] - ERRO', error);
+            });
+        // console.log('[Order Context] addOrder - order', newOrder);
+        dispatch({ type: 'ADD_ORDER' });
+    }
+
+    return <OrderContext.Provider value={{
+        order: order,
+        addBaseProductsToOrder,
+        removeBaseProductsFromOrder,
+        addProductToOrder,
+        startOrder,
+        removeProductFromOrder,
+        addOrder,
+        fetchOrder
+    }}>
         {children}
     </OrderContext.Provider>
 }
