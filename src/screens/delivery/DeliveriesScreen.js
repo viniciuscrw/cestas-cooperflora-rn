@@ -9,6 +9,7 @@ import Button from '../../components/Button';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import useUser from '../../hooks/useUser';
 import DeliveryCard from '../../components/DeliveryCard';
+import GLOBALS from '../../Globals';
 
 const DeliveriesScreen = ({ navigation }) => {
   const user = useUser();
@@ -53,7 +54,13 @@ const DeliveriesScreen = ({ navigation }) => {
               delivery={nextDelivery}
               ordersDateText="Pedidos até:"
               borderColor="darkolivegreen"
-              onPress={() => navigation.navigate('OrdersManagement')}
+              onPress={() => {
+                if (user.role === GLOBALS.USER.ROLE.ORGANIZER) {
+                  navigation.navigate('OrdersManagement');
+                } else if (user.role === GLOBALS.USER.ROLE.CONSUMER) {
+                  navigation.navigate('ConsumerOrderScreen');
+                }
+              }}
               showEditButton
               onEditButtonPress={() => editDelivery(nextDelivery)}
             />
