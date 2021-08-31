@@ -22,6 +22,7 @@ export default {
     USERS: 'users',
     DELIVERIES: 'deliveries',
     PRODUCTS: 'products',
+    ORDERS: 'orders'
   },
   FORMAT: {
     DEFAULT_DATE: 'dd/MM/yyyy',

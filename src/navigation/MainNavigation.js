@@ -33,6 +33,9 @@ import OrdersByConsumerScreen, {
   ordersManagementNavigationOptions,
 } from '../screens/OrdersByConsumerScreen';
 import OrdersQuantityByItemScreen from '../screens/OrdersQuantityByItemScreen';
+import ConsumerOrderScreen from '../screens/consumer/ConsumerOrderScreen';
+import ConsumerOrderPlacedScreen from '../screens/consumer/ConsumerOrderPlacedScreen';
+
 
 const defaultStackNavOptions = {
   headerTitleAlign: 'center',
@@ -72,6 +75,12 @@ const consumerStackNavigator = createStackNavigator({
   UserDetail: {
     screen: UserDetailScreen,
   },
+  ConsumerOrderScreen:{
+    screen: ConsumerOrderScreen
+  },
+  ConsumerOrderPlacedScreen:{
+    screen: ConsumerOrderPlacedScreen
+  }
 });
 
 const organizerStackNavigator = createStackNavigator({
