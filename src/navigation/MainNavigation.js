@@ -74,12 +74,6 @@ const consumerStackNavigator = createStackNavigator({
   },
   UserDetail: {
     screen: UserDetailScreen,
-  },
-  ConsumerOrderScreen:{
-    screen: ConsumerOrderScreen
-  },
-  ConsumerOrderPlacedScreen:{
-    screen: ConsumerOrderPlacedScreen
   }
 });
 
@@ -186,6 +180,12 @@ const deliveryStackNavigator = createStackNavigator(
       screen: ordersManagementTabNavigator,
       navigationOptions: ordersManagementNavigationOptions,
     },
+    ConsumerOrderScreen: {
+      screen: ConsumerOrderScreen
+    },
+    ConsumerOrderPlacedScreen: {
+      screen: ConsumerOrderPlacedScreen
+    }
   },
   {
     defaultNavigationOptions: defaultStackNavOptions,
