@@ -35,7 +35,7 @@ import OrdersByConsumerScreen, {
 import OrdersQuantityByItemScreen from '../screens/OrdersQuantityByItemScreen';
 import ConsumerOrderScreen from '../screens/consumer/ConsumerOrderScreen';
 import ConsumerOrderPlacedScreen from '../screens/consumer/ConsumerOrderPlacedScreen';
-
+import ConsumerPaymentsScreen from '../screens/consumer/ConsumerPaymentsScreen';
 
 const defaultStackNavOptions = {
   headerTitleAlign: 'center',
@@ -185,7 +185,10 @@ const deliveryStackNavigator = createStackNavigator(
     },
     ConsumerOrderPlacedScreen: {
       screen: ConsumerOrderPlacedScreen
-    }
+    },
+    ConsumerPaymentsScreen: {
+      screen: ConsumerPaymentsScreen
+    },
   },
   {
     defaultNavigationOptions: defaultStackNavOptions,

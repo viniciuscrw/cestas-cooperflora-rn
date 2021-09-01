@@ -102,7 +102,12 @@ const ConsumerOrderPlacedScreen = (props) => {
             </View>
             <Divider style={{ borderBottomColor: Colors.secondary }} />
             <View style={styles.buttonContainer}>
-                <Button style={styles.button} onPress={() => console.log('Button pressed!')}>
+                <Button style={styles.button} onPress={() => {
+                    props.navigation.navigate(
+                        'ConsumerPaymentsScreen',
+                        { orderTotalAmount: totalAmount }
+                    )
+                }}>
                     Adicionar Pagamento
                 </Button>
             </View>

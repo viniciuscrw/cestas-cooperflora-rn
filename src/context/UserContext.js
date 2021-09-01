@@ -5,6 +5,7 @@ import {
   insertDoc,
   updateDoc,
   getByAttributeOrderingBy,
+  getById
 } from '../api/firebase';
 import { navigate } from '../navigationRef';
 import GLOBALS from '../Globals';
@@ -124,6 +125,21 @@ const deleteUser = (dispatch) => async (user) => {
   });
 };
 
+//### Incluído por André Bordignon
+const getUserById = (dispatch) => async (userId) => {
+  dispatch({ type: 'loading' });
+
+  const data = await getById(
+    GLOBALS.COLLECTION.USERS,
+    userId
+  );
+
+  dispatch({ type: 'fetch_user' });
+  return data;
+};
+
+//#########
+
 export const { Provider, Context } = createDataContext(
   userReducer,
   {
@@ -133,6 +149,7 @@ export const { Provider, Context } = createDataContext(
     createUser,
     updateUser,
     deleteUser,
+    getUserById
   },
   { users: [], loading: false }
 );
