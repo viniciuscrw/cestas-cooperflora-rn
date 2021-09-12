@@ -32,10 +32,9 @@ import CreateExtraItemScreen from '../screens/delivery/CreateExtraItemScreen';
 import OrdersByConsumerScreen, {
   ordersManagementNavigationOptions,
 } from '../screens/OrdersByConsumerScreen';
-import OrdersQuantityByItemScreen from '../screens/OrdersQuantityByItemScreen';
 import ConsumerOrderScreen from '../screens/consumer/ConsumerOrderScreen';
 import ConsumerOrderPlacedScreen from '../screens/consumer/ConsumerOrderPlacedScreen';
-
+import OrdersItemsQuantityScreen from '../screens/OrdersItemsQuantityScreen';
 
 const defaultStackNavOptions = {
   headerTitleAlign: 'center',
@@ -74,7 +73,7 @@ const consumerStackNavigator = createStackNavigator({
   },
   UserDetail: {
     screen: UserDetailScreen,
-  }
+  },
 });
 
 const organizerStackNavigator = createStackNavigator({
@@ -149,9 +148,9 @@ const ordersManagementTabNavigator = createMaterialTopTabNavigator(
       },
     },
     AddDeliveryExtraItems: {
-      screen: OrdersQuantityByItemScreen,
+      screen: OrdersItemsQuantityScreen,
       navigationOptions: {
-        tabBarLabel: 'Quantidades',
+        tabBarLabel: 'Quantidades pedidas',
       },
     },
   },
@@ -181,18 +180,18 @@ const deliveryStackNavigator = createStackNavigator(
       navigationOptions: ordersManagementNavigationOptions,
     },
     ConsumerOrderScreen: {
-      screen: ConsumerOrderScreen
+      screen: ConsumerOrderScreen,
     },
     ConsumerOrderPlacedScreen: {
-      screen: ConsumerOrderPlacedScreen
-    }
+      screen: ConsumerOrderPlacedScreen,
+    },
   },
   {
     defaultNavigationOptions: defaultStackNavOptions,
   }
 );
 
-//Screen added by André/Rafa/Yasmin
+// Screen added by André/Rafa/Yasmin
 // const consumerOrderStackNavigator = createStackNavigator(
 //   {
 //     Deliveries: {

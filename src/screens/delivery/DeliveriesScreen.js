@@ -16,7 +16,7 @@ const DeliveriesScreen = ({ navigation }) => {
   const { state, fetchDeliveries } = useContext(DeliveryContext);
 
   const renderButtonOrMessage = () => {
-    if (user && user.role === 'organizer') {
+    if (user && user.role === GLOBALS.USER.ROLE.ORGANIZER) {
       return (
         <Button
           style={styles.nextDeliveryButton}
@@ -37,9 +37,12 @@ const DeliveriesScreen = ({ navigation }) => {
     navigation.navigate('CreateDelivery', { delivery });
   };
 
-  const orderConsumer = (delivery) => {
-    console.log("Order Consumer");
-    navigation.navigate('ConsumerOrder', { user, delivery });
+  const onCardClick = (delivery) => {
+    if (user.role === GLOBALS.USER.ROLE.ORGANIZER) {
+      navigation.navigate('OrdersManagement', { delivery });
+    } else {
+      navigation.navigate('ConsumerOrderScreen', { user, delivery });
+    }
   };
 
   const renderNextDelivery = () => {
@@ -54,14 +57,8 @@ const DeliveriesScreen = ({ navigation }) => {
               delivery={nextDelivery}
               ordersDateText="Pedidos até:"
               borderColor="darkolivegreen"
-              onPress={() => {
-                if (user.role === GLOBALS.USER.ROLE.ORGANIZER) {
-                  navigation.navigate('OrdersManagement');
-                } else if (user.role === GLOBALS.USER.ROLE.CONSUMER) {
-                  navigation.navigate('ConsumerOrderScreen');
-                }
-              }}
-              showEditButton
+              onPress={() => onCardClick(nextDelivery)}
+              showEditButton={user.role === GLOBALS.USER.ROLE.ORGANIZER}
               onEditButtonPress={() => editDelivery(nextDelivery)}
             />
           </View>
@@ -85,7 +82,7 @@ const DeliveriesScreen = ({ navigation }) => {
           delivery={item}
           ordersDateText="Pedidos encerrados em:"
           borderColor="darkorange"
-          onPress={() => navigation.navigate('OrdersManagement')}
+          onPress={() => onCardClick(item)}
         />
       </View>
     );

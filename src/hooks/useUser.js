@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getById } from '../api/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getById } from '../api/firebase';
 
 export default () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -9,7 +9,7 @@ export default () => {
     const userId = await AsyncStorage.getItem('userId');
     const userRole = await AsyncStorage.getItem('userRole');
     const userName = await AsyncStorage.getItem('userName');
-    console.log("---", userRole);
+    console.log('---', userRole);
 
     if (!(userId && userRole)) {
       const user = await getById('users', userId);
@@ -18,10 +18,8 @@ export default () => {
       await AsyncStorage.setItem('userName', user.name);
 
       setCurrentUser(user);
-
     } else {
       setCurrentUser({ id: userId, role: userRole });
-
     }
   };
 

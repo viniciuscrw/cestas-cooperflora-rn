@@ -72,7 +72,6 @@ const fetchDeliveries = (dispatch) => async () => {
   const nextDelivery = getNextDelivery(deliveries);
   const lastDeliveries = getLastDeliveries(deliveries);
 
-  console.log('deliveries: ' + JSON.stringify(deliveries));
   dispatch({
     type: 'fetch_deliveries',
     payload: { nextDelivery, lastDeliveries },
@@ -105,7 +104,7 @@ const setDeliveryInfo = (dispatch) => async (
 
 const createDelivery = (dispatch) => async ({ delivery }) => {
   dispatch({ type: 'loading' });
-  console.log('Creating new delivery: ' + JSON.stringify(delivery));
+  console.log(`Creating new delivery: ${JSON.stringify(delivery)}`);
 
   insertIntoSubcollection(
     GLOBALS.COLLECTION.GROUPS,
@@ -120,7 +119,7 @@ const createDelivery = (dispatch) => async ({ delivery }) => {
 
 const updateDelivery = (dispatch) => async ({ deliveryId, delivery }) => {
   dispatch({ type: 'loading' });
-  console.log('Updating delivery: ' + JSON.stringify(delivery));
+  console.log(`Updating delivery: ${JSON.stringify(delivery)}`);
 
   updateDocInSubcollection(
     GLOBALS.COLLECTION.GROUPS,
@@ -136,7 +135,7 @@ const updateDelivery = (dispatch) => async ({ deliveryId, delivery }) => {
 
 const deleteDelivery = (dispatch) => async ({ deliveryId }) => {
   dispatch({ type: 'loading' });
-  console.log('Deleting delivery with id: ' + deliveryId);
+  console.log(`Deleting delivery with id: ${deliveryId}`);
 
   deleteDocInSubcollection(
     GLOBALS.COLLECTION.GROUPS,
