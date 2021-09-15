@@ -4,8 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 const TextInformation = ({ title, text }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
-      <Text selectable style={styles.text}>
+      <Text style={styles.title}> {title}</Text>
+      <Text style={styles.text}>
         {text}
       </Text>
     </View>
@@ -14,18 +14,19 @@ const TextInformation = ({ title, text }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 15,
     alignSelf: 'flex-start',
+    //backgroundColor: '#d0d0c4'
   },
   title: {
     color: '#101010',
-    fontSize: 22,
+    fontSize: 15,
     fontWeight: 'bold',
   },
   text: {
-    fontSize: 18,
-    color: '#595656',
-    marginTop: 8,
+    width:210,
+    fontSize: 13,
+    color: 'black',
+    marginTop: 5,
   },
 });
 
