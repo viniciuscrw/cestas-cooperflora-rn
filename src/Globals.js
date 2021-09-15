@@ -22,7 +22,10 @@ export default {
     USERS: 'users',
     DELIVERIES: 'deliveries',
     PRODUCTS: 'products',
-    ORDERS: 'orders'
+    ORDERS: 'orders',
+  },
+  SUB_COLLECTION: {
+    PAYMENTS: 'payments',
   },
   FORMAT: {
     DEFAULT_DATE: 'dd/MM/yyyy',

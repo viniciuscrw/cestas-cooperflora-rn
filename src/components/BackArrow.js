@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image } from 'react-native';
-import Arrow from '../../assets/backarrow.png';
+import Arrow from '../../assets/images/icons/backarrow.png';
 
 const BackArrow = () => {
   return (

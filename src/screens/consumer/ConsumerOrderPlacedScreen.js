@@ -104,7 +104,7 @@ const ConsumerOrderPlacedScreen = (props) => {
             <View style={styles.buttonContainer}>
                 <Button style={styles.button} onPress={() => {
                     props.navigation.navigate(
-                        'ConsumerPaymentsScreen',
+                        'ConsumerAddPaymentScreen',
                         { orderTotalAmount: totalAmount }
                     )
                 }}>
