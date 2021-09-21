@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { withNavigation } from 'react-navigation';
 import { format } from 'date-fns';
-import { StyleSheet, Text, ScrollView, View, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { StyleSheet, Text, ScrollView, View, TouchableOpacity, ActivityIndicator, Image, Modal, TouchableHighlight, Alert } from 'react-native';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import Divider from '../../components/Divider';
@@ -16,14 +16,16 @@ import firebase from 'firebase';
 import GLOBALS from '../../Globals';
 import * as ImagePicker from 'expo-image-picker';
 import Input from './Input';
-import Upload from './Upload';
 import CurrencyInput from 'react-native-currency-input';
 import ClipIcon from '../../../assets/images/icons/clipicon.png'
+import ImageModal from 'react-native-image-modal';
 
 const ConsumerPaymentsScreen = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [userData, setUserData] = useState();
     const [userPayments, setUserPayments] = useState([]);
+    const [showReceiptImage, setShowReceiptImage] = useState(false);
+    const [receiptImage, setReceiptImage] = useState('https://cdn.pixabay.com/photo/2019/07/25/18/58/church-4363258_960_720.jpg')
 
     const { getUserById } = useContext(userContext);
     const user = useUser();
@@ -48,20 +50,23 @@ const ConsumerPaymentsScreen = (props) => {
                     newUserPayments.push(
                         {
                             amount: doc.data().paymentValue,
-                            date: date
+                            date: date,
+                            receiptImage: doc.data().receiptImage,
+                            showReceiptImage: false
                         });
-                    // console.log('[Payments Screen] New User Payments', newUserPayments);
-                    console.log('[Payments Screen] User Payments', userPayments);
+                });
+                newUserPayments.sort((a, b) => {
+                    return (a.date < b.date ? 1 : -1)
                 });
                 setUserPayments(newUserPayments);
             })
-            .catch((err) =>
-                console.log('Error while getting data from payments', err)
-            );
+            .catch((err) => {
+                Alert.alert('Erro ao carregar os seus pagamentos!', err)
+            });
     }
 
     useEffect(() => {
-        console.log('[ConsumerPaymentsScreen] amount to pay');
+        // console.log('[ConsumerPaymentsScreen] amount to pay');
         setIsLoading(true);
         if (user) {
             getUserById(user.id)
@@ -73,8 +78,17 @@ const ConsumerPaymentsScreen = (props) => {
         }
     }, [user]);
 
+    const showImage = (index) => {
+        // console.log('[show Receipt Image]' , receiptImage);
+        const newUserPayments = [...userPayments];
+        newUserPayments[index].showReceiptImage = !newUserPayments[index].showReceiptImage;
+        setUserPayments(newUserPayments);
+
+        // setUserPayments([...userPayments, userPayments[index].showReceiptImage = true])
+    }
+
     if (isLoading) {
-        console.log('[Consumer Payments Screen] isLoading', isLoading)
+        // console.log('[Consumer Payments Screen] isLoading', isLoading)
         return (
             <View style={styles.centered}>
                 <ActivityIndicator size='large' color={Colors.primary} />
@@ -91,7 +105,7 @@ const ConsumerPaymentsScreen = (props) => {
                 <Divider style={{ borderBottomColor: Colors.secondary }} />
                 <View style={styles.paymentsContainer}>
                     <ScrollView style={styles.paymentsContainer}>
-                        {userPayments.map((userPayment) => {
+                        {userPayments.map((userPayment, index) => {
                             return (
                                 <View key={userPayment.date}>
                                     <View style={styles.paymentContainer}>
@@ -99,7 +113,7 @@ const ConsumerPaymentsScreen = (props) => {
                                             <Text style={styles.dateText}>{format(userPayment.date, GLOBALS.FORMAT.DEFAULT_DATE_TIME)}</Text>
                                             <TouchableOpacity
                                                 style={styles.button}
-                                                onPress={() => console.log('')}>
+                                                onPress={() => showImage(index)}>
                                                 <View style={styles.imageIcon}>
                                                     <Image source={ClipIcon} />
                                                 </View>
@@ -110,18 +124,30 @@ const ConsumerPaymentsScreen = (props) => {
                                             <Text style={styles.amountText}>R$ {userPayment.amount.toFixed(2)}</Text>
                                         </View>
                                     </View>
+                                    {userPayment.showReceiptImage ?
+                                        <View style={styles.imageContainer}>
+                                            <Image
+                                                style={styles.image}
+                                                source={{ uri: userPayment.receiptImage }}
+                                            />
+                                        </View>
+                                        : null
+                                    }
                                     <Divider style={{ borderBottomColor: Colors.tertiary }} />
                                 </View>
-
                             )
                         })}
                     </ScrollView>
                 </View>
-                <View style={styles.buttonAddPaymentContainer}>
+                <View style={styles.buttonContainer}>
                     <Divider style={{ borderBottomColor: Colors.secondary }} />
-                    <Button style={styles.button2}
+                    <Button style={styles.addPaymentButton}
                         textColor='white'
-                        onPress={() => { }}>
+                        onPress={() => {
+                            props.navigation.navigate(
+                                'ConsumerAddPaymentScreen',
+                                { orderTotalAmount: 0 }
+                            )}}>
                         Adicionar Pagamento
                     </Button>
                 </View>
@@ -177,7 +203,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto',
         fontWeight: '700',
         fontSize: 16,
-        color: '#BB2525',
+        color: '#505050',
         marginLeft: 10
     },
     imageIcon: {
@@ -197,16 +223,31 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 10,
     },
-    buttonAddPaymentContainer: {
+    buttonContainer: {
         position: 'absolute',
+        width: '100%',
         bottom: 0,
-        marginBottom: 0,
-        // backgroundColor: 'grey'
     },
-    button2: {
+    addPaymentButton: {
         marginTop: 5,
-        backgroundColor: Colors.primary
+        backgroundColor: Colors.primary,
+        alignSelf: 'center',
     },
+    imageContainer: {
+        flexDirection: 'row',
+        margin: 10,
+        alignItems: 'center',
+        height: 200,
+        // borderColor: 'green',
+        // borderWidth: 2
+        // // backgroundColor: 'green'
+    },
+    image: {
+        flex: 1,
+        width: 200,
+        height: 200,
+        resizeMode: 'contain'
+    }
 });
 
 ConsumerPaymentsScreen.navigationOptions = (navData) => {
@@ -217,11 +258,11 @@ ConsumerPaymentsScreen.navigationOptions = (navData) => {
         headerBackImage: () => (<BackArrow />),
         headerStyle: {
             backgroundColor: 'transparent',
-            position: 'absolute',
-            zIndex: 100,
-            top: 0,
-            left: 0,
-            right: 0,
+            // position: 'absolute',
+            // zIndex: 100,
+            // top: 0,
+            // left: 0,
+            // right: 0,
             elevation: 0,
             shadowOpacity: 0,
             borderBottomWidth: 0,

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { withNavigation } from 'react-navigation';
-import { StyleSheet, Text, TextInput, View, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { format } from 'date-fns';
+import { StyleSheet, Text, View, ActivityIndicator, Alert } from 'react-native';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import Divider from '../../components/Divider';
@@ -10,14 +11,13 @@ import useUser from '../../hooks/useUser';
 import { Context as userContext } from '../../context/UserContext';
 import {
     insertDoc,
-    insertIntoSubcollection
+    insertIntoSubcollection,
+    updateDocAttribute
 } from '../../api/firebase';
 import firebase from 'firebase';
 import GLOBALS from '../../Globals';
-import * as ImagePicker from 'expo-image-picker';
-import Input from './Input';
-import Upload from './Upload';
 import CurrencyInput from 'react-native-currency-input';
+import ImagePicker from '../../components/ImagePicker';
 
 const ConsumerAddPaymentScreen = (props) => {
     const [isLoading, setIsLoading] = useState(true);
@@ -41,79 +41,76 @@ const ConsumerAddPaymentScreen = (props) => {
             getUserById(user.id)
                 .then((data) => {
                     setUserData(data);
-                    console.log('[Consumer Payments Screen] userData', data);
                     setIsLoading(false);
                     setAmountToPay(orderTotalAmount - data.balance);
-                    console.log('[ConsumerAddPaymentScreen] amount to pay', amountToPay);
                 });
         }
     }, [user]);
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            // allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-        setReceiptImage(result.uri);
-        // if (!result.cancelled) {
-        //     uploadImage(result.uri)
-        //         .then(() => {
-        //             console.log('Comprovante armazenado com sucesso!');
-        //         }).catch(() => {
-        //             console.log('Erro ao gravar o comprovante.')
-        //         });
-        // }
+    const imageSelectedHandler = (uri) => {
+        console.log('[ConsumerAddPayment Screen] imageSelectedHandler');
+        setReceiptImage(uri);
     }
 
-    const uploadImage = async (uri, date) => {
-        const imageName = date;
-        let response = await fetch(uri);
-        console.log('[response]', response);
-        const blob = await response.blob();
-        console.log('[blob]', blob);
-        let ref = firebase.storage().ref().child(user.id + '/' + imageName);
-        return ref.put(blob);
-    };
+    const updateUserBalance = () => {
+        const newBalance = amountToPay - orderTotalAmount + userData.balance;
+        console.log('[ConsumerAddPayment Screen] New balance', newBalance);
+        updateDocAttribute('users', user.id, 'balance', newBalance);
+        // return;
+    }
 
     const handlePayment = async () => {
         console.log('[Consumer Payment Screen] Handle payment');
-        console.log('[Consumer Payment Screen] payment', amountToPay);
-        console.log('[Consumer Payment Screen] receipt', receiptImage);
-        const date = new Date();
-        // const date = new Date(
-        //     now.getFullYear(),
-        //     now.getMonth(),
-        //     now.getDate(),
-        //     now.getHours(),
-        //     now.getMinutes()
-        // );
-        const newPayment = {
-            userId: user.id,
-            paymentValue: amountToPay,
-            date: date.toISOString()
+        // console.log('[Consumer Payment Screen] payment', amountToPay);
+        // console.log('[Consumer Payment Screen] receipt', receiptImage);
+        if(amountToPay === 0){
+            Alert.alert('Por favor inclua um valor para o pagamento!');
+            return;
         }
-
-        const collection = GLOBALS.COLLECTION.PAYMENTS;
-        const data = newPayment;
-        const idPayment = user.id+'pay';
-
-        insertIntoSubcollection(
-            GLOBALS.COLLECTION.USERS, 
-            idPayment,
-            GLOBALS.SUB_COLLECTION.PAYMENTS,
-            newPayment) 
-            .then((data) => {
-                // console.log('[Order Context] addOrder - order included', data);
-                uploadImage(receiptImage, date);
-                //Faltou gravar o saldo no user.
-                props.navigation.navigate(
-                    'ConsumerPaymentsScreen'
-                )
-
-            }).catch((error) => {
-                console.log('[Consumer Add payment Screen - Add payment] - ERRO', error);
+        if(!receiptImage){
+            Alert.alert('Por favor inclua o comprovante!');
+            return;
+        }
+        const date = new Date();
+        let imageName = format(date, 'yyyyMMddHHMMSS');
+        let response = await fetch(receiptImage);
+        const blob = await response.blob();
+        let ref = firebase.storage().ref().child(user.id + '/' + imageName);
+        setIsLoading(true);
+        ref.put(blob)
+            .then((response) => {
+                console.log('Resposta do storage', response);
+                ref.getDownloadURL().then(function (url) {
+                    const newPayment = {
+                        userId: user.id,
+                        paymentValue: amountToPay,
+                        date: date.toISOString(),
+                        receiptImage: url
+                    }
+                    const idPayment = user.id + 'pay';
+                    insertIntoSubcollection(
+                        GLOBALS.COLLECTION.USERS,
+                        idPayment,
+                        GLOBALS.SUB_COLLECTION.PAYMENTS,
+                        newPayment)
+                        .then((data) => {
+                            // console.log('[Order Context] addOrder - order included', data);
+                            updateUserBalance();
+                            setIsLoading(false);
+                            props.navigation.navigate(
+                                'ConsumerPaymentsScreen'
+                            )
+                        }).catch((error) => {
+                            // console.log('[Consumer Add payment Screen - Add payment] - ERRO', error);
+                            Alert.alert('Erro ao armazenar o pagamento no banco de dados!', error)
+                        });
+                }).catch((error) => {
+                    console.log('Erro =>', error);
+                    Alert.alert('Erro ao recuperar o endereço da imagem do comprovante do banco de dados!', error)
+                });
+            })
+            .catch((error) => {
+                Alert.alert('Erro ao armazenar a imagem do comprovante!', error)
             });
     }
 
@@ -149,7 +146,8 @@ const ConsumerAddPaymentScreen = (props) => {
                         <Text style={styles.itemText}>Saldo a Pagar</Text>
                         <CurrencyInput
                             style={styles.input}
-                            value={amountToPay}
+                            // value={amountToPay}
+                            value={0}
                             onChangeValue={setAmountToPay}
                             prefix="R$ "
                             delimiter=","
@@ -159,38 +157,12 @@ const ConsumerAddPaymentScreen = (props) => {
                                 console.log(formattedValue); // $2,310.46
                             }}
                         />
-                        {/* <Input
-                            style={styles.input}
-                            id='amount'
-                            // errorText='Please enter a valid title!'
-                            keyboardType='numeric'
-                            returnKeyType='next'
-                            onInputChange={inputChangeHandler}
-                            initialValue={amountToPay}
-                            value={amountToPay}
-                            initiallyValid={true}
-                            required
-                        /> */}
-                    </View>
-                    {/* <Button
-                        style={styles.button1}
-                        textColor='black'
-                        onPress={() => {
-                            console.log('Button clicked');
-                        }}>
-                        Adicionar R$ {amountToPay.toFixed(2)}
-                    </Button> */}
-                    {/* <View style={styles.receiptContainer} > */}
-                    <Upload
-                        user={user}
-                        pickImage={pickImage}
-                        receiptImage={receiptImage}
-                    />
-                    {/* </View> */}
+                    </View>        
+                    <ImagePicker onImagePicker={imageSelectedHandler}/>
                 </View>
-                <View style={styles.buttonAddPaymentContainer}>
+                <View style={styles.confirmContainer}>
                     <Divider style={{ borderBottomColor: Colors.secondary }} />
-                    <Button style={styles.button2}
+                    <Button style={styles.confirmButton}
                         textColor='white'
                         onPress={handlePayment}>
                         Confirmar Pagamento
@@ -277,15 +249,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    buttonAddPaymentContainer: {
+    confirmContainer: {
         position: 'absolute',
+        width: '100%',
         bottom: 0,
-        marginBottom: 1,
-        // backgroundColor: 'grey'
     },
-    button2: {
+    confirmButton: {
         marginTop: 5,
-        backgroundColor: Colors.primary
+        backgroundColor: Colors.primary,
+        alignSelf: 'center',
     },
 });
 
@@ -297,36 +269,10 @@ ConsumerAddPaymentScreen.navigationOptions = (navData) => {
         headerBackImage: () => (<BackArrow />),
         headerStyle: {
             backgroundColor: 'transparent',
-            position: 'absolute',
-            zIndex: 100,
-            top: 0,
-            left: 0,
-            right: 0,
             elevation: 0,
             shadowOpacity: 0,
             borderBottomWidth: 0,
         }
-
-        // headerBackImageSource: 
-        // headerLeft: () => (
-        //     <HeaderButtons HeaderButtonComponent={HeaderButton}>
-        //         <Item
-        //             title="Menu"
-        //             iconName={Platform.OS === 'android' ? 'md-menu' : 'ios-menu'}
-        //             onPress={() => {
-        //                 navData.navigation.toggleDrawer();
-        //             }}
-        //         />
-        //     </HeaderButtons>
-        // )
-        // headerStyle: {
-        //     backgroundColor: 'white',
-        // },
-        // headerTintColor: 'red',
-        // headerTitleStyle: {
-        //     fontWeight: 'bold',
-        // },
-        // // headerRight: () => <ConsumerGroupDetails />,
     };
 };
 
