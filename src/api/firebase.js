@@ -4,7 +4,7 @@ import 'firebase/firestore';
 import { navigate } from '../navigationRef';
 
 export const get = async (collection) => {
-  console.log('[Firebase - get] collection: ' + collection);
+  console.log(`[Firebase - get] collection: ${collection}`);
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -23,7 +23,7 @@ export const get = async (collection) => {
 };
 
 export const getOrderingBy = async (collection, field, direction = 'asc') => {
-  console.log('[Firebase - getOrderingBy] collection: ' + collection);
+  console.log(`[Firebase - getOrderingBy] collection: ${collection}`);
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -46,12 +46,7 @@ export const getOrderingBy = async (collection, field, direction = 'asc') => {
 
 export const getByAttribute = async (collection, attribute, value) => {
   console.log(
-    '[Firebase - getByAttribute] collection: ' +
-      collection +
-      '; attribute: ' +
-      attribute +
-      '; value: ' +
-      value
+    `[Firebase - getByAttribute] collection: ${collection}; attribute: ${attribute}; value: ${value}`
   );
 
   const db = firebase.firestore();
@@ -78,14 +73,7 @@ export const getByAttributeOrderingBy = async (
   orderBy
 ) => {
   console.log(
-    '[Firebase - getByAttribute] collection: ' +
-      collection +
-      '; attribute: ' +
-      attribute +
-      '; value: ' +
-      value +
-      '; orderBy: ' +
-      orderBy
+    `[Firebase - getByAttribute] collection: ${collection}; attribute: ${attribute}; value: ${value}; orderBy: ${orderBy}`
   );
 
   const db = firebase.firestore();
@@ -106,7 +94,7 @@ export const getByAttributeOrderingBy = async (
 };
 
 export const getById = async (collection, id) => {
-  console.log('[Firebase - getById] collection: ' + collection + '; id: ' + id);
+  console.log(`[Firebase - getById] collection: ${collection}; id: ${id}`);
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -124,8 +112,8 @@ export const getById = async (collection, id) => {
 };
 
 export const getFirst = async (collection) => {
-  console.log('[Firebase - findFirstData] collection: ' + collection);
-  let data = [];
+  console.log(`[Firebase - findFirstData] collection: ${collection}`);
+  const data = [];
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -152,14 +140,9 @@ export const getFirstByAttribute = async (collection, attribute, value) => {
 
 export const getGroupDeliveries = async (collection, doc, subcollection) => {
   console.log(
-    '[Firebase - getGroupDeliveries] collection: ' +
-      collection +
-      '; doc: ' +
-      doc +
-      '; subcollection: ' +
-      subcollection
+    `[Firebase - getGroupDeliveries] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}`
   );
-  let data = [];
+  const data = [];
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -169,12 +152,12 @@ export const getGroupDeliveries = async (collection, doc, subcollection) => {
     .orderBy('date', 'desc')
     .get()
     .then((snapshot) => {
-      snapshot.forEach((doc) => {
+      snapshot.forEach((document) => {
         data.push({
-          id: doc.id,
-          deliveryDate: doc.data().date.toDate(),
-          limitDate: doc.data().ordersLimitDate.toDate(),
-          ...doc.data(),
+          id: document.id,
+          deliveryDate: document.data().date.toDate(),
+          limitDate: document.data().ordersLimitDate.toDate(),
+          ...document.data(),
         });
       });
     })
@@ -187,10 +170,9 @@ export const getGroupDeliveries = async (collection, doc, subcollection) => {
 
 export const insertDoc = async (collection, data) => {
   console.log(
-    '[Firebase - insertDoc] collection: ' +
-      collection +
-      '; data: ' +
-      JSON.stringify(data)
+    `[Firebase - insertDoc] collection: ${collection}; data: ${JSON.stringify(
+      data
+    )}`
   );
 
   const db = firebase.firestore();
@@ -214,12 +196,7 @@ export const insertIntoSubcollection = async (
   data
 ) => {
   console.log(
-    '[Firebase - insertIntoSubcollection] collection: ' +
-      collection +
-      '; doc: ' +
-      doc +
-      '; subcollection: ' +
-      subcollection
+    `[Firebase - insertIntoSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}`
   );
 
   const db = firebase.firestore();
@@ -243,14 +220,7 @@ export const updateDocInSubcollection = async (
   data
 ) => {
   console.log(
-    '[Firebase - updateDocInSubcollection] collection: ' +
-      collection +
-      '; doc: ' +
-      doc +
-      '; subcollection: ' +
-      subcollection +
-      '; subcollection doc: ' +
-      subcollectionDoc
+    `[Firebase - updateDocInSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}; subcollection doc: ${subcollectionDoc}`
   );
 
   const db = firebase.firestore();
@@ -269,14 +239,7 @@ export const updateDocInSubcollection = async (
 
 export const updateDocAttribute = async (collection, doc, attribute, value) => {
   console.log(
-    '[Firebase - updateDocAttribute] collection: ' +
-      collection +
-      '; doc: ' +
-      doc +
-      '; attribute: ' +
-      attribute +
-      '; value: ' +
-      value
+    `[Firebase - updateDocAttribute] collection: ${collection}; doc: ${doc}; attribute: ${attribute}; value: ${value}`
   );
 
   const db = firebase.firestore();
@@ -286,7 +249,7 @@ export const updateDocAttribute = async (collection, doc, attribute, value) => {
     .doc(doc)
     .update(attribute, value)
     .catch((err) => {
-      console.log('Error updating document: ' + doc, err);
+      console.log(`Error updating document: ${doc}`, err);
       if (err.code === 'permission-denied') {
         navigate('Signin');
       }
@@ -295,12 +258,9 @@ export const updateDocAttribute = async (collection, doc, attribute, value) => {
 
 export const updateDoc = async (collection, doc, data) => {
   console.log(
-    '[Firebase - updateDoc] collection: ' +
-      collection +
-      '; doc: ' +
-      doc +
-      '; data: ' +
-      JSON.stringify(data)
+    `[Firebase - updateDoc] collection: ${collection}; doc: ${doc}; data: ${JSON.stringify(
+      data
+    )}`
   );
 
   const db = firebase.firestore();
@@ -310,7 +270,7 @@ export const updateDoc = async (collection, doc, data) => {
     .doc(doc)
     .update(data)
     .catch((err) => {
-      console.log('Error updating document: ' + doc, err);
+      console.log(`Error updating document: ${doc}`, err);
       if (err.code === 'permission-denied') {
         navigate('Signin');
       }
@@ -318,9 +278,7 @@ export const updateDoc = async (collection, doc, data) => {
 };
 
 export const deleteDoc = async (collection, doc) => {
-  console.log(
-    '[Firebase - deleteDoc] collection: ' + collection + '; doc: ' + doc
-  );
+  console.log(`[Firebase - deleteDoc] collection: ${collection}; doc: ${doc}`);
 
   const db = firebase.firestore();
 
@@ -329,7 +287,7 @@ export const deleteDoc = async (collection, doc) => {
     .doc(doc)
     .delete()
     .catch((err) => {
-      console.log('Error deleting document: ' + doc, err);
+      console.log(`Error deleting document: ${doc}`, err);
       navigate('Signin');
     });
 };
@@ -353,7 +311,7 @@ export const deleteDocInSubcollection = async (
     .doc(subcollectionDoc)
     .delete()
     .catch((err) => {
-      console.log('Error deleting document in subcollection: ' + doc, err);
+      console.log(`Error deleting document in subcollection: ${doc}`, err);
       navigate('Signin');
     });
 };
