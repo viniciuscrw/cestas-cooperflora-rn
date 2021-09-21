@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 import { Input, ListItem } from 'react-native-elements';
-import { Context as OrdersContext } from '../context/OrdersContext';
+import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
 
 const OrdersItemsQuantity = ({ navigation }) => {
   const {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
-  } = useContext(OrdersContext);
+  } = useContext(OrderContext);
   const deliveryId = navigation.state.params.delivery.id;
   // console.log(`nav: ${JSON.stringify(navigation)}`);
   const [productsToQuantity, setProductsToQuantity] = useState(null);
@@ -44,7 +44,7 @@ const OrdersItemsQuantity = ({ navigation }) => {
 
   useEffect(() => {
     mapProductsToQuantity();
-  }, []);
+  }, [orders]);
 
   const renderSearchIcon = () => {
     return !filterText.length
@@ -66,10 +66,11 @@ const OrdersItemsQuantity = ({ navigation }) => {
         };
   };
 
-  const searchConsumersByFilter = () => {
+  const searchProductsByFilter = () => {
+    console.log('filtrando?');
     setFilteredProducts(
-      orders.filter((order) =>
-        order.userName.toLowerCase().includes(filterText.toLowerCase())
+      productsToQuantity.filter((product) =>
+        product.name.toLowerCase().includes(filterText.toLowerCase())
       )
     );
   };
@@ -87,22 +88,24 @@ const OrdersItemsQuantity = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <NavigationEvents
-        onWillFocus={() => fetchOrdersByDelivery({ deliveryId })}
-      />
+      <NavigationEvents onWillFocus={() => fetchOrdersByDelivery(deliveryId)} />
       <Input
         containerStyle={styles.searchInput}
         placeholder="Buscar produto"
         value={filterText}
         onChangeText={setFilterText}
-        onEndEditing={null}
+        onEndEditing={searchProductsByFilter}
         returnKeyType="done"
         autoCorrect={false}
         rightIcon={renderSearchIcon()}
       />
       {!orderLoading ? (
         <FlatList
-          data={productsToQuantity}
+          data={
+            filteredProducts && filteredProducts.length
+              ? filteredProducts
+              : productsToQuantity
+          }
           renderItem={renderItem}
           keyExtractor={(item) => item.name}
           style={styles.productsList}

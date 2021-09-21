@@ -10,21 +10,15 @@ import { format } from 'date-fns';
 import { NavigationEvents } from 'react-navigation';
 import { Input, ListItem } from 'react-native-elements';
 import GLOBALS from '../Globals';
-import { Context as OrdersContext } from '../context/OrdersContext';
-import { Context as UserContext } from '../context/UserContext';
+import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
 
 const OrdersByConsumerScreen = ({ navigation }) => {
   const {
-    state: { loading: userLoading },
-    findUserById,
-  } = useContext(UserContext);
-  const {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
-  } = useContext(OrdersContext);
+  } = useContext(OrderContext);
   const deliveryId = navigation.state.params.delivery.id;
-  // console.log(`nav: ${JSON.stringify(navigation)}`);
   const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] = useState(
     null
   );
@@ -64,10 +58,6 @@ const OrdersByConsumerScreen = ({ navigation }) => {
     const hasExtraProducts =
       order.extraProducts != null && order.extraProducts.length > 0;
 
-    if (hasBaseProducts && hasExtraProducts) {
-      return <Text>Total: R$ {order.totalAmount} (Cesta + Extras)</Text>;
-    }
-
     if (hasBaseProducts && !hasExtraProducts) {
       return <Text>Total: R$ {order.totalAmount} (Cesta)</Text>;
     }
@@ -75,11 +65,20 @@ const OrdersByConsumerScreen = ({ navigation }) => {
     if (!hasBaseProducts && hasExtraProducts) {
       return <Text>Total: R$ {order.totalAmount} (Extras)</Text>;
     }
+
+    return <Text>Total: R$ {order.totalAmount} (Cesta + Extras)</Text>;
   };
 
   const renderItem = ({ item: order }) => {
     return (
-      <TouchableOpacity onPress={() => console.log('')}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('ConsumerOrderScreen', {
+            user: { id: order.userId, name: order.userName },
+            deliveryId,
+          })
+        }
+      >
         <ListItem
           containerStyle={styles.listItemContainer}
           title={`${order.userName}`}
@@ -94,9 +93,7 @@ const OrdersByConsumerScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <NavigationEvents
-        onWillFocus={() => fetchOrdersByDelivery({ deliveryId })}
-      />
+      <NavigationEvents onWillFocus={() => fetchOrdersByDelivery(deliveryId)} />
       <Input
         containerStyle={styles.searchInput}
         placeholder="Buscar pessoa consumidora"

@@ -8,8 +8,7 @@ import { Provider as UserProvider } from './src/context/UserContext';
 import { Provider as ConsumerGroupProvider } from './src/context/ConsumerGroupContext';
 import { Provider as DeliveryProvider } from './src/context/DeliveryContext';
 import { Provider as ProductProvider } from './src/context/ProductContext';
-import { Provider as OrdersProvider } from './src/context/OrdersContext';
-import { OrderProvider } from './src/context/OrderContext';
+import { Provider as OrderProvider } from './src/context/OrderContext';
 
 import FirebaseConfig from './src/constants/FirebaseConfig';
 import { setNavigator } from './src/navigationRef';
@@ -32,17 +31,15 @@ export default () => {
       <UserProvider>
         <ConsumerGroupProvider>
           <OrderProvider>
-            <OrdersProvider>
-              <DeliveryProvider>
-                <ProductProvider>
-                  <App
-                    ref={(navigator) => {
-                      setNavigator(navigator);
-                    }}
-                  />
-                </ProductProvider>
-              </DeliveryProvider>
-            </OrdersProvider>
+            <DeliveryProvider>
+              <ProductProvider>
+                <App
+                  ref={(navigator) => {
+                    setNavigator(navigator);
+                  }}
+                />
+              </ProductProvider>
+            </DeliveryProvider>
           </OrderProvider>
         </ConsumerGroupProvider>
       </UserProvider>
