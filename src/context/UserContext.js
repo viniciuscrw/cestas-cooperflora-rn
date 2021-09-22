@@ -5,7 +5,7 @@ import {
   insertDoc,
   updateDoc,
   getByAttributeOrderingBy,
-  getById
+  getById,
 } from '../api/firebase';
 import { navigate } from '../navigationRef';
 import GLOBALS from '../Globals';
@@ -55,6 +55,15 @@ const fetchOrganizers = (dispatch) => async () => {
   dispatch({ type: 'fetch_users', payload: organizers });
 };
 
+const findUserById = (dispatch) => async ({ id }) => {
+  dispatch({ type: 'loading' });
+
+  const existingUser = await getById(GLOBALS.COLLECTION.USERS, id);
+
+  dispatch({ type: 'fetch_user' });
+  return existingUser;
+};
+
 const findUserByEmail = (dispatch) => async (email) => {
   dispatch({ type: 'loading' });
 
@@ -82,8 +91,8 @@ const createUser = (dispatch) => async (name, email, phoneNumber, role) => {
     balance: 0.0,
   };
 
-  console.log('Creating user: ' + JSON.stringify(user));
-  let routeName =
+  console.log(`Creating user: ${JSON.stringify(user)}`);
+  const routeName =
     role === GLOBALS.USER.ROLE.CONSUMER ? 'Consumers' : 'Organizers';
   insertDoc(GLOBALS.COLLECTION.USERS, user).then(() => {
     dispatch({ type: 'create_user' });
@@ -100,8 +109,8 @@ const updateUser = (dispatch) => (id, name, email, phoneNumber, role) => {
     phoneNumber,
   };
 
-  console.log('Updating user: ' + id);
-  let routeName =
+  console.log(`Updating user: ${id}`);
+  const routeName =
     role === GLOBALS.USER.ROLE.CONSUMER ? 'Consumers' : 'Organizers';
   updateDoc(GLOBALS.COLLECTION.USERS, id, user).then(() => {
     dispatch({ type: 'update_user' });
@@ -112,10 +121,10 @@ const updateUser = (dispatch) => (id, name, email, phoneNumber, role) => {
 const deleteUser = (dispatch) => async (user) => {
   dispatch({ type: 'loading' });
 
-  console.log('Deleting user: ' + user.id);
+  console.log(`Deleting user: ${user.id}`);
   deleteDoc(GLOBALS.COLLECTION.USERS, user.id).then(() => {
     dispatch({ type: 'delete_user' });
-    console.log('User deleted: ' + user.id);
+    console.log(`User deleted: ${user.id}`);
 
     if (user.role === GLOBALS.USER.ROLE.CONSUMER) {
       fetchConsumers(dispatch)();
@@ -145,11 +154,12 @@ export const { Provider, Context } = createDataContext(
   {
     fetchConsumers,
     fetchOrganizers,
+    findUserById,
     findUserByEmail,
     createUser,
     updateUser,
     deleteUser,
     getUserById
   },
-  { users: [], loading: false }
+  { users: [], user: null, loading: false }
 );
