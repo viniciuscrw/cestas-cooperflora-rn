@@ -3,30 +3,27 @@ import { withNavigationFocus } from 'react-navigation';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image
 } from 'react-native';
 import { format } from 'date-fns';
 import GLOBALS from '../../Globals';
-import { Context as DeliveryContext } from '../../context/DeliveryContext';
-import { Context as ConsumerGroupContext } from '../../context/ConsumerGroupContext';
 import { Context as OrderContext } from '../../context/OrderContext';
 import Colors from '../../constants/Colors';
 import Divider from '../../components/Divider';
 import Button from '../../components/Button';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
-import VegetableImage from '../../../assets/images/vegetable2.png'
+import VegetableImage from '../../../assets/images/vegetable2.png';
 
 const ConsumerOrderScreen = (props) => {
   const [baseProducts, setBaseProducts] = useState();
   const [orderProducts, setOrderProducts] = useState([]);
   const [limitDateToOrder, setLimitDateToOrder] = useState();
-  const [deliveryId, setDeliveryId] = useState('');
 
   const {
     state: { loading, order },
@@ -38,28 +35,14 @@ const ConsumerOrderScreen = (props) => {
     fetchUserOrder,
   } = useContext(OrderContext);
 
-  const { user } = props.navigation.state.params;
-  const {
-    state: { nextDelivery: delivery },
-  } = useContext(DeliveryContext);
-
-  const { state } = useContext(ConsumerGroupContext);
-
-  // ############# ATENCAO CORRIGIR
-
-  const baseProductsPrice = state.consumerGroup
-    ? state.consumerGroup.baseProductsPrice
-    : 10;
-  // const baseProductsPrice = 37.00;
-
-  // #############
+  const { user, delivery } = props.navigation.state.params;
 
   if (props.isFocused) {
     if (limitDateToOrder < new Date()) {
       Alert.alert('Aviso', 'Prazo para pedidos já foi encerrado!', [
         { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
-      props.navigation.navigate('ConsumerOrderPlacedScreen');
+      props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
     }
   }
 
@@ -106,12 +89,20 @@ const ConsumerOrderScreen = (props) => {
     transformOrderProducts();
   }, [order, delivery]);
 
+  const hasAnyProduct = () => {
+    return (
+      order?.baseProducts > 0 ||
+      (order?.extraProducts?.length > 0 &&
+        order.extraProducts.some((prod) => prod.quantity > 0))
+    );
+  };
+
   const onHandleNewOrUpdatedOrder = () => {
     console.log('[Consumer Order Screen] Handle new or update order');
-    addOrder(user.id, user.name, delivery.id, order, baseProductsPrice);
+    addOrder(user.id, user.name, delivery.id, order);
     if (!loading) {
-      if (props.navigation.state.params?.user?.role) {
-        props.navigation.navigate('ConsumerOrderPlacedScreen', { deliveryDate: delivery.deliveryDate, baseProductsPrice: baseProductsPrice });
+      if (user.role) {
+        props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
       } else {
         props.navigation.goBack(null);
       }
@@ -126,27 +117,45 @@ const ConsumerOrderScreen = (props) => {
     );
   }
 
-  return (
+  return loading ? (
+    <View style={styles.centered}>
+      <ActivityIndicator size="large" color={Colors.primary} />
+    </View>
+  ) : (
     <View style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.baseProductsContainer}>
           <View style={styles.baseProducts}>
             <View style={styles.title}>
-              <Text style={styles.textTitle}>{`Cesta (${baseProductsPrice.toFixed(2)})`}</Text>
+              <Text
+                style={styles.textTitle}
+              >{`Cesta (${delivery.baseProductsPrice?.toFixed(2)})`}</Text>
             </View>
             <View style={styles.controls}>
-              <TouchableOpacity style={styles.incDecButton}
-                onPress={() => removeBaseProducts(baseProductsPrice)}
+              <TouchableOpacity
+                style={styles.incDecButton}
+                onPress={() =>
+                  removeBaseProducts(
+                    delivery.baseProductsPrice,
+                    delivery.deliveryFee
+                  )
+                }
               >
-                <Text style={styles.textControls}>-</Text>
+                <Text style={styles.textControls}>{`-  `}</Text>
               </TouchableOpacity>
               <View style={styles.quantityContainer}>
                 <Text style={styles.quantity}>{order.baseProducts}</Text>
               </View>
-              <TouchableOpacity style={styles.incDecButton}
-                onPress={() => addBaseProducts(baseProductsPrice)}
+              <TouchableOpacity
+                style={styles.incDecButton}
+                onPress={() =>
+                  addBaseProducts(
+                    delivery.baseProductsPrice,
+                    delivery.deliveryFee
+                  )
+                }
               >
-                <Text style={styles.textControls}>+</Text>
+                <Text style={styles.textControls}>{`  +`}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -165,14 +174,21 @@ const ConsumerOrderScreen = (props) => {
                 <View key={index} style={styles.extraProductItems}>
                   <View style={styles.line}>
                     <View style={styles.itemContainer}>
-                      <Text style={styles.textItens}>{item.productTitle} {' '}
-                        (R${item.productPrice.toFixed(2)})</Text>
+                      <Text style={styles.textItens}>
+                        {item.productTitle} (R${item.productPrice.toFixed(2)})
+                      </Text>
                     </View>
                   </View>
                   <View style={styles.controls}>
                     <View style={styles.incDecButton}>
                       <TouchableOpacity
-                        onPress={() => removeProduct(orderProducts, item)}
+                        onPress={() =>
+                          removeProduct(
+                            orderProducts,
+                            item,
+                            delivery.deliveryFee
+                          )
+                        }
                       >
                         <Text style={styles.textControls}>-</Text>
                       </TouchableOpacity>
@@ -180,9 +196,11 @@ const ConsumerOrderScreen = (props) => {
                     <Text style={styles.quantity}>{item.quantity}</Text>
                     <View style={styles.incDecButton}>
                       <TouchableOpacity
-                        onPress={() => addProduct(orderProducts, item)}
+                        onPress={() =>
+                          addProduct(orderProducts, item, delivery.deliveryFee)
+                        }
                       >
-                        <Text style={styles.textControls}>+</Text>
+                        <Text style={styles.textControls}>{`  +`}</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -198,11 +216,18 @@ const ConsumerOrderScreen = (props) => {
             <Text style={styles.textTitle}>{order.totalAmount.toFixed(2)}</Text>
           </View>
         </View> */}
+        <Text style={styles.textTitle}>
+          {hasAnyProduct()
+            ? delivery.deliveryFee?.toFixed(2)
+            : (0.0).toFixed(2)}
+        </Text>
         <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
-          <Button style={styles.confirmButton}
-            textColor='white'
-            onPress={onHandleNewOrUpdatedOrder}>
+          <Button
+            style={styles.confirmButton}
+            textColor="white"
+            onPress={onHandleNewOrUpdatedOrder}
+          >
             Confirmar R$ {order.totalAmount.toFixed(2)}
           </Button>
         </View>
@@ -212,7 +237,10 @@ const ConsumerOrderScreen = (props) => {
 };
 
 ConsumerOrderScreen.navigationOptions = (navData) => {
-  const deliveryDate = format(navData.navigation.state.params.delivery.deliveryDate, GLOBALS.FORMAT.DD_MM);
+  const deliveryDate = format(
+    navData.navigation.state.params.delivery.deliveryDate,
+    GLOBALS.FORMAT.DD_MM
+  );
   // if (navData.route) {
   //   deliveryDate = navData.route.params.deliveryDate;
   // }
@@ -220,35 +248,32 @@ ConsumerOrderScreen.navigationOptions = (navData) => {
     headerTitle: () => (
       <View>
         <View style={styles.header}>
-          <HeaderTitle title={'Entrega da Cesta'} />
+          <HeaderTitle title="Entrega da Cesta" />
           <View style={styles.imageContainer}>
             <Image style={styles.image} source={VegetableImage} />
           </View>
         </View>
         <Text>{deliveryDate}</Text>
       </View>
-
     ),
-    headerBackImage: () => (<BackArrow />),
+    headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
-    }
+    },
   };
 };
 
-
 const styles = StyleSheet.create({
-
   screen: {
     flex: 1,
     marginTop: 4,
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 4, height: -3 },
     shadowRadius: 8,
@@ -257,7 +282,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    margin: 25
+    margin: 25,
   },
   baseProductsContainer: {
     height: '18%',
@@ -288,16 +313,16 @@ const styles = StyleSheet.create({
   incDecButton: {
     width: 35,
     height: 35,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   textControls: {
     fontFamily: 'Roboto',
     fontSize: 25,
     fontWeight: 'bold',
-    color: '#8898AA'
+    color: '#8898AA',
   },
   quantityContainer: {
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   quantity: {
     fontSize: 20,
@@ -305,7 +330,7 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     borderBottomWidth: 2,
     borderBottomColor: '#8898AA',
-    color: '#8898AA'
+    color: '#8898AA',
   },
   extraProductsContainer: {
     marginTop: 20,
@@ -317,7 +342,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   itemContainer: {
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   extraProducts: {
     marginTop: 10,
@@ -334,12 +359,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#505050',
   },
-  // totalAmountContainer: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   paddingTop: 10,
-  //   paddingBottom: 10,
-  // },
   buttonContainer: {
     position: 'absolute',
     width: '100%',
@@ -358,8 +377,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '100%'
-  }
+    height: '100%',
+  },
 });
 
 export default withNavigationFocus(ConsumerOrderScreen);

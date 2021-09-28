@@ -1,21 +1,29 @@
 import React, { useContext } from 'react';
 import { withNavigation } from 'react-navigation';
-import { FlatList, ScrollView, StyleSheet, Text, View, Image } from 'react-native';
+import {
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { format } from 'date-fns';
-import GLOBALS from '../../Globals';
 import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
 import Button from '../../components/Button';
 import { Context as OrderContext } from '../../context/OrderContext';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
-import VegetableImage from '../../../assets/images/vegetable1.png'
+import VegetableImage from '../../../assets/images/vegetable1.png';
+import GLOBALS from '../../Globals';
 
 const ConsumerOrderPlacedScreen = (props) => {
   console.log('[ConsumerOrderPlacedScreen]');
   const {
-    state: { loading, order },
+    state: { order },
   } = useContext(OrderContext);
+  const { delivery } = props.navigation.state.params;
 
   console.log('[ConsumerOrderPlacedScreen]', order);
 
@@ -24,10 +32,19 @@ const ConsumerOrderPlacedScreen = (props) => {
     props.navigation.navigate('Deliveries');
   }
 
+  const hasAnyProduct = () => {
+    return (
+      order?.baseProducts > 0 ||
+      (order?.extraProducts?.length > 0 &&
+        order.extraProducts.some((prod) => prod.quantity > 0))
+    );
+  };
+
   const handleOnConfirmPayment = () => {
-    props.navigation.navigate('ConsumerAddPaymentScreen', { orderTotalAmount: order.totalAmount }
-    )
-  }
+    props.navigation.navigate('ConsumerAddPaymentScreen', {
+      orderTotalAmount: order.totalAmount,
+    });
+  };
 
   return (
     <View style={styles.screen}>
@@ -43,7 +60,10 @@ const ConsumerOrderPlacedScreen = (props) => {
                 <Text style={styles.itemText}>{order.baseProducts}</Text>
                 <Text style={styles.itemText}>Cesta(s)</Text>
               </View>
-              <Text style={styles.itemValue}>R$ {props.navigation.state.params.baseProductsPrice.toFixed(2)}</Text>
+              <Text style={styles.itemValue}>
+                R${' '}
+                {(order.baseProducts * delivery.baseProductsPrice).toFixed(2)}
+              </Text>
             </View>
             <FlatList
               data={order.extraProducts}
@@ -77,14 +97,27 @@ const ConsumerOrderPlacedScreen = (props) => {
         </ScrollView>
         <Divider style={{ borderBottomColor: Colors.tertiary }} />
         <View style={styles.totalAmountContainer}>
+          <Text style={styles.itemText}>Taxa de entrega</Text>
+          <Text style={styles.itemValue}>
+            R${' '}
+            {hasAnyProduct()
+              ? delivery.deliveryFee?.toFixed(2)
+              : (0.0).toFixed(2)}
+          </Text>
+        </View>
+        <View style={styles.totalAmountContainer}>
           <Text style={styles.itemText}>Total</Text>
-          <Text style={styles.itemValue}>R$ {order.totalAmount.toFixed(2)}</Text>
+          <Text style={styles.itemValue}>
+            R$ {order.totalAmount.toFixed(2)}
+          </Text>
         </View>
         <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
-          <Button style={styles.confirmButton}
-            textColor='white'
-            onPress={handleOnConfirmPayment}>
+          <Button
+            style={styles.confirmButton}
+            textColor="white"
+            onPress={handleOnConfirmPayment}
+          >
             Adicionar Pagamento
           </Button>
         </View>
@@ -94,24 +127,28 @@ const ConsumerOrderPlacedScreen = (props) => {
 };
 
 ConsumerOrderPlacedScreen.navigationOptions = (navData) => {
-  const deliveryDate = format(navData.navigation.state.params.deliveryDate, GLOBALS.FORMAT.DD_MM);
+  console.log(`navData:`);
+  const deliveryDate = format(
+    navData.navigation.state.params.delivery.deliveryDate,
+    GLOBALS.FORMAT.DD_MM
+  );
   return {
     headerTitle: () => (
       <View style={styles.header}>
-        <HeaderTitle title={'Entrega da Cesta'} />
+        <HeaderTitle title="Entrega da Cesta" />
         <View style={styles.imageContainer}>
           <Image style={styles.image} source={VegetableImage} />
         </View>
         <Text>{deliveryDate}</Text>
       </View>
     ),
-    headerBackImage: () => (<BackArrow />),
+    headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
-    }
+    },
   };
 };
 
@@ -122,7 +159,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 4, height: -3 },
     shadowRadius: 8,
@@ -130,7 +167,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    margin: 25
+    margin: 25,
   },
   titleContainer: {
     alignItems: 'center',
@@ -151,7 +188,7 @@ const styles = StyleSheet.create({
   orderItemContainer: {
     flex: 1,
     flexDirection: 'row',
-    marginTop: 10
+    marginTop: 10,
   },
   itemText: {
     fontFamily: 'Roboto',
@@ -164,7 +201,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontWeight: '700',
     fontSize: 16,
-    color: '#8898AA'
+    color: '#8898AA',
   },
   textContainer: {
     flex: 1,
@@ -173,7 +210,7 @@ const styles = StyleSheet.create({
   totalAmountContainer: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   buttonContainer: {
     position: 'absolute',
@@ -193,8 +230,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '100%'
-  }
+    height: '100%',
+  },
 });
 
 export default withNavigation(ConsumerOrderPlacedScreen);

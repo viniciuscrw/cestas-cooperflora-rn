@@ -23,6 +23,8 @@ const deliveryReducer = (state, action) => {
         deliveryDate: action.payload.deliveryDate,
         ordersLimitDate: action.payload.ordersLimitDate,
         baseProducts: action.payload.baseProducts,
+        baseProductsPrice: action.payload.baseProductsPrice,
+        deliveryFee: action.payload.deliveryFee,
       };
     case 'add_delivery':
       return { ...state, loading: false };
@@ -82,7 +84,9 @@ const setDeliveryInfo = (dispatch) => async (
   deliveryDate,
   ordersDateLimit,
   ordersTimeLimit,
-  baseProducts
+  baseProducts,
+  baseProductsPrice,
+  deliveryFee
 ) => {
   const limitDateTime = new Date(
     ordersDateLimit.getFullYear(),
@@ -98,6 +102,8 @@ const setDeliveryInfo = (dispatch) => async (
       deliveryDate,
       ordersLimitDate: limitDateTime,
       baseProducts,
+      baseProductsPrice,
+      deliveryFee,
     },
   });
 };

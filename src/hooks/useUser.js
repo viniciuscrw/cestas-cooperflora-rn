@@ -23,7 +23,7 @@ export default () => {
   };
 
   useEffect(() => {
-    getUser().catch((err) => console.log(err));
+    getUser().catch((err) => console.log(`Error useUser hook: ${err}`));
   }, []);
 
   return currentUser;

@@ -14,17 +14,29 @@ const orderReducer = (state, action) => {
           extraProducts: action.payload.extraProducts,
         },
       };
-    case 'add_base_products':
+    case 'add_base_products': {
+      const updatedTotalAmount =
+        state.order.totalAmount === 0
+          ? action.payload.baseProductsPrice + action.payload.deliveryFee
+          : state.order.totalAmount + action.payload.baseProductsPrice;
+
       return {
         ...state,
         loading: false,
         order: {
           ...state.order,
           baseProducts: state.order.baseProducts + 1,
-          totalAmount: state.order.totalAmount + action.payload,
+          totalAmount: updatedTotalAmount,
         },
       };
-    case 'remove_base_products':
+    }
+    case 'remove_base_products': {
+      const updatedTotalAmount =
+        state.order.totalAmount ===
+        action.payload.baseProductsPrice + action.payload.deliveryFee
+          ? 0
+          : state.order.totalAmount - action.payload.baseProductsPrice;
+
       return {
         ...state,
         loading: false,
@@ -32,28 +44,40 @@ const orderReducer = (state, action) => {
           ...state.order,
           baseProducts:
             state.order.baseProducts > 0 ? state.order.baseProducts - 1 : 0,
-          totalAmount: state.order.totalAmount - action.payload,
+          totalAmount: updatedTotalAmount,
         },
       };
+    }
     case 'add_product': {
+      const updatedTotalAmount =
+        state.order.totalAmount === 0
+          ? action.payload.productPrice + action.payload.deliveryFee
+          : state.order.totalAmount + action.payload.productPrice;
+
       return {
         ...state,
         loading: false,
         order: {
           ...state.order,
           extraProducts: action.payload.extraProducts,
-          totalAmount: state.order.totalAmount + action.payload.productPrice,
+          totalAmount: updatedTotalAmount,
         },
       };
     }
     case 'remove_product': {
+      const updatedTotalAmount =
+        state.order.totalAmount ===
+        action.payload.productPrice + action.payload.deliveryFee
+          ? 0
+          : state.order.totalAmount - action.payload.productPrice;
+
       return {
         ...state,
         loading: false,
         order: {
           ...state.order,
           extraProducts: action.payload.extraProducts,
-          totalAmount: state.order.totalAmount - action.payload.productPrice,
+          totalAmount: updatedTotalAmount,
         },
       };
     }
@@ -87,26 +111,32 @@ const startOrder = (dispatch) => (extraProducts) => {
   dispatch({ type: 'start_order', payload: newExtraProducts });
 };
 
-const addBaseProducts = (dispatch) => (baseProductsPrice) => {
-  dispatch({ type: 'add_base_products', payload: baseProductsPrice });
+const addBaseProducts = (dispatch) => (baseProductsPrice, deliveryFee) => {
+  dispatch({
+    type: 'add_base_products',
+    payload: { baseProductsPrice, deliveryFee },
+  });
 };
 
-const removeBaseProducts = (dispatch) => (baseProductsPrice) => {
-  dispatch({ type: 'remove_base_products', payload: baseProductsPrice });
+const removeBaseProducts = (dispatch) => (baseProductsPrice, deliveryFee) => {
+  dispatch({
+    type: 'remove_base_products',
+    payload: { baseProductsPrice, deliveryFee },
+  });
 };
 
-const addProduct = (dispatch) => (extraProducts, product) => {
+const addProduct = (dispatch) => (extraProducts, product, deliveryFee) => {
   const productIndex = extraProducts.findIndex(
     (prod) => prod.productTitle === product.productTitle
   );
   extraProducts[productIndex].quantity += 1;
   dispatch({
     type: 'add_product',
-    payload: { extraProducts, productPrice: product.productPrice },
+    payload: { extraProducts, productPrice: product.productPrice, deliveryFee },
   });
 };
 
-const removeProduct = (dispatch) => (extraProducts, product) => {
+const removeProduct = (dispatch) => (extraProducts, product, deliveryFee) => {
   const productIndex = extraProducts.findIndex(
     (prod) => prod.productTitle === product.productTitle
   );
@@ -115,7 +145,11 @@ const removeProduct = (dispatch) => (extraProducts, product) => {
     extraProducts[productIndex].quantity -= 1;
     dispatch({
       type: 'remove_product',
-      payload: { extraProducts, productPrice: product.productPrice },
+      payload: {
+        extraProducts,
+        productPrice: product.productPrice,
+        deliveryFee,
+      },
     });
   }
 };
