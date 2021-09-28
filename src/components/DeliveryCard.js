@@ -44,23 +44,22 @@ const DeliveryCard = ({
         <Card
           containerStyle={{
             borderWidth: 0.25,
-            borderRadius: 5,
-            borderColor,
-            backgroundColor: '#ebebeb',
+            borderRadius: 30,
+            backgroundColor: '#F0F5F9',
           }}
           title={formatCardTitle(delivery.deliveryDate)}
           dividerStyle={{ backgroundColor: borderColor }}
         >
           <View style={styles.contentContainer}>
             <Text>
-              <Text style={styles.cardTextStrong}>{ordersDateText} </Text>
+              <Text style={styles.titleText}>{ordersDateText} </Text>
               <Text style={styles.cardText}>
                 {format(delivery.limitDate, 'dd/MM/yyyy')} às{' '}
                 {format(delivery.limitDate, 'HH:mm')}
               </Text>
             </Text>
             <Text numberOfLines={3} style={styles.cardTextContainer}>
-              <Text style={styles.cardTextStrong}>Composição da cesta: </Text>
+              <Text style={styles.titleText}>Composição da cesta: </Text>
               <Text style={styles.cardText}>
                 {formatBaseProducts(delivery)}
               </Text>
@@ -92,16 +91,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
   },
   titleText: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 19,
+    fontFamily: 'Roboto',
+    fontWeight: '700',
+    fontSize: 16,
+    color: '#505050',
   },
   cardTextStrong: {
     fontWeight: 'bold',
     fontSize: 16,
   },
   cardText: {
-    fontSize: 15,
+    fontFamily: 'Roboto',
+    fontWeight: '400',
+    fontSize: 16,
+    color: '#505050',
   },
   cardTextContainer: {
     marginTop: 8,

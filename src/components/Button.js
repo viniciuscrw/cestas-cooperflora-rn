@@ -1,11 +1,11 @@
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Button = ({ onPress, children, style }) => {
+const Button = ({ onPress, children, style, textColor }) => {
   const { button, text } = styles;
   return (
     <TouchableOpacity onPress={onPress} style={[button, style]}>
-      <Text style={text}>{children}</Text>
+      <Text style={[text, {color:textColor}] }>{children}</Text>
     </TouchableOpacity>
   );
 };
@@ -13,7 +13,7 @@ const Button = ({ onPress, children, style }) => {
 const styles = StyleSheet.create({
   text: {
     alignSelf: 'center',
-    color: 'white',
+    // color: 'white',
     fontFamily: 'Roboto',
     fontSize: 16,
     fontWeight: '700',

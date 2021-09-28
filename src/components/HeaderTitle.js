@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import Colors from '../constants/Colors';
 
 const HeaderTitle = ({ title, subtitle }) => {
   return (
@@ -12,9 +13,11 @@ const HeaderTitle = ({ title, subtitle }) => {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'Roboto',
+    fontSize: 24,
+    fontWeight: '700',
     textAlign: 'center',
+    color: Colors.headerTitleColor
   },
   subtitle: {
     fontSize: 14,

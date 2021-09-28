@@ -3,6 +3,7 @@ import { withNavigationFocus } from 'react-navigation';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,11 +11,14 @@ import {
   View,
 } from 'react-native';
 import { format } from 'date-fns';
+import GLOBALS from '../../Globals';
 import { Context as OrderContext } from '../../context/OrderContext';
 import Colors from '../../constants/Colors';
 import Divider from '../../components/Divider';
 import Button from '../../components/Button';
-import GLOBALS from '../../Globals';
+import HeaderTitle from '../../components/HeaderTitle';
+import BackArrow from '../../components/BackArrow';
+import VegetableImage from '../../../assets/images/vegetable2.png';
 
 const ConsumerOrderScreen = (props) => {
   const [baseProducts, setBaseProducts] = useState();
@@ -74,9 +78,10 @@ const ConsumerOrderScreen = (props) => {
 
     if (user && delivery) {
       setLimitDateToOrder(delivery.limitDate);
-      console.log('[ConsumerOrderProduct] delivery', delivery.limitDate);
+      // console.log('[ConsumerOrderProduct] delivery', delivery.limitDate);
       fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
       setBaseProducts(delivery.baseProducts);
+      props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
     }
   }, [user, delivery]);
 
@@ -104,22 +109,31 @@ const ConsumerOrderScreen = (props) => {
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+
   return loading ? (
     <View style={styles.centered}>
       <ActivityIndicator size="large" color={Colors.primary} />
     </View>
   ) : (
     <View style={styles.screen}>
-      <View style={styles.baseProductsContainer}>
-        <View style={styles.baseProducts}>
-          <View style={styles.title}>
-            <Text
-              style={styles.textTitle}
-            >{`Cesta (${delivery.baseProductsPrice?.toFixed(2)})`}</Text>
-          </View>
-          <View style={styles.controls}>
-            <View style={styles.incDecButton}>
+      <View style={styles.container}>
+        <View style={styles.baseProductsContainer}>
+          <View style={styles.baseProducts}>
+            <View style={styles.title}>
+              <Text
+                style={styles.textTitle}
+              >{`Cesta (${delivery.baseProductsPrice?.toFixed(2)})`}</Text>
+            </View>
+            <View style={styles.controls}>
               <TouchableOpacity
+                style={styles.incDecButton}
                 onPress={() =>
                   removeBaseProducts(
                     delivery.baseProductsPrice,
@@ -129,10 +143,11 @@ const ConsumerOrderScreen = (props) => {
               >
                 <Text style={styles.textControls}>{`-  `}</Text>
               </TouchableOpacity>
-            </View>
-            <Text style={styles.quantity}>{order.baseProducts}</Text>
-            <View style={styles.incDecButton}>
+              <View style={styles.quantityContainer}>
+                <Text style={styles.quantity}>{order.baseProducts}</Text>
+              </View>
               <TouchableOpacity
+                style={styles.incDecButton}
                 onPress={() =>
                   addBaseProducts(
                     delivery.baseProductsPrice,
@@ -144,95 +159,130 @@ const ConsumerOrderScreen = (props) => {
               </TouchableOpacity>
             </View>
           </View>
+          <View style={styles.baseProductsItems}>
+            <Text style={styles.textItens}>{baseProducts}</Text>
+          </View>
         </View>
-        <View style={styles.baseProductsItems}>
-          <Text style={styles.textItens}>{baseProducts}</Text>
-        </View>
-      </View>
-      <Divider
-        style={{ borderBottomColor: Colors.secondary, marginBottom: 15 }}
-      />
-      <View style={styles.extraProductsContainer}>
-        <View style={styles.title}>
-          <Text style={styles.textTitle}>Extras</Text>
-        </View>
-        <ScrollView style={styles.extraProducts}>
-          {orderProducts.map((item, index) => {
-            return (
-              <View key={index} style={styles.extraProductItems}>
-                <View style={styles.item}>
+        <Divider style={{ borderBottomColor: Colors.secondary }} />
+        <View style={styles.extraProductsContainer}>
+          <View style={styles.title}>
+            <Text style={styles.textTitle}>Extras</Text>
+          </View>
+          <ScrollView style={styles.extraProducts}>
+            {orderProducts.map((item, index) => {
+              return (
+                <View key={index} style={styles.extraProductItems}>
                   <View style={styles.line}>
-                    <Text style={styles.textItens}>{item.productTitle}</Text>
-                    <Text style={styles.textItens}>
-                      {' '}
-                      (R${item.productPrice.toFixed(2)})
-                    </Text>
+                    <View style={styles.itemContainer}>
+                      <Text style={styles.textItens}>
+                        {item.productTitle} (R${item.productPrice.toFixed(2)})
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.controls}>
+                    <View style={styles.incDecButton}>
+                      <TouchableOpacity
+                        onPress={() =>
+                          removeProduct(
+                            orderProducts,
+                            item,
+                            delivery.deliveryFee
+                          )
+                        }
+                      >
+                        <Text style={styles.textControls}>-</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <Text style={styles.quantity}>{item.quantity}</Text>
+                    <View style={styles.incDecButton}>
+                      <TouchableOpacity
+                        onPress={() =>
+                          addProduct(orderProducts, item, delivery.deliveryFee)
+                        }
+                      >
+                        <Text style={styles.textControls}>{`  +`}</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
-                <View style={styles.controls}>
-                  <View style={styles.incDecButton}>
-                    <TouchableOpacity
-                      onPress={() =>
-                        removeProduct(orderProducts, item, delivery.deliveryFee)
-                      }
-                    >
-                      <Text style={styles.textControls}>{`-  `}</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <Text style={styles.quantity}>{item.quantity}</Text>
-                  <View style={styles.incDecButton}>
-                    <TouchableOpacity
-                      onPress={() =>
-                        addProduct(orderProducts, item, delivery.deliveryFee)
-                      }
-                    >
-                      <Text style={styles.textControls}>{`  +`}</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            );
-          })}
-        </ScrollView>
-      </View>
-      <Divider style={{ borderBottomColor: Colors.tertiary }} />
-      <View style={styles.totalAmountContainer}>
-        <Text style={styles.textTitle}>Taxa de entrega</Text>
-        <View>
-          <Text style={styles.textTitle}>
-            {hasAnyProduct()
-              ? delivery.deliveryFee?.toFixed(2)
-              : (0.0).toFixed(2)}
-          </Text>
+              );
+            })}
+          </ScrollView>
         </View>
-      </View>
-      <View style={styles.totalAmountContainer}>
-        <Text style={styles.textTitle}>Total</Text>
-        <View>
-          <Text style={styles.textTitle}>{order.totalAmount.toFixed(2)}</Text>
+        {/* <Divider style={{ borderBottomColor: Colors.tertiary }} /> */}
+        {/* <View style={styles.totalAmountContainer}>
+          <Text style={styles.textTitle}>Total</Text>
+          <View>
+            <Text style={styles.textTitle}>{order.totalAmount.toFixed(2)}</Text>
+          </View>
+        </View> */}
+        <Text style={styles.textTitle}>
+          {hasAnyProduct()
+            ? delivery.deliveryFee?.toFixed(2)
+            : (0.0).toFixed(2)}
+        </Text>
+        <View style={styles.buttonContainer}>
+          <Divider style={{ borderBottomColor: Colors.secondary }} />
+          <Button
+            style={styles.confirmButton}
+            textColor="white"
+            onPress={onHandleNewOrUpdatedOrder}
+          >
+            Confirmar R$ {order.totalAmount.toFixed(2)}
+          </Button>
         </View>
-      </View>
-      <Divider style={{ borderBottomColor: Colors.secondary }} />
-      <View style={styles.buttonContainer}>
-        <Button
-          style={styles.button}
-          onPress={() => {
-            onHandleNewOrUpdatedOrder();
-          }}
-        >
-          Confirmar
-        </Button>
       </View>
     </View>
   );
 };
 
+ConsumerOrderScreen.navigationOptions = (navData) => {
+  const deliveryDate = format(
+    navData.navigation.state.params.delivery.deliveryDate,
+    GLOBALS.FORMAT.DD_MM
+  );
+  // if (navData.route) {
+  //   deliveryDate = navData.route.params.deliveryDate;
+  // }
+  return {
+    headerTitle: () => (
+      <View>
+        <View style={styles.header}>
+          <HeaderTitle title="Entrega da Cesta" />
+          <View style={styles.imageContainer}>
+            <Image style={styles.image} source={VegetableImage} />
+          </View>
+        </View>
+        <Text>{deliveryDate}</Text>
+      </View>
+    ),
+    headerBackImage: () => <BackArrow />,
+    headerStyle: {
+      backgroundColor: 'transparent',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+    },
+  };
+};
+
 const styles = StyleSheet.create({
   screen: {
-    paddingLeft: 25,
-    paddingRight: 25,
-    borderRadius: 22,
-    borderTopColor: 'black',
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: 'black',
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 4, height: -3 },
+    shadowRadius: 8,
+    elevation: 25,
+    // backgroundColor: 'red',
+  },
+  container: {
+    flex: 1,
+    margin: 25,
   },
   baseProductsContainer: {
     height: '18%',
@@ -241,29 +291,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 5,
   },
   baseProductsItems: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  line: {
+  title: {
     flex: 1,
+    justifyContent: 'center',
+    height: 40,
+  },
+  textTitle: {
+    fontFamily: 'Roboto',
+    fontWeight: '700',
+    fontSize: 16,
+    color: '#505050',
+  },
+  controls: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
-    // alignItems: 'center'
   },
-  extraProductsContainer: {
-    height: '53%',
-  },
-  extraProducts: {
-    // height: '60%'
-  },
-  extraProductItems: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  incDecButton: {
+    width: 35,
+    height: 35,
     alignItems: 'center',
-    paddingTop: 10,
+  },
+  textControls: {
+    fontFamily: 'Roboto',
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#8898AA',
+  },
+  quantityContainer: {
+    justifyContent: 'center',
   },
   quantity: {
     fontSize: 20,
@@ -271,27 +330,28 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     borderBottomWidth: 2,
     borderBottomColor: '#8898AA',
-  },
-  controls: {
-    flexDirection: 'row',
-  },
-  textControls: {
-    fontFamily: 'Roboto',
-    fontSize: 26,
-    fontWeight: 'bold',
     color: '#8898AA',
   },
-  title: {
-    flex: 1,
-    justifyContent: 'center',
-    height: 40,
-    paddingVertical: 15,
+  extraProductsContainer: {
+    marginTop: 20,
+    marginBottom: 20,
+    height: '60%',
   },
-  textTitle: {
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    fontSize: 16,
-    color: '#505050',
+  line: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  itemContainer: {
+    justifyContent: 'center',
+  },
+  extraProducts: {
+    marginTop: 10,
+  },
+  extraProductItems: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 5,
   },
   textItens: {
     fontFamily: 'Roboto',
@@ -300,44 +360,25 @@ const styles = StyleSheet.create({
     color: '#505050',
   },
   buttonContainer: {
-    flex: 1,
-    alignItems: 'center',
-    alignContent: 'center',
-    justifyContent: 'center',
-    marginTop: 30,
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
   },
-  button: {
-    // justifyContent: 'center',
-    // alignItems: 'center',
+  confirmButton: {
+    marginTop: 5,
     backgroundColor: Colors.primary,
-  },
-  totalAmountContainer: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 10,
-    paddingBottom: 10,
   },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  imageContainer: {
+    position: 'absolute',
+    right: -100,
+    width: 80,
+    height: 55,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
 });
-
-export const consumerOrderNavigationOptions = ({ navigation }) => {
-  let headerTitle = `Pedido - ${
-    navigation.state.params.user?.name?.split(' ')[0]
-  }`;
-
-  if (navigation.state.params.user?.role) {
-    headerTitle = `Meu pedido - ${format(
-      navigation.state.params.delivery.deliveryDate,
-      GLOBALS.FORMAT.DEFAULT_DATE
-    )}`;
-  }
-  return {
-    headerTitle,
-  };
-};
 
 export default withNavigationFocus(ConsumerOrderScreen);
