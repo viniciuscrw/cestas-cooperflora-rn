@@ -1,25 +1,36 @@
 import React, { useContext } from 'react';
 import { withNavigation } from 'react-navigation';
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { format } from 'date-fns';
 import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
 import Button from '../../components/Button';
 import { Context as OrderContext } from '../../context/OrderContext';
+import GLOBALS from '../../Globals';
 
 const ConsumerOrderPlacedScreen = (props) => {
   const {
-    state: { loading, order },
+    state: { order },
   } = useContext(OrderContext);
+  const { delivery } = props.navigation.state.params;
 
   // TODO Resolver aqui pra quem nao tem pedido
   if (order && !order.id) {
     props.navigation.navigate('Deliveries');
   }
 
+  const hasAnyProduct = () => {
+    return (
+      order?.baseProducts > 0 ||
+      (order?.extraProducts?.length > 0 &&
+        order.extraProducts.some((prod) => prod.quantity > 0))
+    );
+  };
+
   return (
     <View style={styles.screen}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>Pedido confirmado!</Text>
+        <Text style={styles.title}>Pedido realizado!</Text>
       </View>
       <Divider style={{ borderBottomColor: Colors.secondary }} />
       <ScrollView style={styles.orderItemsContainer}>
@@ -30,7 +41,9 @@ const ConsumerOrderPlacedScreen = (props) => {
               <Text style={styles.itemText}>Cesta</Text>
             </View>
             <View style={styles.box2}>
-              <Text style={styles.itemText}>37.00</Text>
+              <Text style={styles.itemText}>
+                {(order.baseProducts * delivery.baseProductsPrice).toFixed(2)}
+              </Text>
             </View>
           </View>
           <FlatList
@@ -66,6 +79,18 @@ const ConsumerOrderPlacedScreen = (props) => {
       <Divider style={{ borderBottomColor: Colors.tertiary }} />
       <View style={styles.totalAmountContainer}>
         <View style={styles.box1}>
+          <Text style={styles.itemText}>Taxa de entrega</Text>
+        </View>
+        <View>
+          <Text style={styles.itemText}>
+            {hasAnyProduct()
+              ? delivery.deliveryFee?.toFixed(2)
+              : (0.0).toFixed(2)}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.totalAmountContainer}>
+        <View style={styles.box1}>
           <Text style={styles.itemText}>Total</Text>
         </View>
         <View>
@@ -88,17 +113,17 @@ const ConsumerOrderPlacedScreen = (props) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    padding: 15,
+    paddingHorizontal: 15,
   },
   titleContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: '20%',
+    height: '15%',
     padding: 10,
   },
   orderItemsContainer: {
-    padding: 25,
-    height: '50%',
+    paddingVertical: 25,
+    height: '45%',
   },
   orderItemContainer: {
     flex: 1,
@@ -121,11 +146,9 @@ const styles = StyleSheet.create({
 
   // },
   totalAmountContainer: {
-    height: '10%',
-    paddingRight: 25,
-    paddingLeft: 25,
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     // backgroundColor: 'grey'
   },
   buttonContainer: {
@@ -153,9 +176,12 @@ const styles = StyleSheet.create({
   },
 });
 
-ConsumerOrderPlacedScreen.navigationOptions = () => {
+export const consumerOrderPlacedNavigationOptions = ({ navigation }) => {
   return {
-    headerTitle: 'Pedidos do consumidor',
+    headerTitle: `Meu pedido - ${format(
+      navigation.state.params.delivery.deliveryDate,
+      GLOBALS.FORMAT.DEFAULT_DATE
+    )}`,
   };
 };
 

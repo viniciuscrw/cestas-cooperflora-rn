@@ -18,7 +18,7 @@ const OrdersByConsumerScreen = ({ navigation }) => {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
   } = useContext(OrderContext);
-  const deliveryId = navigation.state.params.delivery.id;
+  const { delivery } = navigation.state.params;
   const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] = useState(
     null
   );
@@ -75,7 +75,7 @@ const OrdersByConsumerScreen = ({ navigation }) => {
         onPress={() =>
           navigation.navigate('ConsumerOrderScreen', {
             user: { id: order.userId, name: order.userName },
-            deliveryId,
+            delivery,
           })
         }
       >
@@ -93,7 +93,9 @@ const OrdersByConsumerScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <NavigationEvents onWillFocus={() => fetchOrdersByDelivery(deliveryId)} />
+      <NavigationEvents
+        onWillFocus={() => fetchOrdersByDelivery(delivery.id)}
+      />
       <Input
         containerStyle={styles.searchInput}
         placeholder="Buscar pessoa consumidora"

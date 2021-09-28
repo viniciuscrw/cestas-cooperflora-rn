@@ -18,9 +18,10 @@ import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import FormInput from '../../components/FormInput';
 import Spacer from '../../components/Spacer';
 import GLOBALS from '../../Globals';
+import useConsumerGroup from '../../hooks/useConsumerGroup';
 
 const CreateDeliveryScreen = ({ navigation }) => {
-  const { state, setDeliveryInfo } = useContext(DeliveryContext);
+  const { setDeliveryInfo } = useContext(DeliveryContext);
   const delivery = navigation.getParam('delivery');
   const [deliveryDate, setDeliveryDate] = useState(
     delivery ? delivery.deliveryDate : new Date()
@@ -46,14 +47,19 @@ const CreateDeliveryScreen = ({ navigation }) => {
   );
   const [showOrdersDateTime, setShowOrdersDateTime] = useState(false);
   const [dateTimeMode, setDateTimeMode] = useState('date');
-  const [baseProducts, setBaseProducts] = useState(delivery ? delivery.baseProducts : '');
+  const [baseProducts, setBaseProducts] = useState(
+    delivery ? delivery.baseProducts : ''
+  );
+  const groupInfo = useConsumerGroup();
 
   useEffect(() => {
     setDeliveryInfo(
       deliveryDate,
       ordersLimitDate,
       ordersLimitTime,
-      baseProducts
+      baseProducts,
+      groupInfo?.baseProductsPrice,
+      groupInfo?.deliveryFee
     );
   }, []);
 
@@ -97,7 +103,14 @@ const CreateDeliveryScreen = ({ navigation }) => {
     setDeliveryDate(currentDate);
     setOrdersLimitDate(limitDate);
 
-    setDeliveryInfo(currentDate, limitDate, limitDate, baseProducts);
+    setDeliveryInfo(
+      currentDate,
+      limitDate,
+      limitDate,
+      baseProducts,
+      groupInfo?.baseProductsPrice,
+      groupInfo?.deliveryFee
+    );
   };
 
   const onOrdersDateTimeChange = (event, selectedValue) => {
@@ -107,18 +120,27 @@ const CreateDeliveryScreen = ({ navigation }) => {
       setOrdersLimitDate(currentDate);
       setDateTimeMode('time');
       setShowOrdersDateTime(Platform.OS !== 'ios');
-      setDeliveryInfo(deliveryDate, currentDate, ordersLimitTime, baseProducts);
+      setDeliveryInfo(
+        deliveryDate,
+        currentDate,
+        ordersLimitTime,
+        baseProducts,
+        groupInfo?.baseProductsPrice,
+        groupInfo?.deliveryFee
+      );
     } else {
       const selectedTime = selectedValue || ordersLimitTime;
       setOrdersLimitTime(selectedTime);
       setShowOrdersDateTime(Platform.OS === 'ios');
-      let nextMode = Platform.OS === 'ios' ? 'time' : 'date';
+      const nextMode = Platform.OS === 'ios' ? 'time' : 'date';
       setDateTimeMode(nextMode);
       setDeliveryInfo(
         deliveryDate,
         ordersLimitDate,
         selectedTime,
-        baseProducts
+        baseProducts,
+        groupInfo?.baseProductsPrice,
+        groupInfo?.deliveryFee
       );
     }
   };
@@ -201,7 +223,9 @@ const CreateDeliveryScreen = ({ navigation }) => {
                     deliveryDate,
                     ordersLimitDate,
                     ordersLimitTime,
-                    baseProducts
+                    baseProducts,
+                    groupInfo?.baseProductsPrice,
+                    groupInfo?.deliveryFee
                   )
                 }
                 underlineColorAndroid="transparent"

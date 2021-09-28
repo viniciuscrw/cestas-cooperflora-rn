@@ -32,8 +32,12 @@ import CreateExtraItemScreen from '../screens/delivery/CreateExtraItemScreen';
 import OrdersByConsumerScreen, {
   ordersManagementNavigationOptions,
 } from '../screens/OrdersByConsumerScreen';
-import ConsumerOrderScreen from '../screens/consumer/ConsumerOrderScreen';
-import ConsumerOrderPlacedScreen from '../screens/consumer/ConsumerOrderPlacedScreen';
+import ConsumerOrderScreen, {
+  consumerOrderNavigationOptions,
+} from '../screens/consumer/ConsumerOrderScreen';
+import ConsumerOrderPlacedScreen, {
+  consumerOrderPlacedNavigationOptions,
+} from '../screens/consumer/ConsumerOrderPlacedScreen';
 import OrdersItemsQuantityScreen from '../screens/OrdersItemsQuantityScreen';
 
 const defaultStackNavOptions = {
@@ -181,9 +185,11 @@ const deliveryStackNavigator = createStackNavigator(
     },
     ConsumerOrderScreen: {
       screen: ConsumerOrderScreen,
+      navigationOptions: consumerOrderNavigationOptions,
     },
     ConsumerOrderPlacedScreen: {
       screen: ConsumerOrderPlacedScreen,
+      navigationOptions: consumerOrderPlacedNavigationOptions,
     },
   },
   {

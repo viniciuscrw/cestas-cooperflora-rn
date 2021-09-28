@@ -9,18 +9,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Context as DeliveryContext } from '../../context/DeliveryContext';
-import { Context as ConsumerGroupContext } from '../../context/ConsumerGroupContext';
+import { format } from 'date-fns';
 import { Context as OrderContext } from '../../context/OrderContext';
 import Colors from '../../constants/Colors';
 import Divider from '../../components/Divider';
 import Button from '../../components/Button';
+import GLOBALS from '../../Globals';
 
 const ConsumerOrderScreen = (props) => {
   const [baseProducts, setBaseProducts] = useState();
   const [orderProducts, setOrderProducts] = useState([]);
   const [limitDateToOrder, setLimitDateToOrder] = useState();
-  const [deliveryId, setDeliveryId] = useState('');
 
   const {
     state: { loading, order },
@@ -32,28 +31,14 @@ const ConsumerOrderScreen = (props) => {
     fetchUserOrder,
   } = useContext(OrderContext);
 
-  const { user } = props.navigation.state.params;
-  const {
-    state: { nextDelivery: delivery },
-  } = useContext(DeliveryContext);
-
-  const { state } = useContext(ConsumerGroupContext);
-
-  // ############# ATENCAO CORRIGIR
-
-  const baseProductsPrice = state.consumerGroup
-    ? state.consumerGroup.baseProductsPrice
-    : 10;
-  // const baseProductsPrice = 37.00;
-
-  // #############
+  const { user, delivery } = props.navigation.state.params;
 
   if (props.isFocused) {
     if (limitDateToOrder < new Date()) {
       Alert.alert('Aviso', 'Prazo para pedidos já foi encerrado!', [
         { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
-      props.navigation.navigate('ConsumerOrderPlacedScreen');
+      props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
     }
   }
 
@@ -99,25 +84,25 @@ const ConsumerOrderScreen = (props) => {
     transformOrderProducts();
   }, [order, delivery]);
 
+  const hasAnyProduct = () => {
+    return (
+      order?.baseProducts > 0 ||
+      (order?.extraProducts?.length > 0 &&
+        order.extraProducts.some((prod) => prod.quantity > 0))
+    );
+  };
+
   const onHandleNewOrUpdatedOrder = () => {
     console.log('[Consumer Order Screen] Handle new or update order');
-    addOrder(user.id, user.name, delivery.id, order, baseProductsPrice);
+    addOrder(user.id, user.name, delivery.id, order);
     if (!loading) {
-      if (props.navigation.state.params?.user?.role) {
-        props.navigation.navigate('ConsumerOrderPlacedScreen');
+      if (user.role) {
+        props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
       } else {
         props.navigation.goBack(null);
       }
     }
   };
-
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
 
   return loading ? (
     <View style={styles.centered}>
@@ -128,24 +113,34 @@ const ConsumerOrderScreen = (props) => {
       <View style={styles.baseProductsContainer}>
         <View style={styles.baseProducts}>
           <View style={styles.title}>
-            <Text style={styles.textTitle}>{`Cesta (${baseProductsPrice.toFixed(
-              2
-            )})`}</Text>
+            <Text
+              style={styles.textTitle}
+            >{`Cesta (${delivery.baseProductsPrice?.toFixed(2)})`}</Text>
           </View>
           <View style={styles.controls}>
             <View style={styles.incDecButton}>
               <TouchableOpacity
-                onPress={() => removeBaseProducts(baseProductsPrice)}
+                onPress={() =>
+                  removeBaseProducts(
+                    delivery.baseProductsPrice,
+                    delivery.deliveryFee
+                  )
+                }
               >
-                <Text style={styles.textControls}>-</Text>
+                <Text style={styles.textControls}>{`-  `}</Text>
               </TouchableOpacity>
             </View>
             <Text style={styles.quantity}>{order.baseProducts}</Text>
             <View style={styles.incDecButton}>
               <TouchableOpacity
-                onPress={() => addBaseProducts(baseProductsPrice)}
+                onPress={() =>
+                  addBaseProducts(
+                    delivery.baseProductsPrice,
+                    delivery.deliveryFee
+                  )
+                }
               >
-                <Text style={styles.textControls}>+</Text>
+                <Text style={styles.textControls}>{`  +`}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -154,7 +149,9 @@ const ConsumerOrderScreen = (props) => {
           <Text style={styles.textItens}>{baseProducts}</Text>
         </View>
       </View>
-      <Divider style={{ borderBottomColor: Colors.secondary }} />
+      <Divider
+        style={{ borderBottomColor: Colors.secondary, marginBottom: 15 }}
+      />
       <View style={styles.extraProductsContainer}>
         <View style={styles.title}>
           <Text style={styles.textTitle}>Extras</Text>
@@ -175,17 +172,21 @@ const ConsumerOrderScreen = (props) => {
                 <View style={styles.controls}>
                   <View style={styles.incDecButton}>
                     <TouchableOpacity
-                      onPress={() => removeProduct(orderProducts, item)}
+                      onPress={() =>
+                        removeProduct(orderProducts, item, delivery.deliveryFee)
+                      }
                     >
-                      <Text style={styles.textControls}>-</Text>
+                      <Text style={styles.textControls}>{`-  `}</Text>
                     </TouchableOpacity>
                   </View>
                   <Text style={styles.quantity}>{item.quantity}</Text>
                   <View style={styles.incDecButton}>
                     <TouchableOpacity
-                      onPress={() => addProduct(orderProducts, item)}
+                      onPress={() =>
+                        addProduct(orderProducts, item, delivery.deliveryFee)
+                      }
                     >
-                      <Text style={styles.textControls}>+</Text>
+                      <Text style={styles.textControls}>{`  +`}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -195,6 +196,16 @@ const ConsumerOrderScreen = (props) => {
         </ScrollView>
       </View>
       <Divider style={{ borderBottomColor: Colors.tertiary }} />
+      <View style={styles.totalAmountContainer}>
+        <Text style={styles.textTitle}>Taxa de entrega</Text>
+        <View>
+          <Text style={styles.textTitle}>
+            {hasAnyProduct()
+              ? delivery.deliveryFee?.toFixed(2)
+              : (0.0).toFixed(2)}
+          </Text>
+        </View>
+      </View>
       <View style={styles.totalAmountContainer}>
         <Text style={styles.textTitle}>Total</Text>
         <View>
@@ -243,7 +254,7 @@ const styles = StyleSheet.create({
     // alignItems: 'center'
   },
   extraProductsContainer: {
-    height: '60%',
+    height: '53%',
   },
   extraProducts: {
     // height: '60%'
@@ -252,7 +263,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 5,
+    paddingTop: 10,
   },
   quantity: {
     fontSize: 20,
@@ -266,7 +277,7 @@ const styles = StyleSheet.create({
   },
   textControls: {
     fontFamily: 'Roboto',
-    fontSize: 20,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#8898AA',
   },
@@ -274,6 +285,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     height: 40,
+    paddingVertical: 15,
   },
   textTitle: {
     fontFamily: 'Roboto',
@@ -312,9 +324,19 @@ const styles = StyleSheet.create({
   },
 });
 
-ConsumerOrderScreen.navigationOptions = () => {
+export const consumerOrderNavigationOptions = ({ navigation }) => {
+  let headerTitle = `Pedido - ${
+    navigation.state.params.user?.name?.split(' ')[0]
+  }`;
+
+  if (navigation.state.params.user?.role) {
+    headerTitle = `Meu pedido - ${format(
+      navigation.state.params.delivery.deliveryDate,
+      GLOBALS.FORMAT.DEFAULT_DATE
+    )}`;
+  }
   return {
-    headerTitle: 'Pedidos do consumidor',
+    headerTitle,
   };
 };
 

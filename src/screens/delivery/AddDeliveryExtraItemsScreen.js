@@ -18,6 +18,7 @@ import Spinner from '../../components/Spinner';
 import TextLink from '../../components/TextLink';
 import { formatCurrency, showAlert } from '../../helper/HelperFunctions';
 import LoadingButton from '../../components/LoadingButton';
+import useConsumerGroup from '../../hooks/useConsumerGroup';
 
 const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const {
@@ -36,6 +37,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const [filteredProducts, setFilteredProducts] = useState(null);
   const [filterText, setFilterText] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const groupInfo = useConsumerGroup();
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -105,6 +107,8 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         ordersLimitDate: state.ordersLimitDate,
         baseProducts: state.baseProducts,
         extraProducts,
+        baseProductsPrice: groupInfo.baseProductsPrice,
+        deliveryFee: groupInfo.deliveryFee,
       };
 
       if (state.nextDelivery) {
@@ -153,6 +157,8 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         <Text>Máx. {item.maxOrderQuantity.toLocaleString()} por pedido</Text>
       );
     }
+
+    return null;
   };
 
   const renderItem = ({ item }) => {
