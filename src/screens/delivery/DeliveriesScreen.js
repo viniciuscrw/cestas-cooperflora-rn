@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View, Image } from 'react-native';
 import { NavigationEvents, withNavigation } from 'react-navigation';
 import { Divider } from 'react-native-elements';
 import Spinner from '../../components/Spinner';
@@ -10,6 +10,9 @@ import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import useUser from '../../hooks/useUser';
 import DeliveryCard from '../../components/DeliveryCard';
 import GLOBALS from '../../Globals';
+import HeaderTitle from '../../components/HeaderTitle';
+import BackArrow from '../../components/BackArrow';
+import BasketProductsImage from '../../../assets/images/basketproducts.png';
 
 const DeliveriesScreen = ({ navigation }) => {
   const user = useUser();
@@ -89,33 +92,65 @@ const DeliveriesScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <NavigationEvents onWillFocus={fetchDeliveries} />
-      {!state.loading && user ? (
-        <FlatList
-          data={state.lastDeliveries}
-          ListHeaderComponent={renderNextDelivery}
-          renderItem={renderLastDeliveriesItem}
-          keyExtractor={(item) => item.id}
-        />
-      ) : (
-        <Spinner />
-      )}
+    <View style={styles.screen}>
+      <View style={styles.container}>
+        <NavigationEvents onWillFocus={fetchDeliveries} />
+        {!state.loading && user ? (
+          <FlatList
+            data={state.lastDeliveries}
+            ListHeaderComponent={renderNextDelivery}
+            renderItem={renderLastDeliveriesItem}
+            keyExtractor={(item) => item.id}
+          />
+        ) : (
+          <Spinner />
+        )}
+      </View>
     </View>
   );
 };
 
 export const deliveriesNavigationOptions = () => {
   return {
-    headerTitle: () => <MainHeader />,
+    headerTitle: () => (
+      <View>
+        <View style={styles.imageContainer}>
+          <Image style={styles.image} source={BasketProductsImage} />
+        </View>
+        <MainHeader />
+      </View>
+    ),
+    // headerBackImage: () => (<BackArrow />),
     headerRight: () => <ConsumerGroupDetails />,
+    headerStyle: {
+      backgroundColor: 'transparent',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+    }
   };
+  // return {
+  //   headerTitle: () => <MainHeader />,
+  //   headerRight: () => <ConsumerGroupDetails />,
+  // };
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: "black",
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 25
+  },
   container: {
     flex: 1,
-    backgroundColor: '#ebebeb',
+    margin: 5
   },
   deliveriesListHeader: {
     flex: 1,
@@ -127,9 +162,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   text: {
-    color: '#101010',
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontFamily: 'Roboto',
+    fontWeight: '700',
+    fontSize: 16,
+    color: '#505050',
   },
   nextDeliveryItem: {
     marginTop: 10,
@@ -144,6 +180,16 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     marginHorizontal: -10,
   },
+  imageContainer: {
+    position: 'absolute',
+    left: -100,
+    width: 80,
+    height: 65,
+  },
+  image: {
+    width: '100%',
+    height: '100%'
+  }
 });
 
 export default withNavigation(DeliveriesScreen);

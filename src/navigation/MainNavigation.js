@@ -34,7 +34,10 @@ import OrdersByConsumerScreen, {
 } from '../screens/OrdersByConsumerScreen';
 import ConsumerOrderScreen from '../screens/consumer/ConsumerOrderScreen';
 import ConsumerOrderPlacedScreen from '../screens/consumer/ConsumerOrderPlacedScreen';
+import ConsumerPaymentsScreen from '../screens/consumer/ConsumerPaymentsScreen';
+import ConsumerAddPaymentScreen from '../screens/consumer/ConsumerAddPaymentScreen';
 import OrdersItemsQuantityScreen from '../screens/OrdersItemsQuantityScreen';
+import Colors from '../constants/Colors';
 
 const defaultStackNavOptions = {
   headerTitleAlign: 'center',
@@ -183,32 +186,19 @@ const deliveryStackNavigator = createStackNavigator(
       screen: ConsumerOrderScreen,
     },
     ConsumerOrderPlacedScreen: {
-      screen: ConsumerOrderPlacedScreen,
+      screen: ConsumerOrderPlacedScreen
+    },
+    ConsumerAddPaymentScreen:{
+      screen:ConsumerAddPaymentScreen
+    },
+    ConsumerPaymentsScreen: {
+      screen: ConsumerPaymentsScreen
     },
   },
   {
     defaultNavigationOptions: defaultStackNavOptions,
   }
 );
-
-// Screen added by André/Rafa/Yasmin
-// const consumerOrderStackNavigator = createStackNavigator(
-//   {
-//     Deliveries: {
-//       screen: DeliveriesScreen,
-//       navigationOptions: deliveriesNavigationOptions,
-//     },
-//     Order: {
-//       screen: ConsumerOrderScreen,
-//       navigationOptions: ScreenOptions,
-//     }
-//   },
-//   {
-//     defaultNavigationOptions: defaultStackNavOptions,
-//   }
-// );
-
-// ==================
 
 const switchNavigator = createSwitchNavigator({
   Initial: InitialScreen,
@@ -255,7 +245,7 @@ const switchNavigator = createSwitchNavigator({
           },
         }),
         navigationOptions: {
-          tabBarLabel: 'Minha conta',
+          tabBarLabel: 'Minha Conta',
           tabBarIcon: ({ tintColor }) => (
             <FontAwesome5 name="user-alt" size={30} color={tintColor} />
           ),
@@ -266,18 +256,15 @@ const switchNavigator = createSwitchNavigator({
         navigationOptions: {
           tabBarLabel: 'Cestas',
           tabBarIcon: ({ tintColor }) => (
-            <FontAwesome5 name="shopping-bag" size={34} color={tintColor} />
+            <FontAwesome5 name="shopping-basket" size={34} color={tintColor} />
           ),
         },
       },
       Payments: {
         screen: createStackNavigator({
           Payments: {
-            screen: PaymentsScreen,
-            navigationOptions: {
-              headerTitle: 'Pagamentos',
-              ...defaultStackNavOptions,
-            },
+            // screen: ConsumerPaymentsScreen,
+            screen: PaymentsScreen
           },
         }),
         navigationOptions: {
@@ -291,8 +278,8 @@ const switchNavigator = createSwitchNavigator({
     {
       initialRouteName: 'Deliveries',
       tabBarOptions: {
-        activeTintColor: 'darkorange',
-        inactiveTintColor: 'darkolivegreen',
+        activeTintColor: Colors.activeIconColor,
+        inactiveTintColor: Colors.inactiveIconColor,
         label: {
           fontSize: 16,
         },

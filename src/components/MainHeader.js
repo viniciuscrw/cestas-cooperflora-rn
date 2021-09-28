@@ -6,7 +6,7 @@ const MainHeader = () => {
   return (
     <HeaderTitle
       title={GLOBALS.APP.NAME}
-      subtitle={GLOBALS.CONSUMER_GROUP.NAME}
+      subtitle={`Grupo: ${GLOBALS.CONSUMER_GROUP.NAME}`}
     />
   );
 };

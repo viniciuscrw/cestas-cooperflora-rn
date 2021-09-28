@@ -9,6 +9,7 @@ import GLOBALS from '../Globals';
 import { Entypo } from '@expo/vector-icons'; 
 import HeaderTitle from '../components/HeaderTitle';
 import { AntDesign } from '@expo/vector-icons';
+import BackArrow from '../components/BackArrow';
 import { Ionicons } from '@expo/vector-icons';
 const ConsumerGroupInfoScreen = ({ navigation }) => {
   const { state, fetchConsumerGroup } = useContext(ConsumerGroupContext);
@@ -70,7 +71,7 @@ const ConsumerGroupInfoScreen = ({ navigation }) => {
           }}
         >
           <Image
-            source={require('../../assets/images/icons/basket.jpg')}
+            source={require('../../assets/images/icons/greenbasket.png')}
             style={{
               width: 25,
               height: 24,
@@ -128,6 +129,7 @@ export const consumerGroupInfoNavigationOptions = () => {
     headerTitle: () => (
       <HeaderTitle title="Cestas Cooperflora" subtitle="Barão Geraldo" />
     ),
+    headerBackImage: () => (<BackArrow />),
     headerBackTitleVisible: false,
   };
 };
