@@ -42,6 +42,7 @@ const fetchConsumers = (dispatch) => async () => {
     'name'
   );
   dispatch({ type: 'fetch_users', payload: consumers });
+  return consumers;
 };
 
 const fetchOrganizers = (dispatch) => async () => {

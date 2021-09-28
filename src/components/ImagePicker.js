@@ -56,40 +56,39 @@ const ImgPicker = (props) => {
             ]
         );
 
+        // console.log('[ImagePicker]');
+        // let options = {
+        //     title: 'Select Image',
+        //     customButtons: [
+        //         { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
+        //     ],
+        //     storageOptions: {
+        //         skipBackup: true,
+        //         path: 'images',
+        //     },
+        // };
+        // ImagePicker.showImagePicker(options, (response) => {
+        //     console.log('Response = ', response);
 
-        console.log('[ImagePicker]');
-        let options = {
-            title: 'Select Image',
-            customButtons: [
-                { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-            ],
-            storageOptions: {
-                skipBackup: true,
-                path: 'images',
-            },
-        };
-        ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response);
+        //     if (response.didCancel) {
+        //         console.log('User cancelled image picker');
+        //     } else if (response.error) {
+        //         console.log('ImagePicker Error: ', response.error);
+        //     } else if (response.customButton) {
+        //         console.log('User tapped custom button: ', response.customButton);
+        //     } else {
+        //         const source = { uri: response.uri };
 
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            } else {
-                const source = { uri: response.uri };
+        //         // You can also display the image using data:
+        //         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
 
-                // You can also display the image using data:
-                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-                // this.setState({
-                //     filePath: response,
-                //     fileData: response.data,
-                //     fileUri: response.uri
-                // });
-            }
-        });
+        //         // this.setState({
+        //         //     filePath: response,
+        //         //     fileData: response.data,
+        //         //     fileUri: response.uri
+        //         // });
+        //     }
+        // });
     }
 
     return (
@@ -136,7 +135,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignContent: 'center',
-        borderColor: 'black',
+        borderColor: '#8898AA',
         borderWidth: 1,
         width: 343,
         height: 48,
@@ -144,6 +143,7 @@ const styles = StyleSheet.create({
     },
     receiptText: {
         alignSelf: 'flex-start',
+        color: '#8898AA',
         fontFamily: 'Roboto',
         fontSize: 16,
         fontWeight: '700',

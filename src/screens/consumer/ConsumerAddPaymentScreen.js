@@ -42,7 +42,8 @@ const ConsumerAddPaymentScreen = (props) => {
                 .then((data) => {
                     setUserData(data);
                     setIsLoading(false);
-                    setAmountToPay(orderTotalAmount - data.balance);
+                    // setAmountToPay(orderTotalAmount - data.balance);
+                    setAmountToPay(0);
                 });
         }
     }, [user]);
@@ -63,11 +64,11 @@ const ConsumerAddPaymentScreen = (props) => {
         console.log('[Consumer Payment Screen] Handle payment');
         // console.log('[Consumer Payment Screen] payment', amountToPay);
         // console.log('[Consumer Payment Screen] receipt', receiptImage);
-        if(amountToPay === 0){
+        if (amountToPay <= 0) {
             Alert.alert('Por favor inclua um valor para o pagamento!');
             return;
         }
-        if(!receiptImage){
+        if (!receiptImage) {
             Alert.alert('Por favor inclua o comprovante!');
             return;
         }
@@ -94,11 +95,11 @@ const ConsumerAddPaymentScreen = (props) => {
                         GLOBALS.SUB_COLLECTION.PAYMENTS,
                         newPayment)
                         .then((data) => {
-                            // console.log('[Order Context] addOrder - order included', data);
+                            console.log('[Consumer Payment Screen] addPayment - Payment  included', data);
                             updateUserBalance();
                             setIsLoading(false);
                             props.navigation.navigate(
-                                'ConsumerPaymentsScreen'
+                                'ConsumerPaymentsScreen', { userId: user.id}
                             )
                         }).catch((error) => {
                             // console.log('[Consumer Add payment Screen - Add payment] - ERRO', error);
@@ -130,13 +131,13 @@ const ConsumerAddPaymentScreen = (props) => {
                     <View style={styles.itemContainer}>
                         <Text style={styles.itemText}>Valor do Pedido</Text>
                         <View style={styles.itemBox}>
-                            <Text style={styles.itemText}>{`R$ ${orderTotalAmount.toFixed(2)}`}</Text>
+                            <Text style={styles.itemValue}>{`R$ ${orderTotalAmount.toFixed(2)}`}</Text>
                         </View>
                     </View>
                     <View style={styles.itemContainer}>
                         <Text style={styles.itemText}>Saldo atual</Text>
                         <View style={styles.itemBox}>
-                            <Text style={styles.itemText}>{`R$ ${userData.balance.toFixed(2)}`}</Text>
+                            <Text style={styles.itemValue}>{`R$ ${userData.balance.toFixed(2)}`}</Text>
                         </View>
                     </View>
                 </View>
@@ -146,8 +147,7 @@ const ConsumerAddPaymentScreen = (props) => {
                         <Text style={styles.itemText}>Saldo a Pagar</Text>
                         <CurrencyInput
                             style={styles.input}
-                            // value={amountToPay}
-                            value={0}
+                            value={amountToPay}
                             onChangeValue={setAmountToPay}
                             prefix="R$ "
                             delimiter=","
@@ -157,8 +157,8 @@ const ConsumerAddPaymentScreen = (props) => {
                                 console.log(formattedValue); // $2,310.46
                             }}
                         />
-                    </View>        
-                    <ImagePicker onImagePicker={imageSelectedHandler}/>
+                    </View>
+                    <ImagePicker onImagePicker={imageSelectedHandler} />
                 </View>
                 <View style={styles.confirmContainer}>
                     <Divider style={{ borderBottomColor: Colors.secondary }} />
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.26,
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 8,
-        elevation: 2
+        elevation: 25
     },
     container: {
         flex: 1,
@@ -215,6 +215,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#505050'
     },
+    itemValue: {
+        fontFamily: 'Roboto',
+        fontWeight: '700',
+        fontSize: 16,
+        color: '#8898AA'
+    },
     addContainer: {
         marginTop: 10,
         // height: '50%',
@@ -231,7 +237,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto',
         fontWeight: '700',
         fontSize: 16,
-        color: '#505050',
+        color: '#8898AA',
         textAlign: 'right',
         width: 80,
         // backgroundColor: 'green'

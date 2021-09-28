@@ -8,27 +8,35 @@ import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
 import Button from '../../components/Button';
 import useUser from '../../hooks/useUser';
+
 import { Context as userContext } from '../../context/UserContext';
-import {
-    insertDoc
-} from '../../api/firebase';
 import firebase from 'firebase';
 import GLOBALS from '../../Globals';
-import * as ImagePicker from 'expo-image-picker';
-import Input from './Input';
-import CurrencyInput from 'react-native-currency-input';
 import ClipIcon from '../../../assets/images/icons/clipicon.png'
-import ImageModal from 'react-native-image-modal';
 
 const ConsumerPaymentsScreen = (props) => {
+    console.log('[ConsumerPaymentScreen started]');
     const [isLoading, setIsLoading] = useState(true);
     const [userData, setUserData] = useState();
     const [userPayments, setUserPayments] = useState([]);
-    const [showReceiptImage, setShowReceiptImage] = useState(false);
-    const [receiptImage, setReceiptImage] = useState('https://cdn.pixabay.com/photo/2019/07/25/18/58/church-4363258_960_720.jpg')
 
+    // console.log(props.navigation.state.params.userId);
+
+    let userId;
+    if(props.navigation.state.params.userId){
+        userId = props.navigation.state.params.userId;
+    } else {
+        
+        userId = useUser().id;
+    }
+    console.log('User id', props.navigation.state.params.userId);
     const { getUserById } = useContext(userContext);
-    const user = useUser();
+    // console.log('[ConsumerPaymentScreen started]', props.navigation.state);
+    // const user = useUser();
+    // setUserId(props.navigation.state.params.userId);
+
+    // console.log('[ConsumerPaymentScreen] user', user);
+    // if(user){ setUserId(user.id) };
 
     const fetchPayments = async () => {
         const collection = GLOBALS.COLLECTION.USERS;
@@ -36,8 +44,9 @@ const ConsumerPaymentsScreen = (props) => {
         //Mover para api firebase
         const db = firebase.firestore();
         const ref = db.collection(collection);
-        const doc = user.id + 'pay';
+        const doc = userId + 'pay';
         // console.log('[Payments Screen] user.id =', user.id, 'subcollection', subcollection, ' ')
+        setIsLoading(true);
         await ref
             .doc(doc)
             .collection(subcollection)
@@ -59,6 +68,7 @@ const ConsumerPaymentsScreen = (props) => {
                     return (a.date < b.date ? 1 : -1)
                 });
                 setUserPayments(newUserPayments);
+                setIsLoading(false);
             })
             .catch((err) => {
                 Alert.alert('Erro ao carregar os seus pagamentos!', err)
@@ -66,17 +76,19 @@ const ConsumerPaymentsScreen = (props) => {
     }
 
     useEffect(() => {
-        // console.log('[ConsumerPaymentsScreen] amount to pay');
+        console.log('[ConsumerPaymentsScreen] user changed');
         setIsLoading(true);
-        if (user) {
-            getUserById(user.id)
+        if (userId) {
+            getUserById(userId)
                 .then((data) => {
                     setUserData(data);
                     fetchPayments();
                     setIsLoading(false);
                 });
         }
-    }, [user]);
+    }, [userId]);
+
+    console.log(userPayments);
 
     const showImage = (index) => {
         // console.log('[show Receipt Image]' , receiptImage);
@@ -100,43 +112,47 @@ const ConsumerPaymentsScreen = (props) => {
         <View style={styles.screen}>
             <View style={styles.container}>
                 <View style={styles.titleContainer}>
-                    <Text style={styles.title}>Meu Saldo: {userData.balance.toFixed(2)} </Text>
+                    <Text style={styles.title}>Saldo: {userData.balance.toFixed(2)} </Text>
+                    <Text>{userData.name}</Text>
                 </View>
                 <Divider style={{ borderBottomColor: Colors.secondary }} />
                 <View style={styles.paymentsContainer}>
                     <ScrollView style={styles.paymentsContainer}>
-                        {userPayments.map((userPayment, index) => {
-                            return (
-                                <View key={userPayment.date}>
-                                    <View style={styles.paymentContainer}>
-                                        <View style={styles.dateContainer}>
-                                            <Text style={styles.dateText}>{format(userPayment.date, GLOBALS.FORMAT.DEFAULT_DATE_TIME)}</Text>
-                                            <TouchableOpacity
-                                                style={styles.button}
-                                                onPress={() => showImage(index)}>
-                                                <View style={styles.imageIcon}>
-                                                    <Image source={ClipIcon} />
-                                                </View>
-                                            </TouchableOpacity>
+                        {!userPayments
+                            ? <Text>Não existe nenhum pagamento ainda!</Text>
+                            : userPayments.map((userPayment, index) => {
+                                return (
+                                    <View key={userPayment.date}>
+                                        <View style={styles.paymentContainer}>
+                                            <View style={styles.dateContainer}>
+                                                <Text style={styles.dateText}>{format(userPayment.date, GLOBALS.FORMAT.DEFAULT_DATE_TIME)}</Text>
+                                                <TouchableOpacity
+                                                    style={styles.button}
+                                                    onPress={() => showImage(index)}>
+                                                    <View style={styles.imageIcon}>
+                                                        <Image source={ClipIcon} />
+                                                    </View>
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={styles.payLine}>
+                                                <Text>Pagamento Realizado</Text>
+                                                <Text style={styles.amountText}>R$ {userPayment.amount.toFixed(2)}</Text>
+                                            </View>
                                         </View>
-                                        <View style={styles.payLine}>
-                                            <Text>Pagamento Realizado</Text>
-                                            <Text style={styles.amountText}>R$ {userPayment.amount.toFixed(2)}</Text>
-                                        </View>
+                                        {userPayment.showReceiptImage ?
+                                            <View style={styles.imageContainer}>
+                                                <Image
+                                                    style={styles.image}
+                                                    source={{ uri: userPayment.receiptImage }}
+                                                />
+                                            </View>
+                                            : null
+                                        }
+                                        <Divider style={{ borderBottomColor: Colors.tertiary }} />
                                     </View>
-                                    {userPayment.showReceiptImage ?
-                                        <View style={styles.imageContainer}>
-                                            <Image
-                                                style={styles.image}
-                                                source={{ uri: userPayment.receiptImage }}
-                                            />
-                                        </View>
-                                        : null
-                                    }
-                                    <Divider style={{ borderBottomColor: Colors.tertiary }} />
-                                </View>
-                            )
-                        })}
+                                )
+                            })
+                        }
                     </ScrollView>
                 </View>
                 <View style={styles.buttonContainer}>
@@ -147,7 +163,8 @@ const ConsumerPaymentsScreen = (props) => {
                             props.navigation.navigate(
                                 'ConsumerAddPaymentScreen',
                                 { orderTotalAmount: 0 }
-                            )}}>
+                            )
+                        }}>
                         Adicionar Pagamento
                     </Button>
                 </View>
