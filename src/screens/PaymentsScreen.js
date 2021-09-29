@@ -4,6 +4,8 @@ import { Text, StyleSheet, View, ScrollView, ActivityIndicator, TouchableOpacity
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import { Context as UserContext } from '../context/UserContext';
+import useUser from '../hooks/useUser';
+import GLOBALS from '../Globals';
 import Colors from '../constants/Colors';
 
 const PaymentsScreen = (props) => {
@@ -14,6 +16,8 @@ const PaymentsScreen = (props) => {
   const { fetchConsumers } = useContext(
     UserContext
   );
+
+  const user = useUser();
 
   useEffect(() => {
     setIsLoading(true);
@@ -28,6 +32,12 @@ const PaymentsScreen = (props) => {
     });
 
   }, []);
+
+  if (user) {
+    if (user.role === GLOBALS.USER.ROLE.CONSUMER) {
+      props.navigation.navigate('ConsumerPaymentsScreen',{ userId: user.id });
+    }
+  }
 
   const handleOnConsumerSelected = (consumerId) => {
     props.navigation.navigate('ConsumerPaymentsScreen', { userId: consumerId });
