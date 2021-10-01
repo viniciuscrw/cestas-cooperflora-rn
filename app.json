@@ -2,11 +2,7 @@
   "expo": {
     "name": "cestas",
     "slug": "cestas",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,11 +14,21 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
+    },
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "ifsp-fn",
+            "project": "cestas-cooperflora",
+            "authToken": "8ea6a44bf50f44669fd2911ba93b5699aa97f7d586f44b0c9ed1ce85b267389b"
+          }
+        }
+      ]
     }
   }
 }
