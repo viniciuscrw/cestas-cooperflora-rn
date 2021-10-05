@@ -2,7 +2,6 @@ import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { LogBox } from 'react-native';
 import firebase from 'firebase';
-import Logs from './src/logs/log';
 import MainNavigation from './src/navigation/MainNavigation';
 import { Provider as AuthProvider } from './src/context/AuthContext';
 import { Provider as UserProvider } from './src/context/UserContext';

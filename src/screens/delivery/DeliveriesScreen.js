@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FlatList, StyleSheet, Text, View, Image } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { NavigationEvents, withNavigation } from 'react-navigation';
 import { Divider } from 'react-native-elements';
 import Spinner from '../../components/Spinner';
@@ -10,8 +10,6 @@ import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import useUser from '../../hooks/useUser';
 import DeliveryCard from '../../components/DeliveryCard';
 import GLOBALS from '../../Globals';
-import HeaderTitle from '../../components/HeaderTitle';
-import BackArrow from '../../components/BackArrow';
 import BasketProductsImage from '../../../assets/images/basketproducts.png';
 
 const DeliveriesScreen = ({ navigation }) => {
@@ -127,7 +125,7 @@ export const deliveriesNavigationOptions = () => {
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
-    }
+    },
   };
   // return {
   //   headerTitle: () => <MainHeader />,
@@ -142,15 +140,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
-    margin: 5
+    margin: 5,
   },
   deliveriesListHeader: {
     flex: 1,
@@ -188,8 +186,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '100%'
-  }
+    height: '100%',
+  },
 });
 
 export default withNavigation(DeliveriesScreen);
