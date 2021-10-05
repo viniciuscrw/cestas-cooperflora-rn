@@ -1,5 +1,5 @@
-import createDataContext from './createDataContext';
 import firebase from 'firebase';
+import createDataContext from './createDataContext';
 import 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigate } from '../navigationRef';
@@ -80,7 +80,7 @@ const tryLocalSignin = (dispatch) => async () => {
 
   const user = await getFirstByAttribute('users', 'authId', authId);
   if (authId && user) {
-    console.log('Local sign in for auth: ' + authId);
+    console.log(`Local sign in for auth: ${authId}`);
     dispatch({ type: 'signin', payload: authId });
     navigate('Deliveries');
   } else {
@@ -89,14 +89,14 @@ const tryLocalSignin = (dispatch) => async () => {
 };
 
 const onSigninSuccess = (dispatch) => async (email) => {
-  let authId = firebase.auth().currentUser.uid;
-  console.log('Sign in success for auth: ' + authId);
+  const authId = firebase.auth().currentUser.uid;
+  console.log(`Sign in success for auth: ${authId}`);
 
   let user = await getFirstByAttribute('users', 'authId', authId);
 
   if (!user) {
     console.log(
-      'No user found with auth {' + authId + '}. Checking by email: ' + email
+      `No user found with auth {${authId}}. Checking by email: ${email}`
     );
     user = await getFirstByAttribute('users', 'email', email);
 
@@ -106,7 +106,7 @@ const onSigninSuccess = (dispatch) => async (email) => {
   }
 
   if (user) {
-    console.log('User found. Setting user id to async storage: ' + user.id);
+    console.log(`User found. Setting user id to async storage: ${user.id}`);
     await AsyncStorage.setItem('userId', user.id);
     await AsyncStorage.setItem('userRole', user.role);
     await AsyncStorage.setItem('authId', authId);
@@ -114,7 +114,7 @@ const onSigninSuccess = (dispatch) => async (email) => {
     dispatch({ type: 'signin', payload: authId });
     navigate('Deliveries');
   } else {
-    console.log('Error retrieving user for auth: ' + authId);
+    console.log(`Error retrieving user for auth: ${authId}`);
     dispatch({
       type: 'add_error',
       payload: 'Algo deu errado com o login.',
@@ -138,7 +138,7 @@ const signin = (dispatch) => ({
         })
       : signup(dispatch)(email, password, userId);
   } else {
-    console.log('Signing in existing user: ' + userId);
+    console.log(`Signing in existing user: ${userId}`);
 
     firebase
       .auth()
@@ -146,7 +146,7 @@ const signin = (dispatch) => ({
       .then(() => onSigninSuccess(dispatch)(email))
       .catch((err) => {
         console.log(err);
-        let errorMessage =
+        const errorMessage =
           err.code === 'auth/wrong-password'
             ? 'Senha inválida.'
             : 'Algo deu errado com o login.';
@@ -160,13 +160,13 @@ const signin = (dispatch) => ({
 };
 
 const signup = (dispatch) => (email, password, userId) => {
-  console.log('Creating auth for new user: ' + userId);
+  console.log(`Creating auth for new user: ${userId}`);
 
   firebase
     .auth()
     .createUserWithEmailAndPassword(email, password)
     .then((data) => {
-      console.log('Updating authId for user: ' + userId);
+      console.log(`Updating authId for user: ${userId}`);
       updateDocAttribute('users', userId, 'authId', data.user.uid).then(() =>
         onSigninSuccess(dispatch)(email)
       );
@@ -174,8 +174,8 @@ const signup = (dispatch) => (email, password, userId) => {
     .catch((err) => {
       if (err.code === 'auth/email-already-in-use') {
       }
-      console.log('Error creating auth for new user: ' + userId, err.code);
-      let errorMessage =
+      console.log(`Error creating auth for new user: ${userId}`, err.code);
+      const errorMessage =
         err.code === 'auth/weak-password'
           ? 'A senha deve possuir pelo menos 6 caracteres.'
           : 'Algo deu errado com o login.';
@@ -189,7 +189,7 @@ const signup = (dispatch) => (email, password, userId) => {
 
 const checkAuthOrUser = (dispatch) => ({ email }) => {
   dispatch({ type: 'loading' });
-  console.log('Checking auth or user for email: ' + email);
+  console.log(`Checking auth or user for email: ${email}`);
 
   firebase
     .auth()
@@ -200,11 +200,11 @@ const checkAuthOrUser = (dispatch) => ({ email }) => {
           firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
         ) !== -1
       ) {
-        console.log('Auth found for email: ' + email);
+        console.log(`Auth found for email: ${email}`);
         const user = await getFirstByAttribute('users', 'email', email);
 
         if (!user) {
-          console.log('Auth found but user was deleted: ' + email);
+          console.log(`Auth found but user was deleted: ${email}`);
           dispatch({ type: 'add_error', payload: 'E-mail não autorizado.' });
         } else {
           dispatch({ type: 'check_auth' });
@@ -214,7 +214,7 @@ const checkAuthOrUser = (dispatch) => ({ email }) => {
       }
     })
     .catch((err) => {
-      let errorMessage =
+      const errorMessage =
         err.code === 'auth/invalid-email'
           ? 'Endereço de e-mail inválido.'
           : 'Algo deu errado com a verificação do e-mail';
@@ -224,11 +224,11 @@ const checkAuthOrUser = (dispatch) => ({ email }) => {
 };
 
 const findUser = (dispatch) => async (email) => {
-  console.log('No auth. So finding user for email: ' + email);
+  console.log(`No auth. So finding user for email: ${email}`);
   const user = await getFirstByAttribute('users', 'email', email);
 
   if (user) {
-    console.log('User found by email: ' + user.id);
+    console.log(`User found by email: ${user.id}`);
     dispatch({
       type: 'add_user',
       payload: user.id,
@@ -240,8 +240,8 @@ const findUser = (dispatch) => async (email) => {
 
 const fetchLoggedUser = (dispatch) => async () => {
   dispatch({ type: 'loading' });
-  let authId = await AsyncStorage.getItem('authId');
-  console.log('Fetching logged user with auth: ' + authId);
+  const authId = await AsyncStorage.getItem('authId');
+  console.log(`Fetching logged user with auth: ${authId}`);
 
   const loggedUser = await getFirstByAttribute(
     GLOBALS.COLLECTION.USERS,
@@ -250,10 +250,10 @@ const fetchLoggedUser = (dispatch) => async () => {
   );
 
   if (loggedUser) {
-    console.log('Current user: ' + JSON.stringify(loggedUser));
+    console.log(`Current user: ${JSON.stringify(loggedUser)}`);
     dispatch({ type: 'fetch_logged_user', payload: loggedUser });
   } else {
-    console.log('No user found for auth: ' + authId);
+    console.log(`No user found for auth: ${authId}`);
     navigate('Signin');
   }
 };
@@ -276,13 +276,14 @@ const signout = (dispatch) => () => {
       await AsyncStorage.removeItem('authId');
       await AsyncStorage.removeItem('userId');
       await AsyncStorage.removeItem('userRole');
+      await AsyncStorage.removeItem('userName');
       dispatch({ type: 'signout' });
       navigate('LoginFlow');
     });
 };
 
 const resetPassword = (dispatch) => (email) => {
-  console.log('Reseting password for user with email: ' + email);
+  console.log(`Reseting password for user with email: ${email}`);
   dispatch({ type: 'loading' });
 
   firebase
@@ -291,8 +292,7 @@ const resetPassword = (dispatch) => (email) => {
     .then(() => {
       Alert.alert(
         'E-mail enviado',
-        'E-mail enviado com as instruções para redefinição de senha para ' +
-          email,
+        `E-mail enviado com as instruções para redefinição de senha para ${email}`,
         [
           {
             text: 'OK',
@@ -303,7 +303,7 @@ const resetPassword = (dispatch) => (email) => {
       navigate('Signin');
     })
     .catch((err) => {
-      console.log('Error while reseting password for email: ' + email, err);
+      console.log(`Error while reseting password for email: ${email}`, err);
       let errorMessage = 'Algo deu errado com a redefinição de senha.';
 
       if (err.code === 'auth/invalid-email') {
@@ -318,7 +318,7 @@ const resetPassword = (dispatch) => (email) => {
 
 const updateAccount = (dispatch) => (currentEmail, password, user) => {
   dispatch({ type: 'loading' });
-  console.log('Updating account for user: ' + user.id);
+  console.log(`Updating account for user: ${user.id}`);
 
   if (currentEmail !== user.email) {
     updateWithEmail(dispatch)(currentEmail, password, user);
@@ -332,10 +332,7 @@ const updateAccount = (dispatch) => (currentEmail, password, user) => {
 
 const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
   console.log(
-    'Setting new e-mail [' +
-      user.email +
-      '] for user with e-mail: ' +
-      currentEmail
+    `Setting new e-mail [${user.email}] for user with e-mail: ${currentEmail}`
   );
 
   firebase
@@ -352,7 +349,7 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
         })
         .catch((err) => {
           console.log(
-            'Error while updating email for user: ' + currentEmail,
+            `Error while updating email for user: ${currentEmail}`,
             err
           );
           user.email = currentEmail;
@@ -364,7 +361,7 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
     })
     .catch((err) => {
       console.log(err);
-      let errorMessage =
+      const errorMessage =
         err.code === 'auth/wrong-password'
           ? 'Senha inválida.'
           : 'Algo deu errado com a atualização de senha.';
@@ -378,7 +375,7 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
 
 const updatePassword = (dispatch) => (email, password, newPassword) => {
   dispatch({ type: 'loading' });
-  console.log('Updating password for user: ' + email);
+  console.log(`Updating password for user: ${email}`);
   firebase
     .auth()
     .signInWithEmailAndPassword(email, password)
@@ -396,7 +393,7 @@ const updatePassword = (dispatch) => (email, password, newPassword) => {
         })
         .catch((err) => {
           console.log(err);
-          let errorMessage =
+          const errorMessage =
             err.code === 'auth/weak-password'
               ? 'A nova senha deve possuir pelo menos 6 caracteres.'
               : 'Algo deu errado com a atualização de senha.';
@@ -409,7 +406,7 @@ const updatePassword = (dispatch) => (email, password, newPassword) => {
     })
     .catch((err) => {
       console.log(err);
-      let errorMessage =
+      const errorMessage =
         err.code === 'auth/wrong-password'
           ? 'Senha atual inválida.'
           : 'Algo deu errado com a atualização de senha.';

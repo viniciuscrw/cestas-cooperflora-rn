@@ -17,15 +17,14 @@ import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import VegetableImage from '../../../assets/images/vegetable1.png';
 import GLOBALS from '../../Globals';
+import Spinner from '../../components/Spinner';
 
 const ConsumerOrderPlacedScreen = (props) => {
   console.log('[ConsumerOrderPlacedScreen]');
   const {
-    state: { order },
+    state: { order, loading },
   } = useContext(OrderContext);
   const { delivery } = props.navigation.state.params;
-
-  console.log('[ConsumerOrderPlacedScreen]', order);
 
   // TODO Resolver aqui pra quem nao tem pedido
   if (order && !order.id) {
@@ -46,11 +45,13 @@ const ConsumerOrderPlacedScreen = (props) => {
     });
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <View style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>Pedido Realizado!</Text>
+          <Text style={styles.title}>Pedido realizado!</Text>
         </View>
         <Divider style={{ borderBottomColor: Colors.secondary }} />
         <ScrollView style={styles.orderedItemsContainer}>
@@ -97,19 +98,21 @@ const ConsumerOrderPlacedScreen = (props) => {
         </ScrollView>
         <Divider style={{ borderBottomColor: Colors.tertiary }} />
         <View style={styles.totalAmountContainer}>
-          <Text style={styles.itemText}>Taxa de entrega</Text>
-          <Text style={styles.itemValue}>
-            R${' '}
-            {hasAnyProduct()
-              ? delivery.deliveryFee?.toFixed(2)
-              : (0.0).toFixed(2)}
-          </Text>
-        </View>
-        <View style={styles.totalAmountContainer}>
-          <Text style={styles.itemText}>Total</Text>
-          <Text style={styles.itemValue}>
-            R$ {order.totalAmount.toFixed(2)}
-          </Text>
+          <View style={styles.totalAmountText}>
+            <Text style={styles.itemText}>Taxa de entrega</Text>
+            <Text style={styles.itemValue}>
+              R${' '}
+              {hasAnyProduct()
+                ? delivery.deliveryFee?.toFixed(2)
+                : (0.0).toFixed(2)}
+            </Text>
+          </View>
+          <View style={styles.totalAmountText}>
+            <Text style={styles.itemText}>Total</Text>
+            <Text style={styles.itemValue}>
+              R$ {order.totalAmount.toFixed(2)}
+            </Text>
+          </View>
         </View>
         <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
@@ -182,8 +185,7 @@ const styles = StyleSheet.create({
     color: '#505050',
   },
   orderedItemsContainer: {
-    // padding: 25,
-    // height: '50%',
+    height: '30%',
   },
   orderItemContainer: {
     flex: 1,
@@ -207,10 +209,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  totalAmountContainer: {
-    flex: 1,
+  totalAmountText: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginVertical: 5,
+  },
+  totalAmountContainer: {
+    flex: 1,
+    paddingVertical: 10,
   },
   buttonContainer: {
     position: 'absolute',

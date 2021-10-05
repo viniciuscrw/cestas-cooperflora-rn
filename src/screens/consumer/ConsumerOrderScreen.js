@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { withNavigationFocus } from 'react-navigation';
 import {
-  ActivityIndicator,
   Alert,
   Image,
   ScrollView,
@@ -19,6 +18,7 @@ import Button from '../../components/Button';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import VegetableImage from '../../../assets/images/vegetable2.png';
+import Spinner from '../../components/Spinner';
 
 const ConsumerOrderScreen = (props) => {
   const [baseProducts, setBaseProducts] = useState();
@@ -89,17 +89,10 @@ const ConsumerOrderScreen = (props) => {
     transformOrderProducts();
   }, [order, delivery]);
 
-  const hasAnyProduct = () => {
-    return (
-      order?.baseProducts > 0 ||
-      (order?.extraProducts?.length > 0 &&
-        order.extraProducts.some((prod) => prod.quantity > 0))
-    );
-  };
-
   const onHandleNewOrUpdatedOrder = () => {
     console.log('[Consumer Order Screen] Handle new or update order');
-    addOrder(user.id, user.name, delivery.id, order);
+
+    addOrder(user.id, user.name, delivery.id, delivery.deliveryFee, order);
     if (!loading) {
       if (user.role) {
         props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
@@ -109,18 +102,8 @@ const ConsumerOrderScreen = (props) => {
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
-  }
-
   return loading ? (
-    <View style={styles.centered}>
-      <ActivityIndicator size="large" color={Colors.primary} />
-    </View>
+    <Spinner />
   ) : (
     <View style={styles.screen}>
       <View style={styles.container}>
@@ -134,12 +117,7 @@ const ConsumerOrderScreen = (props) => {
             <View style={styles.controls}>
               <TouchableOpacity
                 style={styles.incDecButton}
-                onPress={() =>
-                  removeBaseProducts(
-                    delivery.baseProductsPrice,
-                    delivery.deliveryFee
-                  )
-                }
+                onPress={() => removeBaseProducts(delivery.baseProductsPrice)}
               >
                 <Text style={styles.textControls}>{`-  `}</Text>
               </TouchableOpacity>
@@ -148,12 +126,7 @@ const ConsumerOrderScreen = (props) => {
               </View>
               <TouchableOpacity
                 style={styles.incDecButton}
-                onPress={() =>
-                  addBaseProducts(
-                    delivery.baseProductsPrice,
-                    delivery.deliveryFee
-                  )
-                }
+                onPress={() => addBaseProducts(delivery.baseProductsPrice)}
               >
                 <Text style={styles.textControls}>{`  +`}</Text>
               </TouchableOpacity>
@@ -182,13 +155,7 @@ const ConsumerOrderScreen = (props) => {
                   <View style={styles.controls}>
                     <View style={styles.incDecButton}>
                       <TouchableOpacity
-                        onPress={() =>
-                          removeProduct(
-                            orderProducts,
-                            item,
-                            delivery.deliveryFee
-                          )
-                        }
+                        onPress={() => removeProduct(orderProducts, item)}
                       >
                         <Text style={styles.textControls}>-</Text>
                       </TouchableOpacity>
@@ -196,9 +163,7 @@ const ConsumerOrderScreen = (props) => {
                     <Text style={styles.quantity}>{item.quantity}</Text>
                     <View style={styles.incDecButton}>
                       <TouchableOpacity
-                        onPress={() =>
-                          addProduct(orderProducts, item, delivery.deliveryFee)
-                        }
+                        onPress={() => addProduct(orderProducts, item)}
                       >
                         <Text style={styles.textControls}>{`  +`}</Text>
                       </TouchableOpacity>
@@ -209,18 +174,6 @@ const ConsumerOrderScreen = (props) => {
             })}
           </ScrollView>
         </View>
-        {/* <Divider style={{ borderBottomColor: Colors.tertiary }} /> */}
-        {/* <View style={styles.totalAmountContainer}>
-          <Text style={styles.textTitle}>Total</Text>
-          <View>
-            <Text style={styles.textTitle}>{order.totalAmount.toFixed(2)}</Text>
-          </View>
-        </View> */}
-        <Text style={styles.textTitle}>
-          {hasAnyProduct()
-            ? delivery.deliveryFee?.toFixed(2)
-            : (0.0).toFixed(2)}
-        </Text>
         <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
           <Button
@@ -228,7 +181,7 @@ const ConsumerOrderScreen = (props) => {
             textColor="white"
             onPress={onHandleNewOrUpdatedOrder}
           >
-            Confirmar R$ {order.totalAmount.toFixed(2)}
+            Confirmar R$ {order.productsPriceSum?.toFixed(2)}
           </Button>
         </View>
       </View>
@@ -241,9 +194,7 @@ ConsumerOrderScreen.navigationOptions = (navData) => {
     navData.navigation.state.params.delivery.deliveryDate,
     GLOBALS.FORMAT.DD_MM
   );
-  // if (navData.route) {
-  //   deliveryDate = navData.route.params.deliveryDate;
-  // }
+
   return {
     headerTitle: () => (
       <View>
