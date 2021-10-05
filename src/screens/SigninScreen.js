@@ -3,6 +3,7 @@ import {
   Keyboard,
   StyleSheet,
   TouchableWithoutFeedback,
+  Image,
   View,
 } from 'react-native';
 import Spinner from '../components/Spinner';
@@ -16,7 +17,7 @@ import TextCardSection from '../components/TextCardSection';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';
 import { withNavigation } from 'react-navigation';
-
+import { AntDesign } from '@expo/vector-icons';
 const SigninScreen = ({ navigation }) => {
   const {
     state,
@@ -54,7 +55,7 @@ const SigninScreen = ({ navigation }) => {
     if (state.loading) {
       return <Spinner onLayout={Keyboard.dismiss} size="small" />;
     }
-
+    
     let userId = state.userId;
     return (
       <Button
@@ -64,7 +65,7 @@ const SigninScreen = ({ navigation }) => {
           signin({ email, password, passwordConfirmation, userId });
         }}
       >
-        Entrar
+        <Text style={styles.text}> Entrar </Text>
       </Button>
     );
   };
@@ -72,7 +73,7 @@ const SigninScreen = ({ navigation }) => {
   const renderNextButton = () => {
     if (!state.authorized && !state.userId) {
       return (
-        <CardSection>
+        <CardSection style={{borderColor: 'white'}}>
           {state.loading ? (
             <Spinner onLayout={Keyboard.dismiss} size="small" />
           ) : (
@@ -80,7 +81,7 @@ const SigninScreen = ({ navigation }) => {
               style={styles.loginButton}
               onPress={() => checkAuthOrUser({ email })}
             >
-              Avançar
+              <Text style={styles.text}> Avançar </Text>
             </Button>
           )}
         </CardSection>
@@ -98,6 +99,7 @@ const SigninScreen = ({ navigation }) => {
       return (
         <>
           {state.userId ? (
+            
             <TextCardSection text="Cadastre sua senha:">
               <PasswordInput
                 label="Senha"
@@ -111,7 +113,17 @@ const SigninScreen = ({ navigation }) => {
                 autoFocus
                 style={styleForMultiplePasswordInput}
               />
+              
               <PasswordInput
+                style={{
+                  borderBottomColor: 'black',
+                  borderBottomWidth: 1,
+                  width: 305,
+                  //alignContent: 'center',
+                  //alignItems: 'center',
+                  alignSelf: 'center'
+  
+                }}
                 label="Confimar senha"
                 value={passwordConfirmation}
                 onChangeText={(passwordConfirmation) => {
@@ -126,7 +138,7 @@ const SigninScreen = ({ navigation }) => {
           ) : (
             <CardSection>
               <PasswordInput
-                label="Senha"
+                label="Senha:"
                 value={password}
                 onChangeText={(password) => {
                   setPassword(password);
@@ -138,24 +150,51 @@ const SigninScreen = ({ navigation }) => {
               />
             </CardSection>
           )}
+           <View
+            style={{
+             borderBottomColor: 'black',
+             borderBottomWidth: 1,
+             width: 305,
+             alignSelf: 'center',
+             top:-5
+            }}
+            />
+            <View><Text></Text></View>
           <CardSection>{renderLoginButton()}</CardSection>
         </>
       );
     }
   };
-
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+  return (  
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}> 
       <View style={styles.backGroundView}>
-        <View style={styles.container}>
-          <Text style={isKeyboardVisible ? styles.smallTitle : styles.title}>
-            Cestas Cooperflora
-          </Text>
-          <Card style={styles.card}>
-            <CardSection>
-              <Input
+          <View style={styles.container}>
+          <View
+            style={{
+                left:-33,
+                alignSelf: 'center',
+                //marginBottom: 210,
+                top: -60,
+                width: 250,
+                height: 150,
+                zIndex: 2
+            }}
+          >
+              <Text style={styles.textTitle}>
+                Cestas Cooperflora
+              </Text>
+              <Image
+                style={{
+                  width: '100%',
+                  height: '100%'
+                  }}
+                source={require('../../assets/images/backetproducts.png')}
+              />
+        </View>  
+            <CardSection style={styles.cardstyle}>
+              <Input style={styles.text}
                 placeholder="exemplo@email.com"
-                label="E-mail"
+                label="E-mail:"
                 value={email}
                 onChangeText={(email) => {
                   setEmail(email);
@@ -168,9 +207,39 @@ const SigninScreen = ({ navigation }) => {
                 }}
               />
             </CardSection>
+            <View
+              style={{
+                borderBottomColor: 'black',
+                borderBottomWidth: 1,
+                width: 305,
+                //alignContent: 'center',
+                //alignItems: 'center',
+                alignSelf: 'center'
+
+              }}
+            />
+            <View><Text></Text></View>
             {renderNextButton()}
             {renderPasswordForm()}
-          </Card>
+             
+            <View><Text></Text></View>
+            <View><Text></Text></View>
+            <View 
+              style={{
+                //padding: 2,
+                bottom: 25, 
+                alignItems: 'center', 
+                width: 315,
+                right: -18
+              }}
+            >
+              <View><Text></Text></View>
+              <Text style={styles.textText}>
+                A Cooperflora é uma cooperativa que produz 
+                  e comercializa produtos orgânicos do assentamento
+                  Milton Santos em Americana.
+              </Text>
+            </View>
           {state.errorMessage ? (
             <Text style={styles.errorMessage}>{state.errorMessage}</Text>
           ) : null}
@@ -198,7 +267,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    // bottom: 10,
+    bottom: -10,
   },
   title: {
     fontSize: 30,
@@ -212,6 +281,30 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     flex: 1,
+    backgroundColor: '#38C54C',
+    // color: '#ffffff'
+    borderColor: 'black',
+    shadowRadius: 2
+  },
+  cardstyle: {
+    backgroundColor: '#F0F5F9',
+    bottom: -50
+    // color: '#ffffff'
+    //borderColor: 'black',
+  },
+  text:{
+    //backgroundColor: '#87dc93',
+    color: 'white',
+    fontWeight: 'bold',
+    borderColor: 'white'
+    
+  },
+  textTitle:{
+    fontSize: 24,
+    color: '#2D6535',
+    fontWeight: 'bold',
+    top: -18,
+    right: -90 
   },
   errorMessage: {
     fontSize: 16,
@@ -220,9 +313,14 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   forgotPasswordLink: {
-    padding: 15,
-    top: 10,
+    padding: 9,
+    top: 5,
   },
+  textText:{
+    fontSize: 16,
+    textAlign: 'center'
+    //fontWeight: 'bold'
+  }
 });
 
 export default withNavigation(SigninScreen);

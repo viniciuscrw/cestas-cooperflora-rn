@@ -9,9 +9,11 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     borderRadius: 2,
-    borderColor: '#ddd',
+    borderColor: 'black',
+    color: 'white',
+    //backgroundColor: '#2D6535',
     borderBottomWidth: 0,
-    shadowColor: '#000',
+    shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
