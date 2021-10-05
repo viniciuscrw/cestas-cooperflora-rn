@@ -73,7 +73,7 @@ const SigninScreen = ({ navigation }) => {
   const renderNextButton = () => {
     if (!state.authorized && !state.userId) {
       return (
-        <CardSection>
+        <CardSection style={{borderColor: 'white'}}>
           {state.loading ? (
             <Spinner onLayout={Keyboard.dismiss} size="small" />
           ) : (
@@ -99,6 +99,7 @@ const SigninScreen = ({ navigation }) => {
       return (
         <>
           {state.userId ? (
+            
             <TextCardSection text="Cadastre sua senha:">
               <PasswordInput
                 label="Senha"
@@ -112,7 +113,17 @@ const SigninScreen = ({ navigation }) => {
                 autoFocus
                 style={styleForMultiplePasswordInput}
               />
+              
               <PasswordInput
+                style={{
+                  borderBottomColor: 'black',
+                  borderBottomWidth: 1,
+                  width: 305,
+                  //alignContent: 'center',
+                  //alignItems: 'center',
+                  alignSelf: 'center'
+  
+                }}
                 label="Confimar senha"
                 value={passwordConfirmation}
                 onChangeText={(passwordConfirmation) => {
@@ -139,6 +150,16 @@ const SigninScreen = ({ navigation }) => {
               />
             </CardSection>
           )}
+           <View
+            style={{
+             borderBottomColor: 'black',
+             borderBottomWidth: 1,
+             width: 305,
+             alignSelf: 'center',
+             top:-5
+            }}
+            />
+            <View><Text></Text></View>
           <CardSection>{renderLoginButton()}</CardSection>
         </>
       );
@@ -153,7 +174,7 @@ const SigninScreen = ({ navigation }) => {
                 left:-33,
                 alignSelf: 'center',
                 //marginBottom: 210,
-                top: -90,
+                top: -60,
                 width: 250,
                 height: 150,
                 zIndex: 2
@@ -190,16 +211,23 @@ const SigninScreen = ({ navigation }) => {
               style={{
                 borderBottomColor: 'black',
                 borderBottomWidth: 1,
+                width: 305,
+                //alignContent: 'center',
+                //alignItems: 'center',
+                alignSelf: 'center'
+
               }}
             />
             <View><Text></Text></View>
             {renderNextButton()}
             {renderPasswordForm()}
+             
             <View><Text></Text></View>
             <View><Text></Text></View>
             <View 
               style={{
-                //padding: 2, 
+                //padding: 2,
+                bottom: 25, 
                 alignItems: 'center', 
                 width: 315,
                 right: -18
@@ -212,22 +240,6 @@ const SigninScreen = ({ navigation }) => {
                   Milton Santos em Americana.
               </Text>
             </View>
-            {/* <View>
-              <Image
-                style={{
-                  width: 70,
-                  height: 50
-                }} 
-                source={require('../../assets/images/logo.png')}
-              />
-              <Image
-                style={{
-                  width: 70,
-                  height: 50
-                }}  
-                source={require('../../assets/images/basketproducts2.png')}
-              />
-            </View> */}
           {state.errorMessage ? (
             <Text style={styles.errorMessage}>{state.errorMessage}</Text>
           ) : null}
@@ -255,7 +267,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    // bottom: 10,
+    bottom: -10,
   },
   title: {
     fontSize: 30,
@@ -276,7 +288,7 @@ const styles = StyleSheet.create({
   },
   cardstyle: {
     backgroundColor: '#F0F5F9',
-    top: -90
+    bottom: -50
     // color: '#ffffff'
     //borderColor: 'black',
   },
@@ -284,6 +296,7 @@ const styles = StyleSheet.create({
     //backgroundColor: '#87dc93',
     color: 'white',
     fontWeight: 'bold',
+    borderColor: 'white'
     
   },
   textTitle:{
