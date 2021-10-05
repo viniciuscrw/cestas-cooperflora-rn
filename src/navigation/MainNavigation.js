@@ -223,23 +223,18 @@ const switchNavigator = createSwitchNavigator({
           AccountOptions: {
             screen: AccountOptionsScreen,
             navigationOptions: {
-              headerTitle: 'Minha Conta',
               ...defaultStackNavOptions,
             },
           },
           UpdateAccountInfo: {
             screen: UpdateAccountInfoScreen,
             navigationOptions: {
-              headerTitle: 'Atualizar informações',
-              headerBackTitle: 'Voltar',
               ...defaultStackNavOptions,
             },
           },
           UpdatePassword: {
             screen: UpdatePasswordScreen,
             navigationOptions: {
-              headerTitle: 'Atualizar senha',
-              headerBackTitle: 'Voltar',
               ...defaultStackNavOptions,
             },
           },
