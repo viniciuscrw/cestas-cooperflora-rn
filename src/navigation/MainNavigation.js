@@ -124,41 +124,41 @@ const extraItemsStackNavigator = createStackNavigator({
   },
 });
 
-const deliveryTopTabNavigator = createMaterialTopTabNavigator(
-  {
-    CreateDelivery: {
-      screen: CreateDeliveryScreen,
-      navigationOptions: {
-        tabBarLabel: 'Informações da entrega',
-      },
-    },
-    AddDeliveryExtraItems: {
-      screen: extraItemsStackNavigator,
-      navigationOptions: {
-        tabBarLabel: 'Produtos Extras',
-      },
-    },
-  },
-  topTabConfig
-);
+// const deliveryTopTabNavigator = createMaterialTopTabNavigator(
+//   {
+//     CreateDelivery: {
+//       screen: CreateDeliveryScreen,
+//       navigationOptions: {
+//         tabBarLabel: 'Informações da entrega',
+//       },
+//     },
+//     AddDeliveryExtraItems: {
+//       screen: extraItemsStackNavigator,
+//       navigationOptions: {
+//         tabBarLabel: 'Produtos Extras',
+//       },
+//     },
+//   },
+//   topTabConfig
+// );
 
-const ordersManagementTabNavigator = createMaterialTopTabNavigator(
-  {
-    OrdersByConsumer: {
-      screen: OrdersByConsumerScreen,
-      navigationOptions: {
-        tabBarLabel: 'Pedidos',
-      },
-    },
-    AddDeliveryExtraItems: {
-      screen: OrdersItemsQuantityScreen,
-      navigationOptions: {
-        tabBarLabel: 'Quantidades pedidas',
-      },
-    },
-  },
-  topTabConfig
-);
+// const ordersManagementTabNavigator = createMaterialTopTabNavigator(
+//   {
+//     OrdersByConsumer: {
+//       screen: OrdersByConsumerScreen,
+//       navigationOptions: {
+//         tabBarLabel: 'Pedidos',
+//       },
+//     },
+//     AddDeliveryExtraItems: {
+//       screen: OrdersItemsQuantityScreen,
+//       navigationOptions: {
+//         tabBarLabel: 'Quantidades pedidas',
+//       },
+//     },
+//   },
+//   topTabConfig
+// );
 
 const deliveryStackNavigator = createStackNavigator(
   {
