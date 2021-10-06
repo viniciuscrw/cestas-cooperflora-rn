@@ -1,11 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';
 import { NavigationEvents } from 'react-navigation';
 import { Input, ListItem } from 'react-native-elements';
@@ -88,7 +82,6 @@ const OrdersByConsumerScreen = ({ navigation }) => {
     setUsersOrders(userOrderItems);
   };
 
-  // ENTENDER PQ NAO ATUALIZA LOGO QUE MUDA A PARADA
   useEffect(() => {
     matchUsersWithOrders();
   }, [users, orders]);
