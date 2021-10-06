@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { FlatList, StyleSheet, Text, View, Image } from 'react-native';
 import { NavigationEvents, withNavigation } from 'react-navigation';
 import { Divider } from 'react-native-elements';
@@ -17,6 +17,10 @@ import BasketProductsImage from '../../../assets/images/basketproducts.png';
 const DeliveriesScreen = ({ navigation }) => {
   const user = useUser();
   const { state, fetchDeliveries } = useContext(DeliveryContext);
+
+  useEffect(() => {
+    fetchDeliveries();
+  }, [])
 
   const renderButtonOrMessage = () => {
     if (user && user.role === GLOBALS.USER.ROLE.ORGANIZER) {
@@ -94,7 +98,7 @@ const DeliveriesScreen = ({ navigation }) => {
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
-        <NavigationEvents onWillFocus={fetchDeliveries} />
+        {/* <NavigationEvents onWillFocus={fetchDeliveries} /> */}
         {!state.loading && user ? (
           <FlatList
             data={state.lastDeliveries}
@@ -192,4 +196,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default withNavigation(DeliveriesScreen);
+export default DeliveriesScreen;

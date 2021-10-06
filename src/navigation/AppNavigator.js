@@ -1,19 +1,15 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import DeliveriesScreen from '../screens/delivery/DeliveriesScreen';
-
-const AppStack = createStackNavigator();
+import { ConsumerGroupNavigator, ConsumerNavigator, OrganizerNavigator, ConsumerGroupTopTabNavigator, ExtraItemsNavigator, DeliveraryTopTabNavigator, OrdersManagementTabNavigator, DeliveryNavigator, AuthNavigator } from './MainNavigation';
 
 const AppNavigator = (props) => {
     return (
         <NavigationContainer>
-            <AppNavigator.Navigator>
-                <AppNavigator.Screen
-                    name='DeliveriesScreen'
-                    component={DeliveriesScreen}
-                />
-            </AppNavigator.Navigator>
+            <AuthNavigator />
+            {/* <ConsumerGroupTopTabNavigator /> */}
+            {/* <ConsumerNavigator /> */}
+            {/* <OrganizerNavigator /> */}
+            {/* <ConsumerGroupNavigator /> */}
         </NavigationContainer>
     );
 };

@@ -1,125 +1,133 @@
-import React, { useContext } from 'react';
-import { View,Text,ScrollView, StyleSheet, Dimensions,Image } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet, Dimensions, Image } from 'react-native';
 import TextInformation from '../components/TextInformation';
 import Spinner from '../components/Spinner';
 import { NavigationEvents, withNavigation } from 'react-navigation';
 import { Context as ConsumerGroupContext } from '../context/ConsumerGroupContext';
 import GLOBALS from '../Globals';
 // import TextLink from '../components/TextLink';
-import { Entypo } from '@expo/vector-icons'; 
+import { Entypo } from '@expo/vector-icons';
 import HeaderTitle from '../components/HeaderTitle';
 import { AntDesign } from '@expo/vector-icons';
 import BackArrow from '../components/BackArrow';
 import { Ionicons } from '@expo/vector-icons';
-const ConsumerGroupInfoScreen = ({ navigation }) => {
+
+const ConsumerGroupInfoScreen = (props) => {
   const { state, fetchConsumerGroup } = useContext(ConsumerGroupContext);
-  const userRole = navigation.getParam('userRole');
+
+  // const userRole = navigation.getParam('userRole');
+  let userRole;
+  if (props.route.params) {
+    let userRole = props.route.params.userRole;
+  }
+
+  useEffect(() => {
+    fetchConsumerGroup();
+  }, [])
 
   return state.loading ? (
     <Spinner />
-  ) :(
+  ) : (
     <ScrollView style={styles.container} maximumZoomScale={1.25}>
-    <Text/>  
-    <View style={styles.card}>
-        <Text></Text>
+      <View style={styles.card}>
         <Text style={styles.text}>Informações Gerais:</Text>
-        <NavigationEvents onWillFocus={fetchConsumerGroup} />
+        {/* <NavigationEvents onWillFocus={fetchConsumerGroup} /> */}
         {userRole === GLOBALS.USER.ROLE.ORGANIZER ? (
-          <AntDesign 
-            name="form" 
-            size={27} 
-            color="#FA6210" 
+          <AntDesign
+            name="form"
+            size={27}
+            color="#FA6210"
             onPress={() =>
-              navigation.navigate('EditConsumerGroup', {
+              props.navigation.navigate('EditConsumerGroup', {
                 group: state.consumerGroup,
               })
             }
-            style={styles.editButton} 
+            style={styles.editButton}
           />
         ) : null}
-        <Text/>
+        <Text />
         <View style={styles.card2}>
-        {/* <View><Text/></View>   */}
-        <View 
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            
-          }}>
-          <Image
-            source={require('../../assets/images/icons/local.jpg')}
+          {/* <View><Text/></View>   */}
+          <View
             style={{
-              width: 22,
-              height: 33,
-              marginRight: 35,
-              marginTop: 22
-            }}
-          /> 
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+
+            }}>
+            <Image
+              source={require('../../assets/images/icons/local.jpg')}
+              style={{
+                width: 22,
+                height: 33,
+                marginRight: 35,
+                marginTop: 22
+              }}
+            />
 
             {state.consumerGroup && state.consumerGroup.address ? (
-              <TextInformation 
-                title="Local" 
-                text={state.consumerGroup.address} 
-              />    
+              <TextInformation
+                title="Local"
+                text={state.consumerGroup.address}
+              />
             ) : null}
-        </View>
-        <View><Text/></View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Image
-            source={require('../../assets/images/icons/greenbasket.png')}
+          </View>
+          <View><Text /></View>
+          <View
             style={{
-              width: 25,
-              height: 24,
-              marginRight: 33
+              flexDirection: 'row',
+              justifyContent: 'space-between',
             }}
-          /> 
+          >
+            <Image
+              source={require('../../assets/images/icons/greenbasket.png')}
+              style={{
+                width: 25,
+                height: 24,
+                marginRight: 33
+              }}
+            />
             {state.consumerGroup && state.consumerGroup.deliveryFrequencyText ? (
               <TextInformation
                 title="Entregas"
                 text={state.consumerGroup.deliveryFrequencyText}
               />
             ) : null}
-        </View>
-        <View><Text/></View>  
-        <View
-          style={{
-            flexDirection: 'row',
-          
-          }}
-        >
-          <Image
-            source={require('../../assets/images/icons/watch.jpg')}
+          </View>
+          <View><Text /></View>
+          <View
             style={{
-              width: 25,
-              height: 25,
-              marginRight: 33
+              flexDirection: 'row',
+
             }}
-          /> 
+          >
+            <Image
+              source={require('../../assets/images/icons/watch.jpg')}
+              style={{
+                width: 25,
+                height: 25,
+                marginRight: 33
+              }}
+            />
             {state.consumerGroup && state.consumerGroup.time ? (
-            <TextInformation title="Horário" text={state.consumerGroup.time} />
+              <TextInformation title="Horário" text={state.consumerGroup.time} />
             ) : null}
+          </View>
+          <View><Text /></View>
+          {state.consumerGroup && state.consumerGroup.notice ? (
+            <TextInformation
+              title="Observações"
+              text={state.consumerGroup.notice}
+            />
+          ) : null}
+          {/* <View><Text/></View>   */}
+          <View style={styles.imageContainer}>
+            <Image
+              source={require('../../assets/images/basketproducts2.png')}
+              style={styles.image}
+            />
+          </View>
         </View>
-        <View><Text/></View>  
-        {state.consumerGroup && state.consumerGroup.notice ? (
-          <TextInformation
-            title="Observações"
-            text={state.consumerGroup.notice}
-          />
-        ) : null}
-        {/* <View><Text/></View>   */}
-        <View style={styles.imageContainer}>
-          <Image
-            source={require('../../assets/images/basketproducts2.png')}
-            style={styles.image}
-          />
-        </View>
-      </View>   
-    </View>  
+      </View>
     </ScrollView>
   );
 };
@@ -146,7 +154,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%'
   },
-  imageContainer:{
+  imageContainer: {
     width: 310,
     height: 180,
     elevation: 49,
@@ -154,14 +162,14 @@ const styles = StyleSheet.create({
     right: -120,
     marginTop: -35
   },
-  editImage:{
+  editImage: {
     alignSelf: 'flex-end',
     right: 9
   },
-  editButton:{
+  editButton: {
     alignSelf: 'flex-end',
     right: 44,
-    marginTop: -26 
+    marginTop: -26
   },
   text: {
     fontSize: 13,
@@ -186,9 +194,9 @@ const styles = StyleSheet.create({
     // height: 305,
     width: 360,
     backgroundColor: 'white',
-    padding:7,
-    flex:2
+    padding: 7,
+    flex: 2
   }
 });
 
-export default withNavigation(ConsumerGroupInfoScreen);
+export default ConsumerGroupInfoScreen;

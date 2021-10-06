@@ -5,12 +5,18 @@ import { Input, ListItem } from 'react-native-elements';
 import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
 
-const OrdersItemsQuantity = ({ navigation }) => {
+const OrdersItemsQuantity = (props) => {
   const {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
   } = useContext(OrderContext);
-  const deliveryId = navigation.state.params.delivery.id;
+  // const deliveryId = navigation.state.params.delivery.id;
+  let deliveryId;
+  if (props.route.params) {
+    deliveryId = props.route.params.delivery.id;
+  }
+
+
   // console.log(`nav: ${JSON.stringify(navigation)}`);
   const [productsToQuantity, setProductsToQuantity] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState(null);
@@ -29,7 +35,7 @@ const OrdersItemsQuantity = ({ navigation }) => {
         if (product.productTitle && product.quantity && product.quantity > 0) {
           productsToQuantityMap[`${product.productTitle}`] =
             productsToQuantityMap[`${product.productTitle}`] +
-              product.quantity || product.quantity;
+            product.quantity || product.quantity;
         }
       });
     });
@@ -43,27 +49,28 @@ const OrdersItemsQuantity = ({ navigation }) => {
   };
 
   useEffect(() => {
+    fetchOrdersByDelivery(deliveryId);
     mapProductsToQuantity();
   }, [orders]);
 
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-          type: 'ionicons',
-          name: 'search',
-          size: 25,
-          color: 'lightgrey',
-        }
+        type: 'ionicons',
+        name: 'search',
+        size: 25,
+        color: 'lightgrey',
+      }
       : {
-          type: 'material',
-          name: 'clear',
-          size: 25,
-          color: 'lightgrey',
-          onPress: () => {
-            setFilterText('');
-            setFilteredProducts(null);
-          },
-        };
+        type: 'material',
+        name: 'clear',
+        size: 25,
+        color: 'lightgrey',
+        onPress: () => {
+          setFilterText('');
+          setFilteredProducts(null);
+        },
+      };
   };
 
   const searchProductsByFilter = () => {
@@ -88,7 +95,7 @@ const OrdersItemsQuantity = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <NavigationEvents onWillFocus={() => fetchOrdersByDelivery(deliveryId)} />
+      {/* <NavigationEvents onWillFocus={() => fetchOrdersByDelivery(deliveryId)} /> */}
       <Input
         containerStyle={styles.searchInput}
         placeholder="Buscar produto"

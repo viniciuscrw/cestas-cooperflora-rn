@@ -17,8 +17,9 @@ import Spinner from '../components/Spinner';
 import GLOBALS from '../Globals';
 import TextLink from '../components/TextLink';
 
-const CreateUserScreen = ({ navigation }) => {
-  const user = navigation.getParam('user');
+const CreateUserScreen = ( props ) => {
+  // const user = props.navigation.getParam('user');
+  const user = props.route.params.user;
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [phoneNumber, setPhoneNumber] = useState(user ? user.phoneNumber : '');
@@ -28,7 +29,8 @@ const CreateUserScreen = ({ navigation }) => {
   const emailTextInput = React.createRef();
   const phoneNumberTextInput = React.createRef();
 
-  const userRole = user ? user.role : navigation.getParam('role');
+  // const userRole = user ? user.role : navigation.getParam('role');
+  const userRole = user ? user.role : props.route.params.role;
   const authenticatedUser = !!(user && user.authId);
   const roleText =
     userRole === GLOBALS.USER.ROLE.CONSUMER
@@ -98,7 +100,7 @@ const CreateUserScreen = ({ navigation }) => {
             <Text style={styles.title}>{title}</Text>
             <TextLink
               text="Cancelar"
-              onPress={() => navigation.goBack(null)}
+              onPress={() => props.navigation.goBack(null)}
               style={styles.cancelButton}
             />
           </View>

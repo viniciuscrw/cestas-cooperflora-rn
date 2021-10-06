@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -13,35 +13,42 @@ import GLOBALS from '../Globals';
 import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
 
-const OrdersByConsumerScreen = ({ navigation }) => {
+const OrdersByConsumerScreen = (props) => {
   const {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
   } = useContext(OrderContext);
-  const { delivery } = navigation.state.params;
+  let delivery = {id: 1}; // ATENÇAO alterar
+  if (props.route.params) {
+    delivery = props.route.params.delivery;
+  }
   const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] = useState(
     null
   );
   const [filterText, setFilterText] = useState('');
 
+  useEffect(() => {
+    fetchOrdersByDelivery(delivery.id);
+  }, [])
+
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-          type: 'ionicons',
-          name: 'search',
-          size: 25,
-          color: 'lightgrey',
-        }
+        type: 'ionicons',
+        name: 'search',
+        size: 25,
+        color: 'lightgrey',
+      }
       : {
-          type: 'material',
-          name: 'clear',
-          size: 25,
-          color: 'lightgrey',
-          onPress: () => {
-            setFilterText('');
-            setFilteredOrdersByConsumer(null);
-          },
-        };
+        type: 'material',
+        name: 'clear',
+        size: 25,
+        color: 'lightgrey',
+        onPress: () => {
+          setFilterText('');
+          setFilteredOrdersByConsumer(null);
+        },
+      };
   };
 
   const searchConsumersByFilter = () => {
@@ -93,9 +100,9 @@ const OrdersByConsumerScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <NavigationEvents
+      {/* <NavigationEvents
         onWillFocus={() => fetchOrdersByDelivery(delivery.id)}
-      />
+      /> */}
       <Input
         containerStyle={styles.searchInput}
         placeholder="Buscar pessoa consumidora"

@@ -46,7 +46,8 @@ const UsersList = ({ navigation, data, onUserDelete }) => {
   };
 
   const openDetails = (item) => {
-    navigation.navigate('UserDetail', {
+    console.log('Cheguei no OpenDetails');
+    navigation.navigate('UserDetailScreen', {
       user: {
         id: item.id,
         authId: item.authId,
@@ -75,7 +76,7 @@ const UsersList = ({ navigation, data, onUserDelete }) => {
 
   const renderItem = (data) => (
     <TouchableHighlight
-      onPress={() => openDetails(data.item)}
+      onPress={() => openDetails(data.item, navigation)}
       style={styles.rowFront}
       underlayColor={'#ddd'}
     >
@@ -196,4 +197,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(UsersList);
+export default UsersList;

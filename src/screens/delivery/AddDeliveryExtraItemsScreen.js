@@ -40,6 +40,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const groupInfo = useConsumerGroup();
 
   useEffect(() => {
+    fetchProducts();
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {
@@ -171,7 +172,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
           title={
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('CreateExtraItem', {
+                navigation.navigate('CreateExtraItemScreen', {
                   product: item,
                   selectedProducts: checkedItems,
                 })
@@ -242,7 +243,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   return !loading ? (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <NavigationEvents onWillFocus={fetchProducts} />
+        {/* <NavigationEvents onWillFocus={fetchProducts} /> */}
         <Input
           containerStyle={styles.searchInput}
           placeholder="Nome do produto"
@@ -255,7 +256,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         />
         <TextLink
           text="Novo item"
-          onPress={() => navigation.navigate('CreateExtraItem', { products })}
+          onPress={() => navigation.navigate('CreateExtraItemScreen', { products })}
           style={styles.newProductButton}
         />
         {filterText.length && filteredProducts && !filteredProducts.length ? (

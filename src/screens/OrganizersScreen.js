@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Context as UserContext } from '../context/UserContext';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NavigationEvents, withNavigation } from 'react-navigation';
@@ -9,15 +9,19 @@ import Spinner from '../components/Spinner';
 const OrganizersScreen = ({ navigation }) => {
   const { state, fetchOrganizers, deleteUser } = useContext(UserContext);
 
+  useEffect(() => {
+    fetchOrganizers();
+  },[])
+
   return state.loading ? (
     <Spinner />
   ) : (
     <View style={styles.container}>
-      <NavigationEvents onWillFocus={fetchOrganizers} />
+      {/* <NavigationEvents onWillFocus={fetchOrganizers} /> */}
       <UsersList data={state.users} onUserDelete={deleteUser} />
       <TouchableOpacity
         style={styles.icon}
-        onPress={() => navigation.navigate('CreateUser', { role: 'organizer' })}
+        onPress={() => navigation.navigate('CreateUserScreen', { role: 'organizer' })}
       >
         <AntDesign name="pluscircle" size={46} color="darkolivegreen" />
       </TouchableOpacity>
@@ -36,4 +40,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(OrganizersScreen);
+export default OrganizersScreen;

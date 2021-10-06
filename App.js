@@ -14,7 +14,9 @@ import { Provider as OrderProvider } from './src/context/OrderContext';
 import FirebaseConfig from './src/constants/FirebaseConfig';
 import { setNavigator } from './src/navigationRef';
 
-const App = createAppContainer(MainNavigation);
+import AppNavigator from './src/navigation/AppNavigator';
+
+// const App = createAppContainer(MainNavigation);
 
 export default () => {
   LogBox.ignoreLogs(['Setting a timer']);
@@ -34,11 +36,12 @@ export default () => {
           <OrderProvider>
             <DeliveryProvider>
               <ProductProvider>
-                <App
+                {/* <App
                   ref={(navigator) => {
                     setNavigator(navigator);
                   }}
-                />
+                /> */}
+                <AppNavigator />
               </ProductProvider>
             </DeliveryProvider>
           </OrderProvider>

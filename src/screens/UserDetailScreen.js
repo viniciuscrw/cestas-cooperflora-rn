@@ -3,13 +3,14 @@ import { Text, StyleSheet, View, ScrollView } from 'react-native';
 import TextInformation from '../components/TextInformation';
 import TextLink from '../components/TextLink';
 
-const UserDetailScreen = ({ navigation }) => {
-  const user = navigation.getParam('user');
+const UserDetailScreen = ( props ) => {
+  // const user = navigation.getParam('user');
+  const user = props.route.params.user;
   return (
     <ScrollView style={styles.container} maximumZoomScale={1.25}>
       <TextLink
         text="Voltar"
-        onPress={() => navigation.goBack(null)}
+        onPress={() => props.navigation.goBack(null)}
         style={styles.backButton}
       />
       <TextInformation title="Nome" text={user.name} />
@@ -19,7 +20,7 @@ const UserDetailScreen = ({ navigation }) => {
       <View style={styles.optionsContainer}>
         <TextLink
           text="Editar"
-          onPress={() => navigation.navigate('CreateUser', { user })}
+          onPress={() => props.navigation.navigate('CreateUserScreen', { user })}
           style={styles.editButton}
         />
         {/*<TextLink*/}

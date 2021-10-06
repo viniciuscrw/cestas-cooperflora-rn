@@ -1,11 +1,12 @@
 import React from 'react';
-import { createStackNavigator } from 'react-navigation-stack';
-import {
-  createBottomTabNavigator,
-  createMaterialTopTabNavigator,
-} from 'react-navigation-tabs';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { createSwitchNavigator } from 'react-navigation';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+// import {
+//   createBottomTabNavigator,
+//   createMaterialTopTabNavigator,
+// } from 'react-navigation-tabs';
+// import { FontAwesome5 } from '@expo/vector-icons';
 import DeliveriesScreen, {
   deliveriesNavigationOptions,
 } from '../screens/delivery/DeliveriesScreen';
@@ -43,253 +44,271 @@ const defaultStackNavOptions = {
   headerTitleAlign: 'center',
 };
 
-const topTabConfig = {
-  tabBarOptions: {
-    style: {
-      backgroundColor: 'white',
-      height: 30,
-    },
-    labelStyle: {
-      marginTop: -8,
-      fontSize: 11,
-    },
-    activeTintColor: 'darkorange',
-    inactiveTintColor: 'darkolivegreen',
+
+const topTabBarOptions = {
+  style: {
+    backgroundColor: 'white',
+    height: 30,
   },
+  labelStyle: {
+    marginTop: -8,
+    fontSize: 11,
+  },
+  activeTintColor: 'darkorange',
+  inactiveTintColor: 'darkolivegreen',
 };
 
-const consumerGroupStackNavigator = createStackNavigator({
-  ConsumerGroupInfo: {
-    screen: ConsumerGroupInfoScreen,
-  },
-  EditConsumerGroup: {
-    screen: EditConsumerGroupInfoScreen,
-  },
-});
 
-const consumerStackNavigator = createStackNavigator({
-  Consumers: {
-    screen: ConsumersScreen,
-  },
-  CreateUser: {
-    screen: CreateUserScreen,
-  },
-  UserDetail: {
-    screen: UserDetailScreen,
-  },
-});
+const ConsumerGroupStackNavigator = createStackNavigator();
+export const ConsumerGroupNavigator = () => {
+  return (
+    <ConsumerGroupStackNavigator.Navigator>
+      <ConsumerGroupStackNavigator.Screen
+        name="ConsumerGroupInfoScreen" component={ConsumerGroupInfoScreen}
+      />
+      <ConsumerGroupStackNavigator.Screen
+        name="EditConsumerGroupInfoScreen" component={EditConsumerGroupInfoScreen}
+      />
+    </ConsumerGroupStackNavigator.Navigator>
+  );
+}
 
-const organizerStackNavigator = createStackNavigator({
-  Organizers: {
-    screen: OrganizersScreen,
-  },
-  CreateUser: {
-    screen: CreateUserScreen,
-  },
-  UserDetail: {
-    screen: UserDetailScreen,
-  },
-});
+const ConsumerStackNavigator = createStackNavigator();
+export const ConsumerNavigator = () => {
+  return (
+    <ConsumerStackNavigator.Navigator>
+      <ConsumerStackNavigator.Screen
+        name="ConsumersScreen" component={ConsumersScreen}
+      />
+      <ConsumerStackNavigator.Screen
+        name="CreateUserScreen" component={CreateUserScreen}
+      />
+      <ConsumerStackNavigator.Screen
+        name="UserDetailScreen" component={UserDetailScreen}
+      />
+    </ConsumerStackNavigator.Navigator>
+  );
+}
 
-const consumerGroupTopTabNavigator = createMaterialTopTabNavigator(
-  {
-    ConsumerGroupInfo: {
-      screen: consumerGroupStackNavigator,
-      navigationOptions: {
-        tabBarLabel: 'Informações',
-      },
-    },
-    Consumers: {
-      screen: consumerStackNavigator,
-      navigationOptions: {
-        tabBarLabel: 'Consumidores',
-      },
-    },
-    Organizers: {
-      screen: organizerStackNavigator,
-      navigationOptions: {
-        tabBarLabel: 'Organizadores',
-      },
-    },
-  },
-  { ...topTabConfig, swipeEnabled: false }
-);
+const OrganizerStackNavigator = createStackNavigator();
+export const OrganizerNavigator = () => {
+  return (
+    <OrganizerStackNavigator.Navigator>
+      <OrganizerStackNavigator.Screen
+        name="OrganizersScreen" component={OrganizersScreen}
+      />
+      <OrganizerStackNavigator.Screen
+        name="CreateUserScreen" component={CreateUserScreen}
+      />
+      <OrganizerStackNavigator.Screen
+        name="UserDetailScreen" component={UserDetailScreen}
+      />
+    </OrganizerStackNavigator.Navigator>
+  );
+}
 
-const extraItemsStackNavigator = createStackNavigator({
-  AddDeliveryExtraItems: {
-    screen: AddDeliveryExtraItemsScreen,
-  },
-  CreateExtraItem: {
-    screen: CreateExtraItemScreen,
-  },
-});
+const TopTabNavigator = createMaterialTopTabNavigator();
+export const ConsumerGroupTopTabNavigator = () => {
+  return (
+    <TopTabNavigator.Navigator tabBarOptions={topTabBarOptions} swipeEnabled={true}>
+      <TopTabNavigator.Screen
+        name="Informações" component={ConsumerGroupNavigator}
+      />
+      <TopTabNavigator.Screen
+        name="Consumidores" component={ConsumerNavigator} />
+      <TopTabNavigator.Screen
+        name="Organizadores" component={OrganizerNavigator}
+      />
+    </TopTabNavigator.Navigator>
+  );
+}
 
-// const deliveryTopTabNavigator = createMaterialTopTabNavigator(
-//   {
-//     CreateDelivery: {
-//       screen: CreateDeliveryScreen,
+const ExtraItemsStackNavigator = createStackNavigator();
+export const ExtraItemsNavigator = () => {
+  return (
+    <ExtraItemsStackNavigator.Navigator>
+      <ExtraItemsStackNavigator.Screen
+        name="AddDeliveryExtraItemsScreen" component={AddDeliveryExtraItemsScreen}
+      />
+      <ExtraItemsStackNavigator.Screen
+        name="CreateExtraItemScreen" component={CreateExtraItemScreen}
+      />
+    </ExtraItemsStackNavigator.Navigator>
+  );
+}
+
+const DelTopTabNavigator = createMaterialTopTabNavigator();
+export const DeliveraryTopTabNavigator = () => {
+  return (
+    <DelTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
+      <DelTopTabNavigator.Screen
+        name="Informações da entrega" component={CreateDeliveryScreen}
+      />
+      <DelTopTabNavigator.Screen
+        name="Produtos Extras" component={ExtraItemsNavigator}
+      />
+    </DelTopTabNavigator.Navigator>
+  );
+}
+
+const OrdTopTabNavigator = createMaterialTopTabNavigator();
+export const OrdersManagementTabNavigator = () => {
+  return (
+    <OrdTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
+      <OrdTopTabNavigator.Screen
+        name="Pedidos" component={OrdersByConsumerScreen}
+      />
+      <OrdTopTabNavigator.Screen
+        name="Quantidades pedidas" component={OrdersItemsQuantityScreen}
+      />
+    </OrdTopTabNavigator.Navigator>
+  );
+}
+
+const DeliveryStackNavigator = createStackNavigator();
+export const DeliveryNavigator = () => {
+  return (
+    <DeliveryStackNavigator.Navigator options={defaultStackNavOptions}>
+      <DeliveryStackNavigator.Screen
+        name="DeliveriesScreen" component={DeliveriesScreen} options={deliveriesNavigationOptions}
+      />
+      <DeliveryStackNavigator.Screen
+        name="DeliveraryTopTabNavigator" component={DeliveraryTopTabNavigator} options={createDeliveryNavigationOptions}
+      />
+      <DeliveryStackNavigator.Screen
+        name="ConsumerGroupTopTabNavigator" component={ConsumerGroupTopTabNavigator} options={consumerGroupInfoNavigationOptions}
+      />
+      <DeliveryStackNavigator.Screen
+        name="ConsumerGroupInfo" component={ConsumerGroupInfoScreen} options={consumerGroupInfoNavigationOptions}
+      />
+      <DeliveryStackNavigator.Screen
+        name="OrdersManagement" component={OrdersManagementTabNavigator} options={ordersManagementNavigationOptions}
+      />
+      <DeliveryStackNavigator.Screen
+        name="ConsumerOrderScreen" component={ConsumerOrderScreen}
+      // options={ordersManagementNavigationOptions}
+      />
+      <DeliveryStackNavigator.Screen
+        name="ConsumerOrderPlacedScreen" component={ConsumerOrderPlacedScreen}
+      // options={ordersManagementNavigationOptions}
+      />
+      <DeliveryStackNavigator.Screen
+        name="ConsumerAddPaymentScreen" component={ConsumerAddPaymentScreen}
+      // options={ordersManagementNavigationOptions}
+      />
+      <DeliveryStackNavigator.Screen
+        name="ConsumerPaymentsScreen" component={ConsumerPaymentsScreen}
+      // options={ordersManagementNavigationOptions}
+      />
+    </DeliveryStackNavigator.Navigator>
+  );
+}
+
+const AuthStackNavigator = createStackNavigator();
+export const AuthNavigator = () => {
+  return (
+    <AuthStackNavigator.Navigator>
+      <AuthStackNavigator.Screen
+        name="SigninScreen" component={SigninScreen} 
+      />
+      <AuthStackNavigator.Screen
+        name="CreateExtraItemScreen" component={CreateExtraItemScreen}
+      />
+    </AuthStackNavigator.Navigator>
+  );
+}
+
+// const switchNavigator = createSwitchNavigator({
+//   Initial: InitialScreen,
+//   LoginFlow: createStackNavigator({
+//     Signin: {
+//       screen: SigninScreen,
 //       navigationOptions: {
-//         tabBarLabel: 'Informações da entrega',
+//         headerShown: false,
 //       },
 //     },
-//     AddDeliveryExtraItems: {
-//       screen: extraItemsStackNavigator,
+//     ForgotPassword: {
+//       screen: ForgotPasswordScreen,
 //       navigationOptions: {
-//         tabBarLabel: 'Produtos Extras',
+//         headerShown: false,
 //       },
 //     },
-//   },
-//   topTabConfig
-// );
-
-// const ordersManagementTabNavigator = createMaterialTopTabNavigator(
-//   {
-//     OrdersByConsumer: {
-//       screen: OrdersByConsumerScreen,
-//       navigationOptions: {
-//         tabBarLabel: 'Pedidos',
+//   }),
+//   mainFlow: createBottomTabNavigator(
+//     {
+//       Account: {
+//         screen: createStackNavigator({
+//           AccountOptions: {
+//             screen: AccountOptionsScreen,
+//             navigationOptions: {
+//               headerTitle: 'Minha Conta',
+//               ...defaultStackNavOptions,
+//             },
+//           },
+//           UpdateAccountInfo: {
+//             screen: UpdateAccountInfoScreen,
+//             navigationOptions: {
+//               headerTitle: 'Atualizar informações',
+//               headerBackTitle: 'Voltar',
+//               ...defaultStackNavOptions,
+//             },
+//           },
+//           UpdatePassword: {
+//             screen: UpdatePasswordScreen,
+//             navigationOptions: {
+//               headerTitle: 'Atualizar senha',
+//               headerBackTitle: 'Voltar',
+//               ...defaultStackNavOptions,
+//             },
+//           },
+//         }),
+//         navigationOptions: {
+//           tabBarLabel: 'Minha Conta',
+//           tabBarIcon: ({ tintColor }) => (
+//             <FontAwesome5 name="user-alt" size={30} color={tintColor} />
+//           ),
+//         },
+//       },
+//       Deliveries: {
+//         screen: deliveryStackNavigator,
+//         navigationOptions: {
+//           tabBarLabel: 'Cestas',
+//           tabBarIcon: ({ tintColor }) => (
+//             <FontAwesome5 name="shopping-basket" size={34} color={tintColor} />
+//           ),
+//         },
+//       },
+//       Payments: {
+//         screen: createStackNavigator({
+//           Payments: {
+//             // screen: ConsumerPaymentsScreen,
+//             screen: PaymentsScreen
+//           },
+//         }),
+//         navigationOptions: {
+//           tabBarLabel: 'Pagamentos',
+//           tabBarIcon: ({ tintColor }) => (
+//             <FontAwesome5 name="dollar-sign" size={30} color={tintColor} />
+//           ),
+//         },
 //       },
 //     },
-//     AddDeliveryExtraItems: {
-//       screen: OrdersItemsQuantityScreen,
-//       navigationOptions: {
-//         tabBarLabel: 'Quantidades pedidas',
+//     {
+//       initialRouteName: 'Deliveries',
+//       tabBarOptions: {
+//         activeTintColor: Colors.activeIconColor,
+//         inactiveTintColor: Colors.inactiveIconColor,
+//         label: {
+//           fontSize: 16,
+//         },
+//         style: {
+//           height: 60,
+//           backgroundColor: 'white',
+//         },
 //       },
-//     },
-//   },
-//   topTabConfig
-// );
+//     }
+//   ),
+// });
 
-const deliveryStackNavigator = createStackNavigator(
-  {
-    Deliveries: {
-      screen: DeliveriesScreen,
-      navigationOptions: deliveriesNavigationOptions,
-    },
-    CreateDelivery: {
-      screen: deliveryTopTabNavigator,
-      navigationOptions: createDeliveryNavigationOptions,
-    },
-    ConsumerGroup: {
-      screen: consumerGroupTopTabNavigator,
-      navigationOptions: consumerGroupInfoNavigationOptions,
-    },
-    ConsumerGroupInfo: {
-      screen: ConsumerGroupInfoScreen,
-      navigationOptions: consumerGroupInfoNavigationOptions,
-    },
-    OrdersManagement: {
-      screen: ordersManagementTabNavigator,
-      navigationOptions: ordersManagementNavigationOptions,
-    },
-    ConsumerOrderScreen: {
-      screen: ConsumerOrderScreen,
-    },
-    ConsumerOrderPlacedScreen: {
-      screen: ConsumerOrderPlacedScreen
-    },
-    ConsumerAddPaymentScreen:{
-      screen:ConsumerAddPaymentScreen
-    },
-    ConsumerPaymentsScreen: {
-      screen: ConsumerPaymentsScreen
-    },
-  },
-  {
-    defaultNavigationOptions: defaultStackNavOptions,
-  }
-);
-
-const switchNavigator = createSwitchNavigator({
-  Initial: InitialScreen,
-  LoginFlow: createStackNavigator({
-    Signin: {
-      screen: SigninScreen,
-      navigationOptions: {
-        headerShown: false,
-      },
-    },
-    ForgotPassword: {
-      screen: ForgotPasswordScreen,
-      navigationOptions: {
-        headerShown: false,
-      },
-    },
-  }),
-  mainFlow: createBottomTabNavigator(
-    {
-      Account: {
-        screen: createStackNavigator({
-          AccountOptions: {
-            screen: AccountOptionsScreen,
-            navigationOptions: {
-              headerTitle: 'Minha Conta',
-              ...defaultStackNavOptions,
-            },
-          },
-          UpdateAccountInfo: {
-            screen: UpdateAccountInfoScreen,
-            navigationOptions: {
-              headerTitle: 'Atualizar informações',
-              headerBackTitle: 'Voltar',
-              ...defaultStackNavOptions,
-            },
-          },
-          UpdatePassword: {
-            screen: UpdatePasswordScreen,
-            navigationOptions: {
-              headerTitle: 'Atualizar senha',
-              headerBackTitle: 'Voltar',
-              ...defaultStackNavOptions,
-            },
-          },
-        }),
-        navigationOptions: {
-          tabBarLabel: 'Minha Conta',
-          tabBarIcon: ({ tintColor }) => (
-            <FontAwesome5 name="user-alt" size={30} color={tintColor} />
-          ),
-        },
-      },
-      Deliveries: {
-        screen: deliveryStackNavigator,
-        navigationOptions: {
-          tabBarLabel: 'Cestas',
-          tabBarIcon: ({ tintColor }) => (
-            <FontAwesome5 name="shopping-basket" size={34} color={tintColor} />
-          ),
-        },
-      },
-      Payments: {
-        screen: createStackNavigator({
-          Payments: {
-            // screen: ConsumerPaymentsScreen,
-            screen: PaymentsScreen
-          },
-        }),
-        navigationOptions: {
-          tabBarLabel: 'Pagamentos',
-          tabBarIcon: ({ tintColor }) => (
-            <FontAwesome5 name="dollar-sign" size={30} color={tintColor} />
-          ),
-        },
-      },
-    },
-    {
-      initialRouteName: 'Deliveries',
-      tabBarOptions: {
-        activeTintColor: Colors.activeIconColor,
-        inactiveTintColor: Colors.inactiveIconColor,
-        label: {
-          fontSize: 16,
-        },
-        style: {
-          height: 60,
-          backgroundColor: 'white',
-        },
-      },
-    }
-  ),
-});
-
-export default switchNavigator;
+// export default switchNavigator;
+// export default consumerGroupStackNavigator;

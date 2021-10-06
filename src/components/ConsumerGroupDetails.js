@@ -40,4 +40,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(ConsumerGroupDetails);
+export default ConsumerGroupDetails;

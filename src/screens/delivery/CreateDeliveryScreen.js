@@ -20,9 +20,16 @@ import Spacer from '../../components/Spacer';
 import GLOBALS from '../../Globals';
 import useConsumerGroup from '../../hooks/useConsumerGroup';
 
-const CreateDeliveryScreen = ({ navigation }) => {
+const CreateDeliveryScreen = (props) => {
   const { setDeliveryInfo } = useContext(DeliveryContext);
-  const delivery = navigation.getParam('delivery');
+
+  console.log(props);
+  // const delivery = navigation.getParam('delivery');
+  let delivery;
+  if( props.route.params){
+    delivery = props.route.params.delivery;
+  }
+
   const [deliveryDate, setDeliveryDate] = useState(
     delivery ? delivery.deliveryDate : new Date()
   );
@@ -31,11 +38,11 @@ const CreateDeliveryScreen = ({ navigation }) => {
     delivery
       ? delivery.limitDate
       : new Date(
-          deliveryDate.getFullYear(),
-          deliveryDate.getMonth(),
-          deliveryDate.getDate() - 1,
-          18
-        )
+        deliveryDate.getFullYear(),
+        deliveryDate.getMonth(),
+        deliveryDate.getDate() - 1,
+        18
+      )
   );
   const [ordersLimitTime, setOrdersLimitTime] = useState(
     new Date(
@@ -284,4 +291,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(CreateDeliveryScreen);
+export default CreateDeliveryScreen;
