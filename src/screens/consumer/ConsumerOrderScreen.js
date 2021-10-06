@@ -92,14 +92,15 @@ const ConsumerOrderScreen = (props) => {
   const onHandleNewOrUpdatedOrder = () => {
     console.log('[Consumer Order Screen] Handle new or update order');
 
-    addOrder(user.id, user.name, delivery.id, delivery.deliveryFee, order);
-    if (!loading) {
-      if (user.role) {
-        props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
-      } else {
-        props.navigation.goBack(null);
+    addOrder(user.id, user.name, delivery.id, delivery.deliveryFee, order).then(
+      () => {
+        if (user.role) {
+          props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
+        } else {
+          props.navigation.goBack(null);
+        }
       }
-    }
+    );
   };
 
   return loading ? (

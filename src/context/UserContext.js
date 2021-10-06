@@ -6,6 +6,7 @@ import {
   updateDoc,
   getByAttributeOrderingBy,
   getById,
+  get,
 } from '../api/firebase';
 import { navigate } from '../navigationRef';
 import GLOBALS from '../Globals';
@@ -31,6 +32,13 @@ const userReducer = (state, action) => {
     default:
       return state;
   }
+};
+
+const fetchUsers = (dispatch) => async () => {
+  dispatch({ type: 'loading' });
+  const users = await get(GLOBALS.COLLECTION.USERS);
+  dispatch({ type: 'fetch_users', payload: users });
+  return users;
 };
 
 const fetchConsumers = (dispatch) => async () => {
@@ -135,24 +143,22 @@ const deleteUser = (dispatch) => async (user) => {
   });
 };
 
-//### Incluído por André Bordignon
+// ### Incluído por André Bordignon
 const getUserById = (dispatch) => async (userId) => {
   dispatch({ type: 'loading' });
 
-  const data = await getById(
-    GLOBALS.COLLECTION.USERS,
-    userId
-  );
+  const data = await getById(GLOBALS.COLLECTION.USERS, userId);
 
   dispatch({ type: 'fetch_user' });
   return data;
 };
 
-//#########
+// #########
 
 export const { Provider, Context } = createDataContext(
   userReducer,
   {
+    fetchUsers,
     fetchConsumers,
     fetchOrganizers,
     findUserById,
@@ -160,7 +166,7 @@ export const { Provider, Context } = createDataContext(
     createUser,
     updateUser,
     deleteUser,
-    getUserById
+    getUserById,
   },
   { users: [], user: null, loading: false }
 );

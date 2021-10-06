@@ -228,13 +228,11 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
 
     return (
       <View style={styles.mainButtonContainer}>
-        <LoadingButton
-          loading={state.loading}
-          color="darkorange"
-          onPress={deleteCurrentDelivery}
-        >
-          Excluir entrega
-        </LoadingButton>
+        {state.loading ? null : (
+          <LoadingButton color="darkorange" onPress={deleteCurrentDelivery}>
+            Excluir entrega
+          </LoadingButton>
+        )}
       </View>
     );
   };

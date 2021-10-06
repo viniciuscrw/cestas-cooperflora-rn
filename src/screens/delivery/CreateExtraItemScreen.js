@@ -45,7 +45,7 @@ const CreateExtraItemScreen = ({ navigation }) => {
   );
 
   const resolveIntValueOf = (text) => {
-    let intValue = parseInt(text);
+    const intValue = parseInt(text);
     return isNaN(intValue) ? null : intValue;
   };
 
@@ -54,9 +54,8 @@ const CreateExtraItemScreen = ({ navigation }) => {
     if (isNaN(numericPrice)) {
       showAlert('Valor inválido para o preço.');
       return null;
-    } else {
-      return numericPrice;
     }
+    return numericPrice;
   };
 
   const productExists = () => {
@@ -77,7 +76,7 @@ const CreateExtraItemScreen = ({ navigation }) => {
     const maxOrderQuantity = resolveIntValueOf(itemMaxOrderQuantity);
     const price = resolvePriceValueIfValid();
 
-    if (!price || productExists()) {
+    if (price == null || productExists()) {
       return;
     }
 
@@ -105,7 +104,7 @@ const CreateExtraItemScreen = ({ navigation }) => {
     const maxOrderQuantity = resolveIntValueOf(itemMaxOrderQuantity);
     const price = resolvePriceValueIfValid();
 
-    if (!price || productExists()) {
+    if (price == null || productExists()) {
       return;
     }
 
