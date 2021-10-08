@@ -67,230 +67,229 @@ const consumerGroupStackNavigator = createStackNavigator({
   },
 });
 
-// const consumerStackNavigator = createStackNavigator({
-//   Consumers: {
-//     screen: ConsumersScreen,
-//   },
-//   CreateUser: {
-//     screen: CreateUserScreen,
-//   },
-//   UserDetail: {
-//     screen: UserDetailScreen,
-//   },
-// });
+const consumerStackNavigator = createStackNavigator({
+  Consumers: {
+    screen: ConsumersScreen,
+  },
+  CreateUser: {
+    screen: CreateUserScreen,
+  },
+  UserDetail: {
+    screen: UserDetailScreen,
+  },
+});
 
-// const organizerStackNavigator = createStackNavigator({
-//   Organizers: {
-//     screen: OrganizersScreen,
-//   },
-//   CreateUser: {
-//     screen: CreateUserScreen,
-//   },
-//   UserDetail: {
-//     screen: UserDetailScreen,
-//   },
-// });
+const organizerStackNavigator = createStackNavigator({
+  Organizers: {
+    screen: OrganizersScreen,
+  },
+  CreateUser: {
+    screen: CreateUserScreen,
+  },
+  UserDetail: {
+    screen: UserDetailScreen,
+  },
+});
 
-// const consumerGroupTopTabNavigator = createMaterialTopTabNavigator(
-//   {
-//     ConsumerGroupInfo: {
-//       screen: consumerGroupStackNavigator,
-//       navigationOptions: {
-//         tabBarLabel: 'Informações',
-//       },
-//     },
-//     Consumers: {
-//       screen: consumerStackNavigator,
-//       navigationOptions: {
-//         tabBarLabel: 'Consumidores',
-//       },
-//     },
-//     Organizers: {
-//       screen: organizerStackNavigator,
-//       navigationOptions: {
-//         tabBarLabel: 'Organizadores',
-//       },
-//     },
-//   },
-//   { ...topTabConfig, swipeEnabled: false }
-// );
+const consumerGroupTopTabNavigator = createMaterialTopTabNavigator(
+  {
+    ConsumerGroupInfo: {
+      screen: consumerGroupStackNavigator,
+      navigationOptions: {
+        tabBarLabel: 'Informações',
+      },
+    },
+    Consumers: {
+      screen: consumerStackNavigator,
+      navigationOptions: {
+        tabBarLabel: 'Consumidores',
+      },
+    },
+    Organizers: {
+      screen: organizerStackNavigator,
+      navigationOptions: {
+        tabBarLabel: 'Organizadores',
+      },
+    },
+  },
+  { ...topTabConfig, swipeEnabled: false }
+);
 
-// const extraItemsStackNavigator = createStackNavigator({
-//   AddDeliveryExtraItems: {
-//     screen: AddDeliveryExtraItemsScreen,
-//   },
-//   CreateExtraItem: {
-//     screen: CreateExtraItemScreen,
-//   },
-// });
+const extraItemsStackNavigator = createStackNavigator({
+  AddDeliveryExtraItems: {
+    screen: AddDeliveryExtraItemsScreen,
+  },
+  CreateExtraItem: {
+    screen: CreateExtraItemScreen,
+  },
+});
 
-// const deliveryTopTabNavigator = createMaterialTopTabNavigator(
-//   {
-//     CreateDelivery: {
-//       screen: CreateDeliveryScreen,
-//       navigationOptions: {
-//         tabBarLabel: 'Informações da entrega',
-//       },
-//     },
-//     AddDeliveryExtraItems: {
-//       screen: extraItemsStackNavigator,
-//       navigationOptions: {
-//         tabBarLabel: 'Produtos Extras',
-//       },
-//     },
-//   },
-//   topTabConfig
-// );
+const deliveryTopTabNavigator = createMaterialTopTabNavigator(
+  {
+    CreateDelivery: {
+      screen: CreateDeliveryScreen,
+      navigationOptions: {
+        tabBarLabel: 'Informações da entrega',
+      },
+    },
+    AddDeliveryExtraItems: {
+      screen: extraItemsStackNavigator,
+      navigationOptions: {
+        tabBarLabel: 'Produtos Extras',
+      },
+    },
+  },
+  topTabConfig
+);
 
-// const ordersManagementTabNavigator = createMaterialTopTabNavigator(
-//   {
-//     OrdersByConsumer: {
-//       screen: OrdersByConsumerScreen,
-//       navigationOptions: {
-//         tabBarLabel: 'Pedidos',
-//       },
-//     },
-//     AddDeliveryExtraItems: {
-//       screen: OrdersItemsQuantityScreen,
-//       navigationOptions: {
-//         tabBarLabel: 'Quantidades pedidas',
-//       },
-//     },
-//   },
-//   topTabConfig
-// );
+const ordersManagementTabNavigator = createMaterialTopTabNavigator(
+  {
+    OrdersByConsumer: {
+      screen: OrdersByConsumerScreen,
+      navigationOptions: {
+        tabBarLabel: 'Pedidos',
+      },
+    },
+    AddDeliveryExtraItems: {
+      screen: OrdersItemsQuantityScreen,
+      navigationOptions: {
+        tabBarLabel: 'Quantidades pedidas',
+      },
+    },
+  },
+  topTabConfig
+);
 
-// const deliveryStackNavigator = createStackNavigator(
-//   {
-//     Deliveries: {
-//       screen: DeliveriesScreen,
-//       navigationOptions: deliveriesNavigationOptions,
-//     },
-//     CreateDelivery: {
-//       screen: deliveryTopTabNavigator,
-//       navigationOptions: createDeliveryNavigationOptions,
-//     },
-//     ConsumerGroup: {
-//       screen: consumerGroupTopTabNavigator,
-//       navigationOptions: consumerGroupInfoNavigationOptions,
-//     },
-//     ConsumerGroupInfo: {
-//       screen: ConsumerGroupInfoScreen,
-//       navigationOptions: consumerGroupInfoNavigationOptions,
-//     },
-//     OrdersManagement: {
-//       screen: ordersManagementTabNavigator,
-//       navigationOptions: ordersManagementNavigationOptions,
-//     },
-//     ConsumerOrderScreen: {
-//       screen: ConsumerOrderScreen,
-//     },
-//     ConsumerOrderPlacedScreen: {
-//       screen: ConsumerOrderPlacedScreen
-//     },
-//     ConsumerAddPaymentScreen:{
-//       screen:ConsumerAddPaymentScreen
-//     },
-//     ConsumerPaymentsScreen: {
-//       screen: ConsumerPaymentsScreen
-//     },
-//   },
-//   {
-//     defaultNavigationOptions: defaultStackNavOptions,
-//   }
-// );
+const deliveryStackNavigator = createStackNavigator(
+  {
+    Deliveries: {
+      screen: DeliveriesScreen,
+      navigationOptions: deliveriesNavigationOptions,
+    },
+    CreateDelivery: {
+      screen: deliveryTopTabNavigator,
+      navigationOptions: createDeliveryNavigationOptions,
+    },
+    ConsumerGroup: {
+      screen: consumerGroupTopTabNavigator,
+      navigationOptions: consumerGroupInfoNavigationOptions,
+    },
+    ConsumerGroupInfo: {
+      screen: ConsumerGroupInfoScreen,
+      navigationOptions: consumerGroupInfoNavigationOptions,
+    },
+    OrdersManagement: {
+      screen: ordersManagementTabNavigator,
+      navigationOptions: ordersManagementNavigationOptions,
+    },
+    ConsumerOrderScreen: {
+      screen: ConsumerOrderScreen,
+    },
+    ConsumerOrderPlacedScreen: {
+      screen: ConsumerOrderPlacedScreen
+    },
+    ConsumerAddPaymentScreen:{
+      screen:ConsumerAddPaymentScreen
+    },
+    ConsumerPaymentsScreen: {
+      screen: ConsumerPaymentsScreen
+    },
+  },
+  {
+    defaultNavigationOptions: defaultStackNavOptions,
+  }
+);
 
-// const switchNavigator = createSwitchNavigator({
-//   Initial: InitialScreen,
-//   LoginFlow: createStackNavigator({
-//     Signin: {
-//       screen: SigninScreen,
-//       navigationOptions: {
-//         headerShown: false,
-//       },
-//     },
-//     ForgotPassword: {
-//       screen: ForgotPasswordScreen,
-//       navigationOptions: {
-//         headerShown: false,
-//       },
-//     },
-//   }),
-//   mainFlow: createBottomTabNavigator(
-//     {
-//       Account: {
-//         screen: createStackNavigator({
-//           AccountOptions: {
-//             screen: AccountOptionsScreen,
-//             navigationOptions: {
-//               headerTitle: 'Minha Conta',
-//               ...defaultStackNavOptions,
-//             },
-//           },
-//           UpdateAccountInfo: {
-//             screen: UpdateAccountInfoScreen,
-//             navigationOptions: {
-//               headerTitle: 'Atualizar informações',
-//               headerBackTitle: 'Voltar',
-//               ...defaultStackNavOptions,
-//             },
-//           },
-//           UpdatePassword: {
-//             screen: UpdatePasswordScreen,
-//             navigationOptions: {
-//               headerTitle: 'Atualizar senha',
-//               headerBackTitle: 'Voltar',
-//               ...defaultStackNavOptions,
-//             },
-//           },
-//         }),
-//         navigationOptions: {
-//           tabBarLabel: 'Minha Conta',
-//           tabBarIcon: ({ tintColor }) => (
-//             <FontAwesome5 name="user-alt" size={30} color={tintColor} />
-//           ),
-//         },
-//       },
-//       Deliveries: {
-//         screen: deliveryStackNavigator,
-//         navigationOptions: {
-//           tabBarLabel: 'Cestas',
-//           tabBarIcon: ({ tintColor }) => (
-//             <FontAwesome5 name="shopping-basket" size={34} color={tintColor} />
-//           ),
-//         },
-//       },
-//       Payments: {
-//         screen: createStackNavigator({
-//           Payments: {
-//             // screen: ConsumerPaymentsScreen,
-//             screen: PaymentsScreen
-//           },
-//         }),
-//         navigationOptions: {
-//           tabBarLabel: 'Pagamentos',
-//           tabBarIcon: ({ tintColor }) => (
-//             <FontAwesome5 name="dollar-sign" size={30} color={tintColor} />
-//           ),
-//         },
-//       },
-//     },
-//     {
-//       initialRouteName: 'Deliveries',
-//       tabBarOptions: {
-//         activeTintColor: Colors.activeIconColor,
-//         inactiveTintColor: Colors.inactiveIconColor,
-//         label: {
-//           fontSize: 16,
-//         },
-//         style: {
-//           height: 60,
-//           backgroundColor: 'white',
-//         },
-//       },
-//     }
-//   ),
-// });
+const switchNavigator = createSwitchNavigator({
+  Initial: InitialScreen,
+  LoginFlow: createStackNavigator({
+    Signin: {
+      screen: SigninScreen,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    ForgotPassword: {
+      screen: ForgotPasswordScreen,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+  }),
+  mainFlow: createBottomTabNavigator(
+    {
+      Account: {
+        screen: createStackNavigator({
+          AccountOptions: {
+            screen: AccountOptionsScreen,
+            navigationOptions: {
+              headerTitle: 'Minha Conta',
+              ...defaultStackNavOptions,
+            },
+          },
+          UpdateAccountInfo: {
+            screen: UpdateAccountInfoScreen,
+            navigationOptions: {
+              headerTitle: 'Atualizar informações',
+              headerBackTitle: 'Voltar',
+              ...defaultStackNavOptions,
+            },
+          },
+          UpdatePassword: {
+            screen: UpdatePasswordScreen,
+            navigationOptions: {
+              headerTitle: 'Atualizar senha',
+              headerBackTitle: 'Voltar',
+              ...defaultStackNavOptions,
+            },
+          },
+        }),
+        navigationOptions: {
+          tabBarLabel: 'Minha Conta',
+          tabBarIcon: ({ tintColor }) => (
+            <FontAwesome5 name="user-alt" size={30} color={tintColor} />
+          ),
+        },
+      },
+      Deliveries: {
+        screen: deliveryStackNavigator,
+        navigationOptions: {
+          tabBarLabel: 'Cestas',
+          tabBarIcon: ({ tintColor }) => (
+            <FontAwesome5 name="shopping-basket" size={34} color={tintColor} />
+          ),
+        },
+      },
+      Payments: {
+        screen: createStackNavigator({
+          Payments: {
+            // screen: ConsumerPaymentsScreen,
+            screen: PaymentsScreen
+          },
+        }),
+        navigationOptions: {
+          tabBarLabel: 'Pagamentos',
+          tabBarIcon: ({ tintColor }) => (
+            <FontAwesome5 name="dollar-sign" size={30} color={tintColor} />
+          ),
+        },
+      },
+    },
+    {
+      initialRouteName: 'Deliveries',
+      tabBarOptions: {
+        activeTintColor: Colors.activeIconColor,
+        inactiveTintColor: Colors.inactiveIconColor,
+        label: {
+          fontSize: 16,
+        },
+        style: {
+          height: 60,
+          backgroundColor: 'white',
+        },
+      },
+    }
+  ),
+});
 
-// export default switchNavigator;
-export default consumerGroupStackNavigator;
+export default switchNavigator;

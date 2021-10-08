@@ -27,7 +27,7 @@ const DeliveriesScreen = ({ navigation }) => {
       return (
         <Button
           style={styles.nextDeliveryButton}
-          onPress={() => navigation.navigate('CreateDelivery')}
+          onPress={() => navigation.navigate('CreateDeliveryScreen')}
         >
           Adicionar próxima entrega
         </Button>
@@ -114,7 +114,8 @@ const DeliveriesScreen = ({ navigation }) => {
   );
 };
 
-export const deliveriesNavigationOptions = () => {
+export const deliveriesNavigationOptions = ( navigation ) => {
+  // console.log('Deliveries Screen', navigation.navigate);
   return {
     headerTitle: () => (
       <View>
@@ -125,7 +126,7 @@ export const deliveriesNavigationOptions = () => {
       </View>
     ),
     // headerBackImage: () => (<BackArrow />),
-    headerRight: () => <ConsumerGroupDetails />,
+    headerRight: () => <ConsumerGroupDetails navigation={navigation.navigation}/>,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,

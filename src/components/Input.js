@@ -39,9 +39,9 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   label: {
+    color: '#8898AA',
     fontSize: 18,
     paddingLeft: 20,
-    flex: 1,
   },
   container: {
     height: 40,

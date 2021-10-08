@@ -34,6 +34,7 @@ const PaymentsScreen = (props) => {
   }, []);
 
   if (user) {
+    console.log('[PaymentsScreen] consumer');
     if (user.role === GLOBALS.USER.ROLE.CONSUMER) {
       props.navigation.navigate('ConsumerPaymentsScreen',{ userId: user.id });
     }
@@ -79,6 +80,21 @@ const PaymentsScreen = (props) => {
       </View>
     </View>
   );
+};
+
+export const paymentsScreenOptions = (navData) => {
+  return {
+    headerTitle: () => (
+      <HeaderTitle title="Pagamentos" />
+    ),
+    headerBackImage: () => (<BackArrow />),
+    headerStyle: {
+      backgroundColor: 'white',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+    }
+  };
 };
 
 const styles = StyleSheet.create({
@@ -155,20 +171,5 @@ const styles = StyleSheet.create({
     color: '#505050',
   }
 });
-
-PaymentsScreen.navigationOptions = (navData) => {
-  return {
-    headerTitle: () => (
-      <HeaderTitle title="Pagamentos" />
-    ),
-    headerBackImage: () => (<BackArrow />),
-    headerStyle: {
-      backgroundColor: 'white',
-      elevation: 0,
-      shadowOpacity: 0,
-      borderBottomWidth: 0,
-    }
-  };
-};
 
 export default withNavigation(PaymentsScreen);

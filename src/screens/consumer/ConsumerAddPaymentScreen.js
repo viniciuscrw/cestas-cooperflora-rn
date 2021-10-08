@@ -30,7 +30,8 @@ const ConsumerAddPaymentScreen = (props) => {
     const user = useUser();
     // console.log('[Consumer Payments Screen] user', user);
     // console.log('[ConsumerAddPaymentScreen] started');
-    const orderTotalAmount = props.navigation.state.params.orderTotalAmount;
+    // const orderTotalAmount = props.navigation.state.params.orderTotalAmount;
+    const orderTotalAmount = props.route.params.orderTotalAmount;
 
     const { getUserById } = useContext(userContext);
 
@@ -173,6 +174,21 @@ const ConsumerAddPaymentScreen = (props) => {
     )
 }
 
+export const consumerAddPaymentScreenOptions = (navData) => {
+    return {
+        headerTitle: () => (
+            <HeaderTitle title="Adicionar Pagamento" />
+        ),
+        headerBackImage: () => (<BackArrow />),
+        headerStyle: {
+            backgroundColor: 'transparent',
+            elevation: 0,
+            shadowOpacity: 0,
+            borderBottomWidth: 0,
+        }
+    };
+};
+
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
@@ -266,20 +282,5 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
 });
-
-ConsumerAddPaymentScreen.navigationOptions = (navData) => {
-    return {
-        headerTitle: () => (
-            <HeaderTitle title="Adicionar Pagamento" />
-        ),
-        headerBackImage: () => (<BackArrow />),
-        headerStyle: {
-            backgroundColor: 'transparent',
-            elevation: 0,
-            shadowOpacity: 0,
-            borderBottomWidth: 0,
-        }
-    };
-};
 
 export default withNavigation(ConsumerAddPaymentScreen);

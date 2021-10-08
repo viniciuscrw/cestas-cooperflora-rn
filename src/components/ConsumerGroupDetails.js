@@ -7,13 +7,17 @@ import useUser from '../hooks/useUser';
 
 const ConsumerGroupDetails = ({ navigation }) => {
   const user = useUser();
+  console.log('Consumer Group Details Screen', navigation);
 
   return user ? (
     <TouchableOpacity onPress={() => {
       if (user.role === 'organizer') {
-        navigation.navigate('ConsumerGroup', { userRole: user.role });
+        navigation.navigate('ConsumerGroupTopTabNavigator', { userRole: user.role });
       }
-      navigation.navigate('ConsumerGroupInfo', { userRole: user.role });
+      // console.log('ConsumerGroupInfoScreen', navigation.navigate);
+      // navigation.navigate('ConsumerGroupInfoScreen', { userRole: user.role });
+      navigation.navigate('PaymentsScreen', { userRole: user.role });
+
     }}>
       <Image
         source={FrontArrow}

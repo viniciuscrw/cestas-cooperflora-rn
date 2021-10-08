@@ -3,7 +3,9 @@ import {
   Keyboard,
   StyleSheet,
   TouchableWithoutFeedback,
+  Image,
   View,
+  KeyboardAvoidingView
 } from 'react-native';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
@@ -16,6 +18,9 @@ import TextCardSection from '../components/TextCardSection';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';
 import { withNavigation } from 'react-navigation';
+import { AntDesign } from '@expo/vector-icons';
+import BasketProductsImage from '../../assets/images/basketproducts3.png';
+import Colors from '../constants/Colors';
 
 const SigninScreen = ({ navigation }) => {
   const {
@@ -29,6 +34,7 @@ const SigninScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -54,36 +60,35 @@ const SigninScreen = ({ navigation }) => {
     if (state.loading) {
       return <Spinner onLayout={Keyboard.dismiss} size="small" />;
     }
-
     let userId = state.userId;
     return (
-      <Button
-        style={styles.loginButton}
-        onPress={() => {
-          Keyboard.dismiss();
-          signin({ email, password, passwordConfirmation, userId });
-        }}
-      >
-        Entrar
-      </Button>
+      <View style={styles.buttonContainer}>
+        <Button style={styles.button}
+          textColor='white'
+          onPress={() => {
+            // Keyboard.dismiss();
+            signin({ email, password, passwordConfirmation, userId });
+          }}>
+          Entrar
+        </Button>
+      </View>
     );
   };
 
   const renderNextButton = () => {
     if (!state.authorized && !state.userId) {
       return (
-        <CardSection>
-          {state.loading ? (
-            <Spinner onLayout={Keyboard.dismiss} size="small" />
-          ) : (
-            <Button
-              style={styles.loginButton}
-              onPress={() => checkAuthOrUser({ email })}
-            >
+        state.loading ? (
+          <Spinner onLayout={Keyboard.dismiss} size="small" />
+        ) : (
+          <View style={styles.buttonContainer}>
+            <Button style={styles.button}
+              textColor='white'
+              onPress={() => checkAuthOrUser({ email })}>
               Avançar
             </Button>
-          )}
-        </CardSection>
+          </View>
+        )
       );
     }
   };
@@ -98,6 +103,7 @@ const SigninScreen = ({ navigation }) => {
       return (
         <>
           {state.userId ? (
+
             <TextCardSection text="Cadastre sua senha:">
               <PasswordInput
                 label="Senha"
@@ -111,7 +117,17 @@ const SigninScreen = ({ navigation }) => {
                 autoFocus
                 style={styleForMultiplePasswordInput}
               />
+
               <PasswordInput
+                style={{
+                  borderBottomColor: 'black',
+                  borderBottomWidth: 1,
+                  width: 305,
+                  //alignContent: 'center',
+                  //alignItems: 'center',
+                  alignSelf: 'center'
+
+                }}
                 label="Confimar senha"
                 value={passwordConfirmation}
                 onChangeText={(passwordConfirmation) => {
@@ -124,9 +140,9 @@ const SigninScreen = ({ navigation }) => {
               />
             </TextCardSection>
           ) : (
-            <CardSection>
+            <View style={styles.inputContainer}>
               <PasswordInput
-                label="Senha"
+                label="Senha:"
                 value={password}
                 onChangeText={(password) => {
                   setPassword(password);
@@ -136,82 +152,158 @@ const SigninScreen = ({ navigation }) => {
                 }}
                 autoFocus
               />
-            </CardSection>
+            </View>
           )}
-          <CardSection>{renderLoginButton()}</CardSection>
+          <View style={styles.divider}></View>
+          {renderLoginButton()}
         </>
       );
     }
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.backGroundView}>
-        <View style={styles.container}>
-          <Text style={isKeyboardVisible ? styles.smallTitle : styles.title}>
+    <View style={styles.screen} >
+      <View style={styles.container} >
+        <View style={styles.header}>
+          <Text style={styles.textTitle}>
             Cestas Cooperflora
           </Text>
-          <Card style={styles.card}>
-            <CardSection>
-              <Input
-                placeholder="exemplo@email.com"
-                label="E-mail"
-                value={email}
-                onChangeText={(email) => {
-                  setEmail(email);
-                  if (state.userId || state.authorized) {
-                    clearUserInfo();
-                  }
-                  if (state.errorMessage) {
-                    clearError();
-                  }
-                }}
-              />
-            </CardSection>
-            {renderNextButton()}
-            {renderPasswordForm()}
-          </Card>
-          {state.errorMessage ? (
-            <Text style={styles.errorMessage}>{state.errorMessage}</Text>
-          ) : null}
+          <Image
+            style={styles.image}
+            source={BasketProductsImage}
+          />
+        </View>
+
+        <View>
+          <View style={styles.inputContainer}>
+            <Input
+              label='E-mail:'
+              value={email}
+              onChangeText={(email) => {
+                setEmail(email);
+                if (state.userId || state.authorized) {
+                  clearUserInfo();
+                }
+                if (state.errorMessage) {
+                  clearError();
+                }
+              }}
+            />
+            <View style={styles.divider} />
+          </View>
+          {renderNextButton()}
+
+          {renderPasswordForm()}
           {state.authorized ? (
             <TextLink
+              style={styles.forgotPasswordLink}
               text="Esqueceu sua senha?"
               size={16}
               onPress={() =>
                 navigation.navigate('ForgotPassword', { email: email })
               }
-              style={styles.forgotPasswordLink}
             />
           ) : null}
         </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.descriptionText}>
+            A Cooperflora é uma cooperativa que produz
+            e comercializa produtos orgânicos do assentamento
+            Milton Santos em Americana.
+          </Text>
+        </View>
+        {state.errorMessage ? (
+          <Text style={styles.errorMessage}>{state.errorMessage}</Text>
+        ) : null}
       </View>
-    </TouchableWithoutFeedback>
+    </View >
   );
 };
 
+export const signinScreenOptions = (navData) => {
+  return {
+    headerShown: false,
+  };
+};
+
 const styles = StyleSheet.create({
-  backGroundView: {
+  screen: {
     flex: 1,
     backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: "black",
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 25
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    // bottom: 10,
+    marginTop: 30,
+  },
+  controlContainer: {
+    flex: 1,
+  },
+  header: {
+    // flex: 1,
+    // left: -33,
+    // alignSelf: 'center',
+    // top: -60,
+    // width: 250,
+    // height: 150,
+    // zIndex: 2
+  },
+  textTitle: {
+    fontSize: 35,
+    color: '#2D6535',
+    fontWeight: 'bold',
+    right: '-48%',
+    textAlign: 'right',
+    width: '50%',
+  },
+  image: {
+    marginLeft: 5,
+    marginTop: -30,
+    width: 250,
   },
   title: {
     fontSize: 30,
     bottom: 40,
     textAlign: 'center',
   },
+  inputContainer: {
+    height: 50,
+  },
+  divider: {
+    borderBottomColor: '#8898AA',
+    borderBottomWidth: 1,
+    width: '80%',
+    alignSelf: 'center'
+  },
+
+  buttonContainer: {
+    width: '100%',
+  },
+  button: {
+    marginTop: 5,
+    backgroundColor: Colors.primary,
+    alignSelf: 'center',
+  },
+
+  textContainer: {
+    margin: 20
+  },
+  descriptionText: {
+    fontSize: 20,
+    color: '#8898AA',
+    textAlign: 'center',
+    fontWeight: 'bold'
+  },
   smallTitle: {
     fontSize: 20,
     bottom: 20,
     textAlign: 'center',
-  },
-  loginButton: {
-    flex: 1,
   },
   errorMessage: {
     fontSize: 16,
@@ -220,9 +312,11 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   forgotPasswordLink: {
-    padding: 15,
-    top: 10,
-  },
+    color: '#8898AA',
+    fontSize: 58,
+    padding: 9,
+    marginLeft: 20,
+  }
 });
 
-export default withNavigation(SigninScreen);
+export default SigninScreen;

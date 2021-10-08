@@ -12,6 +12,8 @@ import { Input, ListItem } from 'react-native-elements';
 import GLOBALS from '../Globals';
 import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
+import HeaderTitle from '../components/HeaderTitle';
+import BackArrow from '../components/BackArrow';
 
 const OrdersByConsumerScreen = (props) => {
   const {
@@ -131,13 +133,33 @@ const OrdersByConsumerScreen = (props) => {
   );
 };
 
-export const ordersManagementNavigationOptions = ({ navigation }) => {
+export const ordersManagementNavigationOptions = ({route}) => {
+  // console.log(route.params.delivery.deliveryDate);
+  // let deliveryDate = '2021-10-08T02:59:59.999Z'.toDate();
+  // if(route.params.delivery){
+  //   deliveryDate = route.params.delivery.deliveryDate;
+  // }
+
+  // return {
+  //   headerTitle: `Pedidos - ${format(
+  //     deliveryDate,
+  //     GLOBALS.FORMAT.DEFAULT_DATE
+  //   )}`,
+  // };
+
   return {
-    headerTitle: `Pedidos - ${format(
-      navigation.state.params.delivery.deliveryDate,
-      GLOBALS.FORMAT.DEFAULT_DATE
-    )}`,
-  };
+    headerTitle: () => (
+        <HeaderTitle title="Pedidos" />
+    ),
+    headerBackImage: () => (<BackArrow />),
+    headerStyle: {
+        backgroundColor: 'transparent',
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+    }
+};
+
 };
 
 const styles = StyleSheet.create({

@@ -1,20 +1,21 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // import {
 //   createBottomTabNavigator,
 //   createMaterialTopTabNavigator,
 // } from 'react-navigation-tabs';
-// import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import DeliveriesScreen, {
   deliveriesNavigationOptions,
 } from '../screens/delivery/DeliveriesScreen';
 import ConsumerGroupInfoScreen, {
   consumerGroupInfoNavigationOptions,
 } from '../screens/ConsumerGroupInfoScreen';
-import PaymentsScreen from '../screens/PaymentsScreen';
-import SigninScreen from '../screens/SigninScreen';
+import PaymentsScreen, { paymentsScreenOptions } from '../screens/PaymentsScreen';
+import SigninScreen, { signinScreenOptions } from '../screens/SigninScreen';
 import InitialScreen from '../screens/InitialScreen';
 import ConsumersScreen from '../screens/ConsumersScreen';
 import OrganizersScreen from '../screens/OrganizersScreen';
@@ -22,9 +23,9 @@ import CreateUserScreen from '../screens/CreateUserScreen';
 import UserDetailScreen from '../screens/UserDetailScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import EditConsumerGroupInfoScreen from '../screens/EditConsumerGroupScreen';
-import UpdateAccountInfoScreen from '../screens/UpdateAccountInfoScreen';
-import AccountOptionsScreen from '../screens/AccountOptionsScreen';
-import UpdatePasswordScreen from '../screens/UpdatePasswordScreen';
+import UpdateAccountInfoScreen, { updateAccountInfoScreenOptions } from '../screens/UpdateAccountInfoScreen';
+import AccountOptionsScreen, { AccountOptionsScreenOptions } from '../screens/AccountOptionsScreen';
+import UpdatePasswordScreen, { updatePasswordScreenOptions } from '../screens/UpdatePasswordScreen';
 import CreateDeliveryScreen, {
   createDeliveryNavigationOptions,
 } from '../screens/delivery/CreateDeliveryScreen';
@@ -35,15 +36,14 @@ import OrdersByConsumerScreen, {
 } from '../screens/OrdersByConsumerScreen';
 import ConsumerOrderScreen from '../screens/consumer/ConsumerOrderScreen';
 import ConsumerOrderPlacedScreen from '../screens/consumer/ConsumerOrderPlacedScreen';
-import ConsumerPaymentsScreen from '../screens/consumer/ConsumerPaymentsScreen';
-import ConsumerAddPaymentScreen from '../screens/consumer/ConsumerAddPaymentScreen';
+import ConsumerPaymentsScreen, { consumerPaymentsScreenOptions } from '../screens/consumer/ConsumerPaymentsScreen';
+import ConsumerAddPaymentScreen, { consumerAddPaymentScreenOptions } from '../screens/consumer/ConsumerAddPaymentScreen';
 import OrdersItemsQuantityScreen from '../screens/OrdersItemsQuantityScreen';
 import Colors from '../constants/Colors';
 
 const defaultStackNavOptions = {
   headerTitleAlign: 'center',
 };
-
 
 const topTabBarOptions = {
   style: {
@@ -57,7 +57,6 @@ const topTabBarOptions = {
   activeTintColor: 'darkorange',
   inactiveTintColor: 'darkolivegreen',
 };
-
 
 const ConsumerGroupStackNavigator = createStackNavigator();
 export const ConsumerGroupNavigator = () => {
@@ -138,7 +137,7 @@ export const ExtraItemsNavigator = () => {
 }
 
 const DelTopTabNavigator = createMaterialTopTabNavigator();
-export const DeliveraryTopTabNavigator = () => {
+export const DeliveryTopTabNavigator = () => {
   return (
     <DelTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
       <DelTopTabNavigator.Screen
@@ -157,6 +156,7 @@ export const OrdersManagementTabNavigator = () => {
     <OrdTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
       <OrdTopTabNavigator.Screen
         name="Pedidos" component={OrdersByConsumerScreen}
+        options={ordersManagementNavigationOptions}
       />
       <OrdTopTabNavigator.Screen
         name="Quantidades pedidas" component={OrdersItemsQuantityScreen}
@@ -170,10 +170,11 @@ export const DeliveryNavigator = () => {
   return (
     <DeliveryStackNavigator.Navigator options={defaultStackNavOptions}>
       <DeliveryStackNavigator.Screen
-        name="DeliveriesScreen" component={DeliveriesScreen} options={deliveriesNavigationOptions}
+        name="DeliveriesScreen" component={DeliveriesScreen}
+        options={deliveriesNavigationOptions}
       />
       <DeliveryStackNavigator.Screen
-        name="DeliveraryTopTabNavigator" component={DeliveraryTopTabNavigator} options={createDeliveryNavigationOptions}
+        name="DeliveryTopTabNavigator" component={DeliveryTopTabNavigator} options={createDeliveryNavigationOptions}
       />
       <DeliveryStackNavigator.Screen
         name="ConsumerGroupTopTabNavigator" component={ConsumerGroupTopTabNavigator} options={consumerGroupInfoNavigationOptions}
@@ -194,7 +195,7 @@ export const DeliveryNavigator = () => {
       />
       <DeliveryStackNavigator.Screen
         name="ConsumerAddPaymentScreen" component={ConsumerAddPaymentScreen}
-      // options={ordersManagementNavigationOptions}
+        options={consumerAddPaymentScreenOptions}
       />
       <DeliveryStackNavigator.Screen
         name="ConsumerPaymentsScreen" component={ConsumerPaymentsScreen}
@@ -204,19 +205,242 @@ export const DeliveryNavigator = () => {
   );
 }
 
+const PaymentsStackNavigator = createStackNavigator();
+export const PaymentsNavigator = () => {
+  return (
+    <PaymentsStackNavigator.Navigator options={defaultStackNavOptions}>
+      <PaymentsStackNavigator.Screen
+        name="PaymentsScreen" component={PaymentsScreen}
+        options={paymentsScreenOptions}
+      />
+      <PaymentsStackNavigator.Screen
+        name="ConsumerPaymentsScreen" component={ConsumerPaymentsScreen}
+        options={consumerPaymentsScreenOptions}
+      />
+    </PaymentsStackNavigator.Navigator>
+  );
+}
+
 const AuthStackNavigator = createStackNavigator();
 export const AuthNavigator = () => {
   return (
     <AuthStackNavigator.Navigator>
       <AuthStackNavigator.Screen
-        name="SigninScreen" component={SigninScreen} 
+        name="SigninScreen"
+        component={SigninScreen}
+        options={signinScreenOptions}
       />
       <AuthStackNavigator.Screen
-        name="CreateExtraItemScreen" component={CreateExtraItemScreen}
+        name="ForgotPassword" component={ForgotPasswordScreen}
       />
     </AuthStackNavigator.Navigator>
   );
 }
+
+const AccountStackNavigator = createStackNavigator();
+export const AccountNavigator = () => {
+  return (
+    <AccountStackNavigator.Navigator options={defaultStackNavOptions}>
+      <AccountStackNavigator.Screen
+        name="AccountOptionsScreen" component={AccountOptionsScreen}
+        options={AccountOptionsScreenOptions}
+      />
+      <AccountStackNavigator.Screen
+        name="UpdateAccountInfoScreen" component={UpdateAccountInfoScreen} options={updateAccountInfoScreenOptions}
+      />
+      <AccountStackNavigator.Screen
+        name="UpdatePasswordScreen" component={UpdatePasswordScreen} options={updatePasswordScreenOptions}
+      />
+    </AccountStackNavigator.Navigator>
+  );
+}
+
+const tabBarOptions = {
+  activeTintColor: Colors.activeIconColor,
+  inactiveTintColor: Colors.inactiveIconColor,
+  tabBarActiveTintColor: Colors.activeIconColor,
+  tabBarInactiveTintColor: Colors.inactiveIconColor,
+  label: {
+    fontSize: 16,
+  },
+  style: {
+    height: 60,
+    backgroundColor: 'white',
+  },
+}
+
+import { Ionicons } from '@expo/vector-icons';
+
+const BottomTab = createBottomTabNavigator();
+export const BottomTabNavigator = () => {
+  return (
+    <BottomTab.Navigator
+      initialRouteName="DeliveryNavigator"
+      screenOptions={({ route }) => ({
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray',
+      })}
+    >
+      <BottomTab.Screen
+        name="AccountNavigator" component={AccountNavigator}
+        headerShown='false'
+        options={{
+          tabBarLabel: 'Minha Conta',
+          tabBarAccessibilityLabel: 'Minha Conta',
+          tabBarIcon: ({ color, size }) => {
+            return (
+              <FontAwesome5 name="user-alt" size={34} color={color} />
+            )
+          },
+        }}
+      />
+      <BottomTab.Screen
+        name="DeliveryNavigator" component={DeliveryNavigator}
+        options={{
+          tabBarLabel: 'Cestas bottom tab',
+          tabBarAccessibilityLabel: 'Cestas bottom tab',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="shopping-basket" size={34} color={color} />
+          ),
+        }}
+      />
+      <BottomTab.Screen
+        name="Payments" component={PaymentsNavigator}
+        options={{
+          tabBarLabel: 'Pagamentos',
+          tabBarAccessibilityLabel: 'Pagamentos',
+          tabBarActiveTintColor: 'red',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="dollar-sign" size={34} color={color} />
+          ),
+        }}
+      />
+    </BottomTab.Navigator>
+  );
+}
+
+const MainStackNavigator = createStackNavigator();
+export const MainNavigator = () => {
+  return (
+    <MainStackNavigator.Navigator >
+      <MainStackNavigator.Screen
+        name="Entregas" component={BottomTabNavigator} 
+        options={{headerShown:false}}
+      />
+      <MainStackNavigator.Screen
+        name="CreateDeliveryScreen"
+        component={DeliveryTopTabNavigator}
+        // options={}
+      />
+      <MainStackNavigator.Screen
+        name="OrdersManagement"
+        component={OrdersManagementTabNavigator}
+      />
+
+      {/* <MainStackNavigator.Screen
+        name="CreateDeliveryScreen" 
+        component={CreateDeliveryScreen}
+      />
+      <MainStackNavigator.Screen
+        name="DeliveryTopTabNavigator" component={DeliveryTopTabNavigator}
+      />
+      <MainStackNavigator.Screen
+        name="PaymentsScreen" 
+        component={PaymentsScreen}
+        options={PaymentsScreenOptions}
+      /> */}
+      {/* <MainStackNavigator.Screen
+        name="ConsumerGroupTopTabNavigator" component={ConsumerGroupTopTabNavigator}
+      /> */}
+      <MainStackNavigator.Screen
+        name="ConsumerGroupInfoScreen" component={ConsumerGroupInfoScreen}
+      />
+    </MainStackNavigator.Navigator>
+  );
+}
+
+// const switchNavigator = createSwitchNavigator({
+//   Initial: InitialScreen,
+//   mainFlow: createBottomTabNavigator(
+//     {
+//       Account: {
+//         screen: createStackNavigator({
+//           AccountOptions: {
+//             screen: AccountOptionsScreen,
+//             navigationOptions: {
+//               headerTitle: 'Minha Conta',
+//               ...defaultStackNavOptions,
+//             },
+//           },
+//           UpdateAccountInfo: {
+//             screen: UpdateAccountInfoScreen,
+//             navigationOptions: {
+//               headerTitle: 'Atualizar informações',
+//               headerBackTitle: 'Voltar',
+//               ...defaultStackNavOptions,
+//             },
+//           },
+//           UpdatePassword: {
+//             screen: UpdatePasswordScreen,
+//             navigationOptions: {
+//               headerTitle: 'Atualizar senha',
+//               headerBackTitle: 'Voltar',
+//               ...defaultStackNavOptions,
+//             },
+//           },
+//         }),
+//         navigationOptions: {
+//           tabBarLabel: 'Minha Conta',
+//           tabBarIcon: ({ tintColor }) => (
+//             <FontAwesome5 name="user-alt" size={30} color={tintColor} />
+//           ),
+//         },
+//       },
+//       Deliveries: {
+//         screen: deliveryStackNavigator,
+//         navigationOptions: {
+//           tabBarLabel: 'Cestas',
+//           tabBarIcon: ({ tintColor }) => (
+//             <FontAwesome5 name="shopping-basket" size={34} color={tintColor} />
+//           ),
+//         },
+//       },
+//       Payments: {
+//         screen: createStackNavigator({
+//           Payments: {
+//             // screen: ConsumerPaymentsScreen,
+//             screen: PaymentsScreen
+//           },
+//         }),
+//         navigationOptions: {
+//           tabBarLabel: 'Pagamentos',
+//           tabBarIcon: ({ tintColor }) => (
+//             <FontAwesome5 name="dollar-sign" size={30} color={tintColor} />
+//           ),
+//         },
+//       },
+//     },
+//     {
+//       initialRouteName: 'Deliveries',
+//       tabBarOptions: {
+//         activeTintColor: Colors.activeIconColor,
+//         inactiveTintColor: Colors.inactiveIconColor,
+//         label: {
+//           fontSize: 16,
+//         },
+//         style: {
+//           height: 60,
+//           backgroundColor: 'white',
+//         },
+//       },
+//     }
+//   ),
+// });
+
+
+
+
+
 
 // const switchNavigator = createSwitchNavigator({
 //   Initial: InitialScreen,

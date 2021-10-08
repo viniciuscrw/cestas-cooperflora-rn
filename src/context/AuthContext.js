@@ -277,7 +277,6 @@ const signout = (dispatch) => () => {
       await AsyncStorage.removeItem('userId');
       await AsyncStorage.removeItem('userRole');
       dispatch({ type: 'signout' });
-      navigate('LoginFlow');
     });
 };
 

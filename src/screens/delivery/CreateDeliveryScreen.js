@@ -21,6 +21,7 @@ import GLOBALS from '../../Globals';
 import useConsumerGroup from '../../hooks/useConsumerGroup';
 
 const CreateDeliveryScreen = (props) => {
+  console.log('[Create Delivery Screen started]');
   const { setDeliveryInfo } = useContext(DeliveryContext);
 
   console.log(props);

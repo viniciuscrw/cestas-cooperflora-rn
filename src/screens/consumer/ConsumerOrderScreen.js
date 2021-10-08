@@ -35,7 +35,8 @@ const ConsumerOrderScreen = (props) => {
     fetchUserOrder,
   } = useContext(OrderContext);
 
-  const { user, delivery } = props.navigation.state.params;
+  // const { user, delivery } = props.navigation.state.params;
+  const { user, delivery } = props.route.params;
 
   if (props.isFocused) {
     if (limitDateToOrder < new Date()) {

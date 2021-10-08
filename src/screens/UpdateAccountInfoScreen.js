@@ -13,15 +13,19 @@ import {
 import Spacer from '../components/Spacer';
 import FormInput from '../components/FormInput';
 import Button from '../components/Button';
+import Divider from '../components/Divider';
 import { Context as UserContext } from '../context/UserContext';
 import { Context as AuthContext } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import { Dialog } from 'react-native-simple-dialogs';
 import TextLink from '../components/TextLink';
 import LoadingButton from '../components/LoadingButton';
+import HeaderTitle from '../components/HeaderTitle';
+import BackArrow from '../components/BackArrow';
+import Colors from '../constants/Colors';
 
-const UpdateAccountInfoScreen = ({ navigation }) => {
-  const user = navigation.getParam('user');
+const UpdateAccountInfoScreen = ( props ) => {
+  const user = props.route.params.user;
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [password, setPassword] = useState('');
@@ -127,67 +131,104 @@ const UpdateAccountInfoScreen = ({ navigation }) => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        enabled
-        keyboardVerticalOffset={100}
-      >
-        <ScrollView style={styles.container}>
-          <Spacer />
-          <FormInput
-            label="Nome"
-            value={name}
-            returnKeyType="next"
-            onChangeText={setName}
-            onSubmitEditing={() => emailTextInput.current.focus()}
-            autoCapitalize="words"
-            autoCorrect={false}
-            maxLength={50}
-          />
-          <Spacer />
-          <FormInput
-            label="E-mail"
-            value={email}
-            reference={emailTextInput}
-            returnKeyType="next"
-            onChangeText={setEmail}
-            onSubmitEditing={() => phoneNumberTextInput.current.focus()}
-            autoCapitalize="none"
-            autoCorrect={false}
-            maxLength={50}
-            hasError={isInvalidEmail()}
-            errorMessage="Endereço de e-mail inválido."
-          />
-          <Spacer />
-          <FormInput
-            label="Celular"
-            value={phoneNumber}
-            returnKeyType="done"
-            reference={phoneNumberTextInput}
-            maxLength={18}
-            onChangeText={setPhoneNumber}
-            keyboardType="phone-pad"
-          />
-          <Spacer />
-          {renderPasswordDialog()}
-          <LoadingButton
+    <View style={styles.screen} >
+      <View style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <KeyboardAvoidingView
+            style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
+            behavior={Platform.OS === 'ios' ? 'padding' : null}
+            enabled
+            keyboardVerticalOffset={100}
+          >
+            <ScrollView>
+              {/* <Spacer /> */}
+              <FormInput
+                label="Nome"
+                value={name}
+                returnKeyType="next"
+                onChangeText={setName}
+                onSubmitEditing={() => emailTextInput.current.focus()}
+                autoCapitalize="words"
+                autoCorrect={false}
+                maxLength={50}
+              />
+              <Spacer />
+              <FormInput
+                label="E-mail"
+                value={email}
+                reference={emailTextInput}
+                returnKeyType="next"
+                onChangeText={setEmail}
+                onSubmitEditing={() => phoneNumberTextInput.current.focus()}
+                autoCapitalize="none"
+                autoCorrect={false}
+                maxLength={50}
+                hasError={isInvalidEmail()}
+                errorMessage="Endereço de e-mail inválido."
+              />
+              <Spacer />
+              <FormInput
+                label="Celular"
+                value={phoneNumber}
+                returnKeyType="done"
+                reference={phoneNumberTextInput}
+                maxLength={18}
+                onChangeText={setPhoneNumber}
+                keyboardType="phone-pad"
+              />
+              <Spacer />
+              {renderPasswordDialog()}
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+        <View style={styles.buttonContainer}>
+          <Divider style={{ borderBottomColor: Colors.secondary }} />
+          <Button
+            style={styles.confirmButton}
+            textColor="white"
             onPress={updateUserInfo}
-            loading={state.loading || loading}
           >
             Atualizar informações
-          </LoadingButton>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+          </Button>
+        </View>
+      </View>
+    </View>
   );
 };
 
+export const updateAccountInfoScreenOptions = (navData) => {
+  return {
+    headerTitle: () => (
+      <HeaderTitle title="Meus Dados" />
+    ),
+    headerBackImage: () => (<BackArrow />),
+    headerStyle: {
+      backgroundColor: 'transparent',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+    },
+  };
+};
+
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: 'black',
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 4, height: -3 },
+    shadowRadius: 8,
+    elevation: 25,
+    // backgroundColor: 'red',
+  },
   container: {
     flex: 1,
-    padding: 10,
+    margin: 25,
+    // backgroundColor: 'grey'
   },
   titleContainer: {
     flexDirection: 'row',
@@ -221,6 +262,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 10,
     marginTop: -8,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
+  },
+  confirmButton: {
+    marginTop: 5,
+    backgroundColor: Colors.primary,
+    justifyContent: 'space-between',
+    alignSelf: 'center',
   },
 });
 

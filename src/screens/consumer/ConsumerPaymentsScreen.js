@@ -20,16 +20,15 @@ const ConsumerPaymentsScreen = (props) => {
     const [userData, setUserData] = useState();
     const [userPayments, setUserPayments] = useState([]);
 
-    // console.log(props.navigation.state.params.userId);
+    // console.log('[ConsumerPaymentScreen started]',props.route);
 
     let userId;
-    if(props.navigation.state.params.userId){
-        userId = props.navigation.state.params.userId;
+    if(props.route.params.userId){
+        userId = props.route.params.userId;
     } else {
-        
+        console.log('[ConsumerPaymentScreen] Entrei else');
         userId = useUser().id;
     }
-    console.log('User id', props.navigation.state.params.userId);
     const { getUserById } = useContext(userContext);
     // console.log('[ConsumerPaymentScreen started]', props.navigation.state);
     // const user = useUser();
@@ -174,6 +173,26 @@ const ConsumerPaymentsScreen = (props) => {
     )
 }
 
+export const consumerPaymentsScreenOptions = (navData) => {
+    return {
+        headerTitle: () => (
+            <HeaderTitle title="Pagamentos" />
+        ),
+        headerBackImage: () => (<BackArrow />),
+        headerStyle: {
+            backgroundColor: 'transparent',
+            // position: 'absolute',
+            // zIndex: 100,
+            // top: 0,
+            // left: 0,
+            // right: 0,
+            elevation: 0,
+            shadowOpacity: 0,
+            borderBottomWidth: 0,
+        }
+    };
+};
+
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
@@ -266,25 +285,5 @@ const styles = StyleSheet.create({
         resizeMode: 'contain'
     }
 });
-
-ConsumerPaymentsScreen.navigationOptions = (navData) => {
-    return {
-        headerTitle: () => (
-            <HeaderTitle title="Pagamentos" />
-        ),
-        headerBackImage: () => (<BackArrow />),
-        headerStyle: {
-            backgroundColor: 'transparent',
-            // position: 'absolute',
-            // zIndex: 100,
-            // top: 0,
-            // left: 0,
-            // right: 0,
-            elevation: 0,
-            shadowOpacity: 0,
-            borderBottomWidth: 0,
-        }
-    };
-};
 
 export default withNavigation(ConsumerPaymentsScreen);

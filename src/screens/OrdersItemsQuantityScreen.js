@@ -10,7 +10,6 @@ const OrdersItemsQuantity = (props) => {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
   } = useContext(OrderContext);
-  // const deliveryId = navigation.state.params.delivery.id;
   let deliveryId;
   if (props.route.params) {
     deliveryId = props.route.params.delivery.id;
