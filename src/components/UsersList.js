@@ -10,7 +10,9 @@ import {
 import { withNavigation } from 'react-navigation';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FontAwesome5 } from '@expo/vector-icons'; 
 import { Feather } from '@expo/vector-icons';
+import Colors from '../constants/Colors';
 
 const UsersList = ({ navigation, data, onUserDelete }) => {
   const deleteIfNotSelfDeletion = async (user) => {
@@ -46,7 +48,7 @@ const UsersList = ({ navigation, data, onUserDelete }) => {
   };
 
   const openDetails = (item) => {
-    console.log('Cheguei no OpenDetails');
+    console.log('[User List ]Cheguei no OpenDetails');
     navigation.navigate('UserDetailScreen', {
       user: {
         id: item.id,
@@ -58,6 +60,7 @@ const UsersList = ({ navigation, data, onUserDelete }) => {
         balance: item.balance,
       },
     });
+    console.log('[User List ]Sai do OpenDetails');
   };
 
   const editUser = (item) => {
@@ -83,10 +86,12 @@ const UsersList = ({ navigation, data, onUserDelete }) => {
       <View style={styles.itemContainer}>
         <View style={styles.textContainer}>
           <Text style={styles.itemTitle}>{data.item.name}</Text>
-          <Text style={styles.itemSubtitle}>{data.item.phoneNumber}</Text>
+          {/* <Text style={styles.itemSubtitle}>{data.item.phoneNumber}</Text> */}
         </View>
         <View style={styles.iconContainer}>
-          <Feather name="chevron-right" size={18} color="#ddd" />
+          <FontAwesome5 name="user-edit" size={24} color={Colors.secondary} />
+
+          {/* <Feather name="chevron-right" size={18} color="#ddd" /> */}
         </View>
       </View>
     </TouchableHighlight>
@@ -152,8 +157,11 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   itemContainer: {
-    paddingLeft: 10,
+    // paddingLeft: 20,
+    padding: 15,
     flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 25,
   },
   rowFront: {
     backgroundColor: '#f2f2f2',

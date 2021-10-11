@@ -22,12 +22,13 @@ import {
 } from '../../helper/HelperFunctions';
 
 const CreateExtraItemScreen = (props) => {
-  // const products = props.navigation.getParam('products');
-  // const product = props.navigation.getParam('product');
-  // const selectedProducts = navigation.getParam('selectedProducts');
   const products = props.route.params.products;
   const product = props.route.params.product;
   const selectedProducts = props.route.params.selectedProducts;
+
+  // const products = navigation.getParam('products');
+  // const product = navigation.getParam('product');
+  // const selectedProducts = navigation.getParam('selectedProducts');
 
   const { state, createProduct, updateProduct, deleteProduct } = useContext(
     ProductContext
@@ -48,7 +49,7 @@ const CreateExtraItemScreen = (props) => {
   );
 
   const resolveIntValueOf = (text) => {
-    let intValue = parseInt(text);
+    const intValue = parseInt(text);
     return isNaN(intValue) ? null : intValue;
   };
 
@@ -57,9 +58,8 @@ const CreateExtraItemScreen = (props) => {
     if (isNaN(numericPrice)) {
       showAlert('Valor inválido para o preço.');
       return null;
-    } else {
-      return numericPrice;
     }
+    return numericPrice;
   };
 
   const productExists = () => {
@@ -80,7 +80,7 @@ const CreateExtraItemScreen = (props) => {
     const maxOrderQuantity = resolveIntValueOf(itemMaxOrderQuantity);
     const price = resolvePriceValueIfValid();
 
-    if (!price || productExists()) {
+    if (price == null || productExists()) {
       return;
     }
 
@@ -108,7 +108,7 @@ const CreateExtraItemScreen = (props) => {
     const maxOrderQuantity = resolveIntValueOf(itemMaxOrderQuantity);
     const price = resolvePriceValueIfValid();
 
-    if (!price || productExists()) {
+    if (price == null || productExists()) {
       return;
     }
 

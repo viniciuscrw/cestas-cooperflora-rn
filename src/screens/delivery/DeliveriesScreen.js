@@ -1,6 +1,5 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { FlatList, StyleSheet, Text, View, Image } from 'react-native';
-import { NavigationEvents, withNavigation } from 'react-navigation';
 import { Divider } from 'react-native-elements';
 import Spinner from '../../components/Spinner';
 import ConsumerGroupDetails from '../../components/ConsumerGroupDetails';
@@ -10,27 +9,35 @@ import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import useUser from '../../hooks/useUser';
 import DeliveryCard from '../../components/DeliveryCard';
 import GLOBALS from '../../Globals';
-import HeaderTitle from '../../components/HeaderTitle';
-import BackArrow from '../../components/BackArrow';
 import BasketProductsImage from '../../../assets/images/basketproducts.png';
+import Colors from '../../constants/Colors';
+import { AntDesign } from '@expo/vector-icons';
 
 const DeliveriesScreen = ({ navigation }) => {
+  const [refreshing, setRefreshing] = useState(false);
   const user = useUser();
   const { state, fetchDeliveries } = useContext(DeliveryContext);
 
   useEffect(() => {
-    fetchDeliveries();
-  }, [])
+    const unsubscribe = navigation.addListener('focus', () => {
+      // The screen is focused
+      // Call any action
+      fetchDeliveries();
+    });
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
 
   const renderButtonOrMessage = () => {
     if (user && user.role === GLOBALS.USER.ROLE.ORGANIZER) {
       return (
-        <Button
-          style={styles.nextDeliveryButton}
-          onPress={() => navigation.navigate('CreateDeliveryScreen')}
-        >
-          Adicionar próxima entrega
-        </Button>
+        <View style={styles.buttonContainer}>
+          <Button style={styles.button}
+            textColor='white'
+            onPress={() => navigation.navigate('CreateDeliveryScreen')}>
+            Adicionar próxima entrega
+          </Button>
+        </View>
       );
     }
     return (
@@ -41,12 +48,15 @@ const DeliveriesScreen = ({ navigation }) => {
   };
 
   const editDelivery = (delivery) => {
-    navigation.navigate('CreateDelivery', { delivery });
+    navigation.navigate('DeliveryManagement', {
+      params: { delivery: delivery },
+      screen: 'CreateDeliveryScreen'
+    });
   };
 
   const onCardClick = (delivery) => {
     if (user.role === GLOBALS.USER.ROLE.ORGANIZER) {
-      navigation.navigate('OrdersManagement', { delivery });
+      navigation.navigate('OrdersManagement', { delivery: delivery });
     } else {
       navigation.navigate('ConsumerOrderScreen', { user, delivery });
     }
@@ -63,7 +73,6 @@ const DeliveriesScreen = ({ navigation }) => {
             <DeliveryCard
               delivery={nextDelivery}
               ordersDateText="Pedidos até:"
-              borderColor="darkolivegreen"
               onPress={() => onCardClick(nextDelivery)}
               showEditButton={user.role === GLOBALS.USER.ROLE.ORGANIZER}
               onEditButtonPress={() => editDelivery(nextDelivery)}
@@ -98,13 +107,18 @@ const DeliveriesScreen = ({ navigation }) => {
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
-        {/* <NavigationEvents onWillFocus={fetchDeliveries} /> */}
         {!state.loading && user ? (
           <FlatList
             data={state.lastDeliveries}
             ListHeaderComponent={renderNextDelivery}
             renderItem={renderLastDeliveriesItem}
             keyExtractor={(item) => item.id}
+            onRefresh={() => {
+              setRefreshing(true);
+              fetchDeliveries()
+              setRefreshing(false);
+            }}
+            refreshing={refreshing}
           />
         ) : (
           <Spinner />
@@ -114,8 +128,7 @@ const DeliveriesScreen = ({ navigation }) => {
   );
 };
 
-export const deliveriesNavigationOptions = ( navigation ) => {
-  // console.log('Deliveries Screen', navigation.navigate);
+export const deliveriesNavigationOptions = (navigation) => {
   return {
     headerTitle: () => (
       <View>
@@ -125,8 +138,7 @@ export const deliveriesNavigationOptions = ( navigation ) => {
         <MainHeader />
       </View>
     ),
-    // headerBackImage: () => (<BackArrow />),
-    headerRight: () => <ConsumerGroupDetails navigation={navigation.navigation}/>,
+    headerRight: () => <ConsumerGroupDetails navigation={navigation.navigation} />,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
@@ -134,10 +146,6 @@ export const deliveriesNavigationOptions = ( navigation ) => {
       borderBottomWidth: 0,
     }
   };
-  // return {
-  //   headerTitle: () => <MainHeader />,
-  //   headerRight: () => <ConsumerGroupDetails />,
-  // };
 };
 
 const styles = StyleSheet.create({
@@ -187,14 +195,25 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'absolute',
-    left: -100,
+    left: -15,
     width: 80,
     height: 65,
   },
   image: {
     width: '100%',
     height: '100%'
-  }
+  },
+  buttonContainer: {
+    // position: 'absolute',
+    width: '100%',
+    // bottom: 0,
+  },
+  button: {
+    marginTop: 5,
+    backgroundColor: Colors.secondary,
+    alignSelf: 'center',
+  },
+
 });
 
 export default DeliveriesScreen;

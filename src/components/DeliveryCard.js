@@ -4,6 +4,7 @@ import { Card, Divider } from 'react-native-elements';
 import { format } from 'date-fns';
 import GLOBALS from '../Globals';
 import { Feather } from '@expo/vector-icons';
+import Colors from '../constants/Colors';
 
 const DeliveryCard = ({
   delivery,
@@ -17,7 +18,7 @@ const DeliveryCard = ({
     return delivery.baseProducts.toLowerCase().replace(/\n/g, ', ');
   };
 
-  const formatCardTitle = (deliveryDate) => {
+   const formatCardTitle = (deliveryDate) => {
     return (
       <View style={styles.titleViewContainer}>
         <View style={styles.titleContainer}>
@@ -27,13 +28,13 @@ const DeliveryCard = ({
           {showEditButton ? (
             <Feather
               name="edit"
-              size={20}
-              color={borderColor}
+              size={24}
+              color={Colors.secondary}
               onPress={onEditButtonPress}
             />
           ) : null}
         </View>
-        <Divider style={{ backgroundColor: borderColor }} />
+        <Divider style={{ backgroundColor: Colors.secondary }} />
       </View>
     );
   };

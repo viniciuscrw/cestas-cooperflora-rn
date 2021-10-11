@@ -89,7 +89,9 @@ const AccountOptionsScreen = ({ navigation }) => {
 export const AccountOptionsScreenOptions = (navData) => {
   return {
     headerTitle: () => (
-      <HeaderTitle title="Minha Conta" />
+      <View style={styles.header} >
+        <HeaderTitle title="Minha Conta" />
+      </View>
     ),
     headerStyle: {
       backgroundColor: 'transparent',
@@ -148,6 +150,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#505050',
   },
+  header:{
+    alignItems: 'flex-start'
+  }
 });
 
 export default AccountOptionsScreen;

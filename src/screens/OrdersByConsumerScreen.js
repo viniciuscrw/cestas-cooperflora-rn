@@ -1,37 +1,118 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';
 import { NavigationEvents } from 'react-navigation';
 import { Input, ListItem } from 'react-native-elements';
 import GLOBALS from '../Globals';
 import { Context as OrderContext } from '../context/OrderContext';
+import { Context as UserContext } from '../context/UserContext';
 import Spinner from '../components/Spinner';
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
+import Colors from '../constants/Colors';
 
 const OrdersByConsumerScreen = (props) => {
+  // console.log('[OrdersbyConsumer Screen] started');
+  // console.log('[OrdersbyConsumer Screen] props', props);
+
   const {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
   } = useContext(OrderContext);
-  let delivery = {id: 1}; // ATENÇAO alterar
-  if (props.route.params) {
-    delivery = props.route.params.delivery;
-  }
-  const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] = useState(
-    null
-  );
+
+  const {
+    state: { loading: userLoading, users },
+    fetchUsers,
+  } = useContext(UserContext);
+
+  // const { delivery } = navigation.state.params;
+  const delivery = props.route.params ? props.route.params.delivery : null;
+  // console.log('[OrdersbyConsumer Screen] delivery id', delivery.id);
+
+  const [usersOrders, setUsersOrders] = useState([]);
+  const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] = useState(null);
   const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
-    fetchOrdersByDelivery(delivery.id);
+    matchUsersWithOrders();
+  }, [users, orders]);
+
+  useEffect(() => {
+    if (delivery) {
+      fetchOrdersByDelivery(delivery.id);
+      fetchUsers();
+      props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
+    } else {
+      console.log('delivery ainda não existe');
+    }
   }, [])
+
+  // useEffect(() => {
+  //   const unsubscribe = props.navigation.addListener('focus', () => {
+  //     // The screen is focused
+  //     // Call any action
+  //     fetchOrdersByDelivery(delivery.id)
+  //   });
+  //   // Return the function to unsubscribe from the event so it gets removed on unmount
+  //   return unsubscribe;
+  // }, [props.navigation]);
+
+  const resolveUserOrderItemSubtitle = (order) => {
+    const hasBaseProducts =
+      order.baseProducts != null && order.baseProducts > 0;
+    const hasExtraProducts =
+      order.extraProducts != null && order.extraProducts.length > 0;
+
+    if (hasBaseProducts && !hasExtraProducts) {
+      return `Total: R$ ${order.totalAmount} (Cesta)`;
+    }
+
+    if (!hasBaseProducts && hasExtraProducts) {
+      return `Total: R$ ${order.totalAmount} (Extras)`;
+    }
+
+    return `Total: R$ ${order.totalAmount} (Cesta + Extras)`;
+  };
+
+  const matchUsersWithOrders = () => {
+    // console.log('[OrdersbyConsumer Screen] matchuserswithorders');
+    const userOrderItems = [];
+    let userOrderItem;
+    users.forEach((user) => {
+      const userOrdersResult = orders.filter((order) => {
+        return order.userId === user.id;
+      });
+      const userOrder =
+        userOrdersResult.length > 0 ? userOrdersResult[0] : null;
+      if (userOrder && userOrder.totalAmount > 0) {
+        userOrderItem = {
+          userId: user.id,
+          userName: user.name,
+          orderId: userOrder.id,
+          subtitle: resolveUserOrderItemSubtitle(userOrder),
+        };
+      } else {
+        userOrderItem = {
+          userId: user.id,
+          userName: user.name,
+          subtitle: 'Pedido não realizado para esta entrega',
+        };
+      }
+
+      userOrderItems.push(userOrderItem);
+    });
+
+    userOrderItems.sort((a, b) => {
+      if (a.orderId != null && b.orderId == null) {
+        return -1;
+      }
+      if (a.orderId == null && b.orderId != null) {
+        return 1;
+      }
+      return a.userName.toLowerCase() < b.userName.toLowerCase() ? -1 : 1;
+    });
+    setUsersOrders(userOrderItems);
+  };
 
   const renderSearchIcon = () => {
     return !filterText.length
@@ -55,118 +136,110 @@ const OrdersByConsumerScreen = (props) => {
 
   const searchConsumersByFilter = () => {
     setFilteredOrdersByConsumer(
-      orders.filter((order) =>
+      usersOrders.filter((order) =>
         order.userName.toLowerCase().includes(filterText.toLowerCase())
       )
     );
   };
 
-  const renderSubtitle = (order) => {
-    const hasBaseProducts =
-      order.baseProducts != null && order.baseProducts > 0;
-    const hasExtraProducts =
-      order.extraProducts != null && order.extraProducts.length > 0;
-
-    if (hasBaseProducts && !hasExtraProducts) {
-      return <Text>Total: R$ {order.totalAmount} (Cesta)</Text>;
-    }
-
-    if (!hasBaseProducts && hasExtraProducts) {
-      return <Text>Total: R$ {order.totalAmount} (Extras)</Text>;
-    }
-
-    return <Text>Total: R$ {order.totalAmount} (Cesta + Extras)</Text>;
-  };
-
-  const renderItem = ({ item: order }) => {
+  const renderItem = ({ item: userOrderItem }) => {
     return (
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate('ConsumerOrderScreen', {
-            user: { id: order.userId, name: order.userName },
+          props.navigation.navigate('ConsumerOrderScreen', {
+            user: { id: userOrderItem.userId, name: userOrderItem.userName },
             delivery,
           })
         }
       >
-        <ListItem
-          containerStyle={styles.listItemContainer}
-          title={`${order.userName}`}
-          titleStyle={styles.listItemTitle}
-          subtitle={renderSubtitle(order)}
-          bottomDivider
-          chevron
-        />
+        <View style={styles.itemContainer}>
+          <ListItem
+            containerStyle={styles.listItemContainer}
+            title={`${userOrderItem.userName}`}
+            titleStyle={styles.listItemTitle}
+            subtitle={`${userOrderItem.subtitle}`}
+            // subtitle={<Text>{userOrderItem.subtitle}</Text>}
+            bottomDivider
+            chevron
+          />
+        </View>
       </TouchableOpacity>
     );
   };
 
   return (
-    <View style={styles.container}>
-      {/* <NavigationEvents
-        onWillFocus={() => fetchOrdersByDelivery(delivery.id)}
+    <View style={styles.screen}>
+      <View style={styles.container}>
+        {/* <NavigationEvents
+        onWillFocus={() => {
+          fetchOrdersByDelivery(delivery.id);
+          fetchUsers();
+        }}
       /> */}
-      <Input
-        containerStyle={styles.searchInput}
-        placeholder="Buscar pessoa consumidora"
-        value={filterText}
-        onChangeText={setFilterText}
-        onEndEditing={searchConsumersByFilter}
-        returnKeyType="done"
-        autoCorrect={false}
-        rightIcon={renderSearchIcon()}
-      />
-      {!orderLoading ? (
-        <FlatList
-          data={
-            filteredOrdersByConsumer && filteredOrdersByConsumer.length
-              ? filteredOrdersByConsumer
-              : orders
-          }
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          style={styles.productsList}
+        <Input
+          containerStyle={styles.searchInput}
+          placeholder="Buscar pessoa consumidora"
+          value={filterText}
+          onChangeText={setFilterText}
+          onEndEditing={searchConsumersByFilter}
+          returnKeyType="done"
+          autoCorrect={false}
+          rightIcon={renderSearchIcon()}
         />
-      ) : (
-        <Spinner />
-      )}
+        {!orderLoading && !userLoading ? (
+          <FlatList
+            data={
+              filteredOrdersByConsumer && filteredOrdersByConsumer.length
+                ? filteredOrdersByConsumer
+                : usersOrders
+            }
+            renderItem={renderItem}
+            keyExtractor={(item) => item.userId}
+            style={styles.productsList}
+          />
+        ) : (
+          <Spinner />
+        )}
+      </View>
     </View>
   );
 };
 
-export const ordersManagementNavigationOptions = ({route}) => {
-  // console.log(route.params.delivery.deliveryDate);
-  // let deliveryDate = '2021-10-08T02:59:59.999Z'.toDate();
-  // if(route.params.delivery){
-  //   deliveryDate = route.params.delivery.deliveryDate;
-  // }
-
-  // return {
-  //   headerTitle: `Pedidos - ${format(
-  //     deliveryDate,
-  //     GLOBALS.FORMAT.DEFAULT_DATE
-  //   )}`,
-  // };
-
+export const ordersManagementScreenOptions = ( props ) => {
+  const deliveryDate = format(props.route.params.delivery.deliveryDate,GLOBALS.FORMAT.DEFAULT_DATE);
+  console.log(deliveryDate);
   return {
     headerTitle: () => (
-        <HeaderTitle title="Pedidos" />
+      <View style={styles.header} >
+        <HeaderTitle title={`Pedidos - ${deliveryDate}`} />
+      </View>
     ),
     headerBackImage: () => (<BackArrow />),
     headerStyle: {
-        backgroundColor: 'transparent',
-        elevation: 0,
-        shadowOpacity: 0,
-        borderBottomWidth: 0,
+      backgroundColor: 'transparent',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
     }
-};
-
+  }
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: Colors.backGroundColor,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: "black",
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 25
+  },
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: '#ebebeb',
+    margin: 25
   },
   text: {
     color: '#101010',
@@ -175,6 +248,12 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     width: 300,
+  },
+  itemContainer: {
+    marginBottom: 5,
+    // flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 25,
   },
   productsList: {
     marginTop: -10,
@@ -188,6 +267,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
     fontSize: 20,
+  },
+  header: {
+    alignItems: 'flex-start'
   },
 });
 

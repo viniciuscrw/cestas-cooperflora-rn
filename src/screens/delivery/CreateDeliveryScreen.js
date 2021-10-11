@@ -11,7 +11,6 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { format } from 'date-fns';
-import { withNavigation } from 'react-navigation';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
@@ -19,17 +18,17 @@ import FormInput from '../../components/FormInput';
 import Spacer from '../../components/Spacer';
 import GLOBALS from '../../Globals';
 import useConsumerGroup from '../../hooks/useConsumerGroup';
+import HeaderTitle from '../../components/HeaderTitle';
+import BackArrow from '../../components/BackArrow';
+import Colors from '../../constants/Colors';
 
 const CreateDeliveryScreen = (props) => {
   console.log('[Create Delivery Screen started]');
   const { setDeliveryInfo } = useContext(DeliveryContext);
 
-  console.log(props);
   // const delivery = navigation.getParam('delivery');
-  let delivery;
-  if( props.route.params){
-    delivery = props.route.params.delivery;
-  }
+  const delivery = props.route.params ? props.route.params.delivery : null;
+  // console.log('[Create Delivery Screen]', delivery);
 
   const [deliveryDate, setDeliveryDate] = useState(
     delivery ? delivery.deliveryDate : new Date()
@@ -159,127 +158,155 @@ const CreateDeliveryScreen = (props) => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 100}
-        behavior={Platform.OS === 'ios' ? 'position' : 'height'}
-      >
-        <View style={{ justifyContent: 'flex-end' }}>
-          <ScrollView>
-            <TouchableOpacity
-              onPress={() => setShowDeliveryDate(!showDeliveryDate)}
-            >
-              <FormInput
-                label="Data da entrega"
-                value={format(deliveryDate, GLOBALS.FORMAT.DEFAULT_DATE)}
-                editable={false}
-                rightIcon={handleDateInputIconTouch(
-                  showDeliveryDate,
-                  setShowDeliveryDate,
-                  false
+    <View style={styles.screen}>
+      <View style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <KeyboardAvoidingView
+            style={styles.container}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 100}
+            behavior={Platform.OS === 'ios' ? 'position' : 'height'}
+          >
+            <View style={{ justifyContent: 'flex-end' }}>
+              <ScrollView>
+                <TouchableOpacity
+                  onPress={() => setShowDeliveryDate(!showDeliveryDate)}
+                >
+                  <FormInput
+                    style={{ borderBottomWidth: 2, borderColor: Colors.tertiary }}
+                    label="Data da entrega"
+                    value={format(deliveryDate, GLOBALS.FORMAT.DEFAULT_DATE)}
+                    editable={false}
+                    rightIcon={handleDateInputIconTouch(
+                      showDeliveryDate,
+                      setShowDeliveryDate,
+                      false
+                    )}
+                    onTouchStart={() => setShowDeliveryDate(!showDeliveryDate)}
+                  />
+                </TouchableOpacity>
+                {showDeliveryDate && (
+                  <DateTimePicker
+                    value={deliveryDate}
+                    mode="date"
+                    display="default"
+                    minimumDate={new Date()}
+                    onChange={onDeliveryDateChange}
+                  />
                 )}
-                onTouchStart={() => setShowDeliveryDate(!showDeliveryDate)}
-              />
-            </TouchableOpacity>
-            {showDeliveryDate && (
-              <DateTimePicker
-                value={deliveryDate}
-                mode="date"
-                display="default"
-                minimumDate={new Date()}
-                onChange={onDeliveryDateChange}
-              />
-            )}
-            <TouchableOpacity onPress={handleOrdersDateTimeInputPress}>
-              <FormInput
-                label="Horário limite para pedidos"
-                value={`${format(
-                  ordersLimitDate,
-                  GLOBALS.FORMAT.DEFAULT_DATE
-                )} ${format(ordersLimitTime, GLOBALS.FORMAT.DEFAULT_TIME)}`}
-                editable={false}
-                rightIcon={handleDateInputIconTouch(
-                  showOrdersDateTime,
-                  setShowOrdersDateTime,
-                  true
+                <TouchableOpacity onPress={handleOrdersDateTimeInputPress}>
+                  <FormInput
+                    style={{ borderBottomWidth: 2, borderColor: Colors.tertiary }}
+                    label="Horário limite para pedidos"
+                    value={`${format(
+                      ordersLimitDate,
+                      GLOBALS.FORMAT.DEFAULT_DATE
+                    )} ${format(ordersLimitTime, GLOBALS.FORMAT.DEFAULT_TIME)}`}
+                    editable={false}
+                    rightIcon={handleDateInputIconTouch(
+                      showOrdersDateTime,
+                      setShowOrdersDateTime,
+                      true
+                    )}
+                    onTouchStart={handleOrdersDateTimeInputPress}
+                  />
+                </TouchableOpacity>
+                {showOrdersDateTime && (
+                  <DateTimePicker
+                    value={
+                      dateTimeMode === 'date' ? ordersLimitDate : ordersLimitTime
+                    }
+                    mode={dateTimeMode}
+                    is24Hour
+                    display="default"
+                    minimumDate={dateTimeMode === 'date' ? new Date() : null}
+                    maximumDate={dateTimeMode === 'date' ? deliveryDate : null}
+                    onChange={onOrdersDateTimeChange}
+                  />
                 )}
-                onTouchStart={handleOrdersDateTimeInputPress}
-              />
-            </TouchableOpacity>
-            {showOrdersDateTime && (
-              <DateTimePicker
-                value={
-                  dateTimeMode === 'date' ? ordersLimitDate : ordersLimitTime
-                }
-                mode={dateTimeMode}
-                is24Hour
-                display="default"
-                minimumDate={dateTimeMode === 'date' ? new Date() : null}
-                maximumDate={dateTimeMode === 'date' ? deliveryDate : null}
-                onChange={onOrdersDateTimeChange}
-              />
-            )}
-            <Spacer />
-            <View style={styles.textAreaContainer}>
-              <TextInput
-                style={styles.textArea}
-                value={baseProducts}
-                onChangeText={setBaseProducts}
-                onEndEditing={() =>
-                  setDeliveryInfo(
-                    deliveryDate,
-                    ordersLimitDate,
-                    ordersLimitTime,
-                    baseProducts,
-                    groupInfo?.baseProductsPrice,
-                    groupInfo?.deliveryFee
-                  )
-                }
-                underlineColorAndroid="transparent"
-                placeholder="Composição da cesta"
-                placeholderTextColor="grey"
-                numberOfLines={10}
-                multiline
-              />
+                <Spacer />
+                <View style={styles.textAreaContainer}>
+                  <TextInput
+                    style={styles.textArea}
+                    value={baseProducts}
+                    onChangeText={setBaseProducts}
+                    onEndEditing={() =>
+                      setDeliveryInfo(
+                        deliveryDate,
+                        ordersLimitDate,
+                        ordersLimitTime,
+                        baseProducts,
+                        groupInfo?.baseProductsPrice,
+                        groupInfo?.deliveryFee
+                      )
+                    }
+                    underlineColorAndroid="transparent"
+                    placeholder="Composição da cesta"
+                    placeholderTextColor="grey"
+                    numberOfLines={10}
+                    multiline
+                  />
+                </View>
+              </ScrollView>
             </View>
-          </ScrollView>
-        </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </View>
+    </View>
   );
 };
 
-export const createDeliveryNavigationOptions = ({ navigation }) => {
+export const createDeliveryScreenOptions = () => {
   return {
-    headerTitle: 'Nova entrega',
-    headerLeft: () => (
-      <TouchableOpacity onPress={() => navigation.goBack(null)}>
-        <FontAwesome5
-          name="chevron-left"
-          style={{ marginLeft: 10 }}
-          size={24}
-          color="#2d98d6"
-        />
-      </TouchableOpacity>
+    headerTitle: () => (
+      <View style={styles.header}>
+        <HeaderTitle title="Nova Entrega" />
+      </View>
     ),
-  };
+    headerBackImage: () => (<BackArrow />),
+    headerBackTitleVisible: false,
+    headerStyle: {
+      backgroundColor: 'transparent',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+    }
+  }
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: 'white',
+    // paddingLeft: 25,
+    // paddingRight: 25,
+    // borderRadius: 25,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    backgroundColor: '#F0F5F9',
+    shadowColor: "black",
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 25
+  },
   container: {
     flex: 1,
-    backgroundColor: '#ebebeb',
-    padding: 10,
+    margin: 10,
   },
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: '#ebebeb',
+  //   padding: 10,
+  // },
   text: {
     color: '#101010',
     fontSize: 24,
     fontWeight: 'bold',
   },
   textAreaContainer: {
-    borderColor: 'grey',
-    borderWidth: 1,
+    borderColor: Colors.tertiary,
+    borderWidth: 2,
     padding: 5,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
@@ -289,6 +316,9 @@ const styles = StyleSheet.create({
     height: 150,
     width: 300,
     textAlignVertical: 'top',
+  },
+  header: {
+    alignItems: 'flex-start'
   },
 });
 

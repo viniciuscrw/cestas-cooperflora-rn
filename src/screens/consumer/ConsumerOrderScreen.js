@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { withNavigationFocus } from 'react-navigation';
+// import { withNavigationFocus } from 'react-navigation';
 import {
   ActivityIndicator,
   Alert,
@@ -21,6 +21,7 @@ import BackArrow from '../../components/BackArrow';
 import VegetableImage from '../../../assets/images/vegetable2.png';
 
 const ConsumerOrderScreen = (props) => {
+  console.log('[ConsumerOrderScreen started]');
   const [baseProducts, setBaseProducts] = useState();
   const [orderProducts, setOrderProducts] = useState([]);
   const [limitDateToOrder, setLimitDateToOrder] = useState();
@@ -100,14 +101,24 @@ const ConsumerOrderScreen = (props) => {
 
   const onHandleNewOrUpdatedOrder = () => {
     console.log('[Consumer Order Screen] Handle new or update order');
-    addOrder(user.id, user.name, delivery.id, order);
-    if (!loading) {
-      if (user.role) {
-        props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
-      } else {
-        props.navigation.goBack(null);
+    addOrder(user.id, user.name, delivery.id, delivery.deliveryFee, order).then(
+      () => {
+        if (user.role) {
+          props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
+        } else {
+          props.navigation.goBack(null);
+        }
       }
-    }
+    )
+
+    // addOrder(user.id, user.name, delivery.id, order);
+    // if (!loading) {
+    //   if (user.role) {
+    //     props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
+    //   } else {
+    //     props.navigation.goBack(null);
+    //   }
+    // }
   };
 
   if (loading) {
@@ -237,9 +248,10 @@ const ConsumerOrderScreen = (props) => {
   );
 };
 
-ConsumerOrderScreen.navigationOptions = (navData) => {
+export const consumerOrderScreenOptions = (navData) => {
+  console.log(navData.route.params.delivery.deliveryDate);
   const deliveryDate = format(
-    navData.navigation.state.params.delivery.deliveryDate,
+    navData.route.params.delivery.deliveryDate,
     GLOBALS.FORMAT.DD_MM
   );
   // if (navData.route) {
@@ -370,9 +382,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     justifyContent: 'space-between',
   },
+  header: {
+    alignItems: 'flex-start'
+  },
   imageContainer: {
     position: 'absolute',
-    right: -100,
+    right: -10,
     width: 80,
     height: 55,
   },
@@ -382,4 +397,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigationFocus(ConsumerOrderScreen);
+export default (ConsumerOrderScreen);

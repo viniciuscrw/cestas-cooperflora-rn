@@ -12,7 +12,7 @@ import DeliveriesScreen, {
   deliveriesNavigationOptions,
 } from '../screens/delivery/DeliveriesScreen';
 import ConsumerGroupInfoScreen, {
-  consumerGroupInfoNavigationOptions,
+  consumerGroupInfoScreenOptions,
 } from '../screens/ConsumerGroupInfoScreen';
 import PaymentsScreen, { paymentsScreenOptions } from '../screens/PaymentsScreen';
 import SigninScreen, { signinScreenOptions } from '../screens/SigninScreen';
@@ -22,40 +22,27 @@ import OrganizersScreen from '../screens/OrganizersScreen';
 import CreateUserScreen from '../screens/CreateUserScreen';
 import UserDetailScreen from '../screens/UserDetailScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
-import EditConsumerGroupInfoScreen from '../screens/EditConsumerGroupScreen';
+import EditConsumerGroupInfoScreen, { editConsumerGroupScreenOptions } from '../screens/EditConsumerGroupScreen';
 import UpdateAccountInfoScreen, { updateAccountInfoScreenOptions } from '../screens/UpdateAccountInfoScreen';
 import AccountOptionsScreen, { AccountOptionsScreenOptions } from '../screens/AccountOptionsScreen';
 import UpdatePasswordScreen, { updatePasswordScreenOptions } from '../screens/UpdatePasswordScreen';
 import CreateDeliveryScreen, {
-  createDeliveryNavigationOptions,
+  createDeliveryScreenOptions,
 } from '../screens/delivery/CreateDeliveryScreen';
 import AddDeliveryExtraItemsScreen from '../screens/delivery/AddDeliveryExtraItemsScreen';
 import CreateExtraItemScreen from '../screens/delivery/CreateExtraItemScreen';
 import OrdersByConsumerScreen, {
-  ordersManagementNavigationOptions,
+  ordersManagementScreenOptions,
 } from '../screens/OrdersByConsumerScreen';
-import ConsumerOrderScreen from '../screens/consumer/ConsumerOrderScreen';
-import ConsumerOrderPlacedScreen from '../screens/consumer/ConsumerOrderPlacedScreen';
+import ConsumerOrderScreen, { consumerOrderScreenOptions } from '../screens/consumer/ConsumerOrderScreen';
+import ConsumerOrderPlacedScreen, { consumerOrderPlacedScreenOptions } from '../screens/consumer/ConsumerOrderPlacedScreen';
 import ConsumerPaymentsScreen, { consumerPaymentsScreenOptions } from '../screens/consumer/ConsumerPaymentsScreen';
 import ConsumerAddPaymentScreen, { consumerAddPaymentScreenOptions } from '../screens/consumer/ConsumerAddPaymentScreen';
 import OrdersItemsQuantityScreen from '../screens/OrdersItemsQuantityScreen';
 import Colors from '../constants/Colors';
 
 const defaultStackNavOptions = {
-  headerTitleAlign: 'center',
-};
-
-const topTabBarOptions = {
-  style: {
-    backgroundColor: 'white',
-    height: 30,
-  },
-  labelStyle: {
-    marginTop: -8,
-    fontSize: 11,
-  },
-  activeTintColor: 'darkorange',
-  inactiveTintColor: 'darkolivegreen',
+  // headerTitleAlign: 'center',
 };
 
 const ConsumerGroupStackNavigator = createStackNavigator();
@@ -63,10 +50,14 @@ export const ConsumerGroupNavigator = () => {
   return (
     <ConsumerGroupStackNavigator.Navigator>
       <ConsumerGroupStackNavigator.Screen
-        name="ConsumerGroupInfoScreen" component={ConsumerGroupInfoScreen}
+        name="ConsumerGroupInfoScreen"
+        component={ConsumerGroupInfoScreen}
+        options={consumerGroupInfoScreenOptions}
       />
       <ConsumerGroupStackNavigator.Screen
-        name="EditConsumerGroupInfoScreen" component={EditConsumerGroupInfoScreen}
+        name="EditConsumerGroupInfoScreen"
+        component={EditConsumerGroupInfoScreen}
+        options={editConsumerGroupScreenOptions}
       />
     </ConsumerGroupStackNavigator.Navigator>
   );
@@ -106,15 +97,37 @@ export const OrganizerNavigator = () => {
   );
 }
 
+const topTabBarOptions = {
+  style: {
+    backgroundColor: 'transparent',
+    height: 30,
+  },
+  labelStyle: {
+    marginTop: -8,
+    fontSize: 13,
+  },
+  activeTintColor: Colors.secondary,
+  inactiveTintColor: Colors.tertiary,
+  indicatorStyle: {
+    backgroundColor: Colors.secondary,
+  },
+};
+
 const TopTabNavigator = createMaterialTopTabNavigator();
 export const ConsumerGroupTopTabNavigator = () => {
   return (
-    <TopTabNavigator.Navigator tabBarOptions={topTabBarOptions} swipeEnabled={true}>
+    <TopTabNavigator.Navigator
+      tabBarOptions={topTabBarOptions}
+      initialRouteName="Informações"
+    >
       <TopTabNavigator.Screen
-        name="Informações" component={ConsumerGroupNavigator}
+        name="Informações"
+        component={ConsumerGroupNavigator}
+        options={{ tabBarLabel: 'Informações' }}
       />
       <TopTabNavigator.Screen
-        name="Consumidores" component={ConsumerNavigator} />
+        name="Consumidores" component={ConsumerNavigator}
+      />
       <TopTabNavigator.Screen
         name="Organizadores" component={OrganizerNavigator}
       />
@@ -125,7 +138,8 @@ export const ConsumerGroupTopTabNavigator = () => {
 const ExtraItemsStackNavigator = createStackNavigator();
 export const ExtraItemsNavigator = () => {
   return (
-    <ExtraItemsStackNavigator.Navigator>
+    <ExtraItemsStackNavigator.Navigator
+    >
       <ExtraItemsStackNavigator.Screen
         name="AddDeliveryExtraItemsScreen" component={AddDeliveryExtraItemsScreen}
       />
@@ -137,29 +151,41 @@ export const ExtraItemsNavigator = () => {
 }
 
 const DelTopTabNavigator = createMaterialTopTabNavigator();
-export const DeliveryTopTabNavigator = () => {
+export const DeliveryManagementTopTabNavigator = (props) => {
   return (
     <DelTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
       <DelTopTabNavigator.Screen
-        name="Informações da entrega" component={CreateDeliveryScreen}
+        name="CreateDeliveryScreen"
+        component={CreateDeliveryScreen}
+        options={{ tabBarLabel: 'Composição da Cesta' }}
       />
       <DelTopTabNavigator.Screen
-        name="Produtos Extras" component={ExtraItemsNavigator}
+        name="Produtos Extras"
+        component={ExtraItemsNavigator}
+        options={{ tabBarLabel: 'Produtos Extras' }}
       />
     </DelTopTabNavigator.Navigator>
   );
 }
 
 const OrdTopTabNavigator = createMaterialTopTabNavigator();
-export const OrdersManagementTabNavigator = () => {
+export const OrdersManagementTabNavigator = ( props ) => {
+  const delivery = props.route.params;
   return (
-    <OrdTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
+    <OrdTopTabNavigator.Navigator
+      tabBarOptions={topTabBarOptions}
+    >
       <OrdTopTabNavigator.Screen
-        name="Pedidos" component={OrdersByConsumerScreen}
-        options={ordersManagementNavigationOptions}
+        name="OrdersByConsumer" component={OrdersByConsumerScreen}
+        // options={ordersManagementScreenOptions}
+        options={{ tabBarLabel: 'Pedidos' }}
+        initialParams={delivery}
+
       />
       <OrdTopTabNavigator.Screen
-        name="Quantidades pedidas" component={OrdersItemsQuantityScreen}
+        name="Quantidades pedidas" 
+        component={OrdersItemsQuantityScreen}
+        initialParams={delivery}
       />
     </OrdTopTabNavigator.Navigator>
   );
@@ -174,24 +200,27 @@ export const DeliveryNavigator = () => {
         options={deliveriesNavigationOptions}
       />
       <DeliveryStackNavigator.Screen
-        name="DeliveryTopTabNavigator" component={DeliveryTopTabNavigator} options={createDeliveryNavigationOptions}
+        name="DeliveryTopTabNavigator" component={DeliveryManagementTopTabNavigator}
+        options={createDeliveryScreenOptions}
       />
       <DeliveryStackNavigator.Screen
-        name="ConsumerGroupTopTabNavigator" component={ConsumerGroupTopTabNavigator} options={consumerGroupInfoNavigationOptions}
+        name="ConsumerGroupTopTabNavigator" component={ConsumerGroupTopTabNavigator}
+      // options={consumerGroupInfoNavigationOptions}
       />
       <DeliveryStackNavigator.Screen
-        name="ConsumerGroupInfo" component={ConsumerGroupInfoScreen} options={consumerGroupInfoNavigationOptions}
+        name="ConsumerGroupInfoScreen" component={ConsumerGroupInfoScreen}
+        options={consumerGroupInfoScreenOptions}
       />
       <DeliveryStackNavigator.Screen
-        name="OrdersManagement" component={OrdersManagementTabNavigator} options={ordersManagementNavigationOptions}
+        name="OrdersManagement" component={OrdersManagementTabNavigator} options={ordersManagementScreenOptions}
       />
       <DeliveryStackNavigator.Screen
         name="ConsumerOrderScreen" component={ConsumerOrderScreen}
-      // options={ordersManagementNavigationOptions}
+        options={consumerOrderScreenOptions}
       />
       <DeliveryStackNavigator.Screen
         name="ConsumerOrderPlacedScreen" component={ConsumerOrderPlacedScreen}
-      // options={ordersManagementNavigationOptions}
+        options={consumerOrderPlacedScreenOptions}
       />
       <DeliveryStackNavigator.Screen
         name="ConsumerAddPaymentScreen" component={ConsumerAddPaymentScreen}
@@ -276,10 +305,16 @@ export const BottomTabNavigator = () => {
   return (
     <BottomTab.Navigator
       initialRouteName="DeliveryNavigator"
-      screenOptions={({ route }) => ({
-        tabBarActiveTintColor: 'tomato',
-        tabBarInactiveTintColor: 'gray',
-      })}
+      // activeColor="red"
+      // inactiveColor="white"
+      // tabBarActiveTintColor='tomato'
+      // tabBarInactiveTintColor='gray'
+      // activeBackgroundColor="green"
+      // inactiveBackgroundColor="green"
+      tabBarOptions={{
+        activeTintColor: Colors.secondary,
+        inactiveTintColor: Colors.tertiary,
+      }}
     >
       <BottomTab.Screen
         name="AccountNavigator" component={AccountNavigator}
@@ -287,9 +322,9 @@ export const BottomTabNavigator = () => {
         options={{
           tabBarLabel: 'Minha Conta',
           tabBarAccessibilityLabel: 'Minha Conta',
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({ color }) => {
             return (
-              <FontAwesome5 name="user-alt" size={34} color={color} />
+              <FontAwesome5 name="user-alt" size={40} color={color} />
             )
           },
         }}
@@ -299,8 +334,8 @@ export const BottomTabNavigator = () => {
         options={{
           tabBarLabel: 'Cestas bottom tab',
           tabBarAccessibilityLabel: 'Cestas bottom tab',
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="shopping-basket" size={34} color={color} />
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="shopping-basket" size={40} color={color} />
           ),
         }}
       />
@@ -310,8 +345,8 @@ export const BottomTabNavigator = () => {
           tabBarLabel: 'Pagamentos',
           tabBarAccessibilityLabel: 'Pagamentos',
           tabBarActiveTintColor: 'red',
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="dollar-sign" size={34} color={color} />
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="dollar-sign" size={40} color={color} />
           ),
         }}
       />
@@ -324,24 +359,31 @@ export const MainNavigator = () => {
   return (
     <MainStackNavigator.Navigator >
       <MainStackNavigator.Screen
-        name="Entregas" component={BottomTabNavigator} 
-        options={{headerShown:false}}
+        name="Entregas" component={BottomTabNavigator}
+        options={{ headerShown: false }}
       />
       <MainStackNavigator.Screen
-        name="CreateDeliveryScreen"
-        component={DeliveryTopTabNavigator}
-        // options={}
+        name="DeliveryManagement"
+        component={DeliveryManagementTopTabNavigator}
+        options={createDeliveryScreenOptions}
       />
       <MainStackNavigator.Screen
         name="OrdersManagement"
         component={OrdersManagementTabNavigator}
       />
-
+      <MainStackNavigator.Screen
+        name="ConsumerGroupInfoScreen" component={ConsumerGroupInfoScreen}
+        options={consumerGroupInfoScreenOptions}
+      />
+      <MainStackNavigator.Screen
+        name="ConsumerGroupManagement" component={ConsumerGroupTopTabNavigator}
+        options={consumerGroupInfoScreenOptions}
+      />
       {/* <MainStackNavigator.Screen
         name="CreateDeliveryScreen" 
         component={CreateDeliveryScreen}
-      />
-      <MainStackNavigator.Screen
+      /> */}
+      {/* <MainStackNavigator.Screen
         name="DeliveryTopTabNavigator" component={DeliveryTopTabNavigator}
       />
       <MainStackNavigator.Screen
@@ -349,12 +391,6 @@ export const MainNavigator = () => {
         component={PaymentsScreen}
         options={PaymentsScreenOptions}
       /> */}
-      {/* <MainStackNavigator.Screen
-        name="ConsumerGroupTopTabNavigator" component={ConsumerGroupTopTabNavigator}
-      /> */}
-      <MainStackNavigator.Screen
-        name="ConsumerGroupInfoScreen" component={ConsumerGroupInfoScreen}
-      />
     </MainStackNavigator.Navigator>
   );
 }

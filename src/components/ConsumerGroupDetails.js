@@ -4,19 +4,24 @@ import { AntDesign } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
 import FrontArrow from '../../assets/images/icons/frontarrow.png';
 import useUser from '../hooks/useUser';
+import HeaderTitle from './HeaderTitle';
+import BackArrow from './BackArrow';
 
 const ConsumerGroupDetails = ({ navigation }) => {
   const user = useUser();
-  console.log('Consumer Group Details Screen', navigation);
 
   return user ? (
     <TouchableOpacity onPress={() => {
       if (user.role === 'organizer') {
-        navigation.navigate('ConsumerGroupTopTabNavigator', { userRole: user.role });
+        // console.log('[Consumer Group Details Screen] user role', user.role);
+        navigation.navigate('ConsumerGroupManagement', { userRole: user.role });
+      } else if (user.role === 'consumer') {
+        // console.log('ConsumerGroupInfoScreen', navigation.navigate);
+        // navigation.navigate('ConsumerGroupInfoScreen', { userRole: user.role });
+        navigation.navigate('ConsumerGroupInfoScreen', { userRole: user.role });
+      } else {
+        console.log("Ocorreu um erro");
       }
-      // console.log('ConsumerGroupInfoScreen', navigation.navigate);
-      // navigation.navigate('ConsumerGroupInfoScreen', { userRole: user.role });
-      navigation.navigate('PaymentsScreen', { userRole: user.role });
 
     }}>
       <Image
@@ -36,6 +41,16 @@ const ConsumerGroupDetails = ({ navigation }) => {
     //   }}
     // />
   ) : null;
+};
+
+export const consumerGroupDetailsScreenOptions = () => {
+  return {
+    headerTitle: () => (
+      <HeaderTitle title="Informações sobre o grupo de consumo" />
+    ),
+    headerBackImage: () => (<BackArrow />),
+    headerBackTitleVisible: false,
+  };
 };
 
 const styles = StyleSheet.create({

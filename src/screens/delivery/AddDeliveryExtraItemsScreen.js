@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import endOfDay from 'date-fns/endOfDay';
 import { Input, ListItem } from 'react-native-elements';
 import { NavigationEvents } from 'react-navigation';
@@ -19,6 +20,9 @@ import TextLink from '../../components/TextLink';
 import { formatCurrency, showAlert } from '../../helper/HelperFunctions';
 import LoadingButton from '../../components/LoadingButton';
 import useConsumerGroup from '../../hooks/useConsumerGroup';
+import Colors from '../../constants/Colors';
+import Button from '../../components/Button';
+import { navigate } from '../../navigationRef';
 
 const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const {
@@ -71,21 +75,21 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-          type: 'ionicons',
-          name: 'search',
-          size: 25,
-          color: 'lightgrey',
-        }
+        type: 'ionicons',
+        name: 'search',
+        size: 25,
+        color: 'lightgrey',
+      }
       : {
-          type: 'material',
-          name: 'clear',
-          size: 25,
-          color: 'lightgrey',
-          onPress: () => {
-            setFilterText('');
-            setFilteredProducts(products);
-          },
-        };
+        type: 'material',
+        name: 'clear',
+        size: 25,
+        color: 'lightgrey',
+        onPress: () => {
+          setFilterText('');
+          setFilteredProducts(products);
+        },
+      };
   };
 
   const handleItemCheck = (item) => {
@@ -116,6 +120,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         updateDelivery({ deliveryId: state.nextDelivery.id, delivery });
       } else {
         createDelivery({ delivery });
+        navigation.navigate('DeliveriesScreen');
       }
     }
   };
@@ -132,7 +137,10 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         {
           text: 'Confirmar',
           onPress: () => {
-            deleteDelivery({ deliveryId: state.nextDelivery.id });
+            deleteDelivery({ deliveryId: state.nextDelivery.id })
+              .then(() => {
+                navigation.navigate('DeliveriesScreen');
+              });
           },
         },
       ]
@@ -166,39 +174,39 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
     const priceDisplay = formatCurrency(item.price);
 
     return (
-      <TouchableWithoutFeedback>
-        <ListItem
-          containerStyle={styles.listItemContainer}
-          title={
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('CreateExtraItemScreen', {
-                  product: item,
-                  selectedProducts: checkedItems,
-                })
-              }
-            >
-              <Text
-                style={{ fontWeight: 'bold', marginBottom: 5, fontSize: 16 }}
+      <View style={styles.productContainer}>
+        <TouchableWithoutFeedback>
+          <ListItem
+            containerStyle={styles.listItemContainer}
+            title={
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('CreateExtraItemScreen', {
+                    product: item,
+                    selectedProducts: checkedItems,
+                  })
+                }
               >
-                {item.name} - R$ {priceDisplay}
-              </Text>
-              {renderQuantityInfoText(item)}
-            </TouchableOpacity>
-          }
-          checkBox={{
-            checkedIcon: 'check-square-o',
-            uncheckedIcon: 'square-o',
-            checkedColor: 'grey',
-            onPress: () => handleItemCheck(item),
-            checked: checkedItems.includes(item.id),
-            containerStyle: {
-              marginRight: 7,
-            },
-          }}
-          bottomDivider
-        />
-      </TouchableWithoutFeedback>
+                <Text style={{ fontFamily: 'Roboto', fontWeight: '700', marginBottom: 5, fontSize: 16 }} >
+                  {item.name} - R$ {priceDisplay}
+                </Text>
+                {renderQuantityInfoText(item)}
+              </TouchableOpacity>
+            }
+            checkBox={{
+              checkedIcon: 'check-square-o',
+              uncheckedIcon: 'square-o',
+              checkedColor: Colors.secondary,
+              onPress: () => handleItemCheck(item),
+              checked: checkedItems.includes(item.id),
+              containerStyle: {
+                marginRight: 7,
+              },
+            }}
+          // bottomDivider
+          />
+        </TouchableWithoutFeedback>
+      </View>
     );
   };
 
@@ -207,13 +215,18 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
       filteredProducts &&
       !filteredProducts.length) ||
       isKeyboardVisible ? null : (
-      <View style={styles.mainButtonContainer}>
-        <LoadingButton
+      <View style={styles.buttonContainer}>
+        <Button style={styles.button}
+          textColor='white'
+          onPress={validateAndCreateOrUpdateDelivery}>
+          {state.nextDelivery ? 'Atualizar entrega' : 'Criar entrega'}
+        </Button>
+        {/* <LoadingButton
           loading={state.loading}
           onPress={validateAndCreateOrUpdateDelivery}
         >
           {state.nextDelivery ? 'Atualizar entrega' : 'Criar entrega'}
-        </LoadingButton>
+        </LoadingButton> */}
       </View>
     );
   };
@@ -228,72 +241,109 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
     }
 
     return (
-      <View style={styles.mainButtonContainer}>
-        <LoadingButton
+      <View style={styles.buttonContainer}>
+        <Button style={styles.button}
+          textColor='white'
+          onPress={deleteCurrentDelivery}>
+          Excluir entrega
+        </Button>
+        {/* <LoadingButton
           loading={state.loading}
           color="darkorange"
           onPress={deleteCurrentDelivery}
         >
           Excluir entrega
-        </LoadingButton>
+        </LoadingButton> */}
       </View>
     );
   };
 
-  return !loading ? (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+  return (
+    <View style={styles.screen}>
       <View style={styles.container}>
-        {/* <NavigationEvents onWillFocus={fetchProducts} /> */}
-        <Input
-          containerStyle={styles.searchInput}
-          placeholder="Nome do produto"
-          value={filterText}
-          onChangeText={setFilterText}
-          onEndEditing={searchProductsByFilter}
-          returnKeyType="done"
-          autoCorrect={false}
-          rightIcon={renderSearchIcon()}
-        />
-        <TextLink
-          text="Novo item"
-          onPress={() => navigation.navigate('CreateExtraItemScreen', { products })}
-          style={styles.newProductButton}
-        />
-        {filterText.length && filteredProducts && !filteredProducts.length ? (
-          <Text style={styles.productNotFoundText}>
-            Nenhum produto encontrado por este nome.
-          </Text>
+        {!loading ? (
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.container}>
+              {/* <NavigationEvents onWillFocus={fetchProducts} /> */}
+              <Input
+                containerStyle={styles.searchInput}
+                placeholder="Nome do produto"
+                value={filterText}
+                onChangeText={setFilterText}
+                onEndEditing={searchProductsByFilter}
+                returnKeyType="done"
+                autoCorrect={false}
+                rightIcon={renderSearchIcon()}
+              />
+              {/* <TextLink
+                text="Novo item"
+                onPress={() => navigation.navigate('CreateExtraItemScreen', { products })}
+                style={styles.newProductButton}
+              /> */}
+              <TouchableOpacity
+                style={styles.newProductButton}
+                onPress={() => navigation.navigate('CreateExtraItemScreen', { products })}>
+                <AntDesign name="pluscircle" size={24} color={Colors.tertiary} />
+              </TouchableOpacity>
+              {filterText.length && filteredProducts && !filteredProducts.length ? (
+                <Text style={styles.productNotFoundText}>
+                  Nenhum produto encontrado por este nome.
+                </Text>
+              ) : (
+                <View style={{ flex: 1.20 }}>
+                  <FlatList
+                    data={
+                      filteredProducts && filteredProducts.length
+                        ? filteredProducts
+                        : products
+                    }
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id}
+                  />
+                </View>
+              )}
+              {renderConfirmButton()}
+              {renderDeleteButton()}
+            </View>
+          </TouchableWithoutFeedback>
         ) : (
-          <View style={{ flex: 0.88 }}>
-            <FlatList
-              data={
-                filteredProducts && filteredProducts.length
-                  ? filteredProducts
-                  : products
-              }
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-            />
-          </View>
+          <Spinner />
         )}
-        {renderConfirmButton()}
-        {renderDeleteButton()}
       </View>
-    </TouchableWithoutFeedback>
-  ) : (
-    <Spinner />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: 'white',
+    // paddingLeft: 25,
+    // paddingRight: 25,
+    // borderRadius: 25,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    backgroundColor: '#F0F5F9',
+    shadowColor: "black",
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 25
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    margin: 10,
+  },
+  productContainer: {
+    marginTop: 5,
+    backgroundColor: 'white',
+    borderRadius: 15,
   },
   listItemContainer: {
     backgroundColor: 'transparent',
     padding: 10,
-    minHeight: 60,
+    minHeight: 50,
   },
   searchInput: {
     width: 250,
@@ -308,10 +358,22 @@ const styles = StyleSheet.create({
     margin: 10,
     fontSize: 16,
   },
-  mainButtonContainer: {
-    flex: 0.15,
-    justifyContent: 'center',
+  // mainButtonContainer: {
+  //   flex: 0.15,
+  //   justifyContent: 'center',
+  // },
+
+  buttonContainer: {
+    // position: 'absolute',
+    width: '100%',
+    // bottom: 0,
   },
+  button: {
+    marginTop: 5,
+    backgroundColor: Colors.secondary,
+    alignSelf: 'center',
+  },
+
 });
 
 export default AddDeliveryExtraItemsScreen;

@@ -184,7 +184,7 @@ export const consumerAddPaymentScreenOptions = (navData) => {
             backgroundColor: 'transparent',
             elevation: 0,
             shadowOpacity: 0,
-            borderBottomWidth: 0,
+            borderBottomWidth: 0, 
         }
     };
 };
@@ -194,12 +194,8 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 4,
         backgroundColor: 'white',
-        // paddingLeft: 25,
-        // paddingRight: 25,
-        // borderRadius: 25,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        // backgroundColor: 'grey',
         shadowColor: "black",
         shadowOpacity: 0.26,
         shadowOffset: { width: 0, height: 2 },

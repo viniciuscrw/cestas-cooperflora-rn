@@ -23,9 +23,10 @@ const ConsumerOrderPlacedScreen = (props) => {
   const {
     state: { order },
   } = useContext(OrderContext);
-  const { delivery } = props.navigation.state.params;
+  // const { delivery } = props.navigation.state.params;
+  const { delivery } = props.route.params;
 
-  console.log('[ConsumerOrderPlacedScreen]', order);
+  // console.log('[ConsumerOrderPlacedScreen]', order);
 
   // TODO Resolver aqui pra quem nao tem pedido
   if (order && !order.id) {
@@ -111,7 +112,7 @@ const ConsumerOrderPlacedScreen = (props) => {
             R$ {order.totalAmount.toFixed(2)}
           </Text>
         </View>
-        <View style={styles.buttonContainer}>
+        {/* <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
           <Button
             style={styles.confirmButton}
@@ -120,16 +121,18 @@ const ConsumerOrderPlacedScreen = (props) => {
           >
             Adicionar Pagamento
           </Button>
-        </View>
+        </View> */}
       </View>
     </View>
   );
 };
 
-ConsumerOrderPlacedScreen.navigationOptions = (navData) => {
+export const consumerOrderPlacedScreenOptions = (navData) => {
   console.log(`navData:`);
   const deliveryDate = format(
-    navData.navigation.state.params.delivery.deliveryDate,
+    // navData.navigation.state.params.delivery.deliveryDate,
+    navData.route.params.delivery.deliveryDate,
+
     GLOBALS.FORMAT.DD_MM
   );
   return {
@@ -144,6 +147,7 @@ ConsumerOrderPlacedScreen.navigationOptions = (navData) => {
     ),
     headerBackImage: () => <BackArrow />,
     headerStyle: {
+      headerTitleAlign: 'left',
       backgroundColor: 'transparent',
       elevation: 0,
       shadowOpacity: 0,
@@ -221,6 +225,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
     backgroundColor: Colors.primary,
     alignSelf: 'center',
+  },
+  header: {
+    alignItems: 'flex-start'
   },
   imageContainer: {
     position: 'absolute',

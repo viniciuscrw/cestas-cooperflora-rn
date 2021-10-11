@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { ConsumerGroupNavigator, ConsumerNavigator, OrganizerNavigator, ConsumerGroupTopTabNavigator, ExtraItemsNavigator, DeliveryTopTabNavigator, OrdersManagementTabNavigator, DeliveryNavigator, AuthNavigator, MainNavigator, BottomTabNavigator, AccountNavigator } from './MainNavigation';
+import { AuthNavigator, MainNavigator } from './MainNavigation';
 import { Context as AuthContext } from '../context/AuthContext';
 
 const AppNavigator = (props) => {

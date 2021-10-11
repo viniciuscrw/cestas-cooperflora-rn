@@ -4,17 +4,15 @@ import { NavigationEvents } from 'react-navigation';
 import { Input, ListItem } from 'react-native-elements';
 import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
+import Colors from '../constants/Colors';
 
 const OrdersItemsQuantity = (props) => {
   const {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
   } = useContext(OrderContext);
-  let deliveryId;
-  if (props.route.params) {
-    deliveryId = props.route.params.delivery.id;
-  }
 
+  const delivery = props.route.params ? props.route.params.delivery : null;
 
   // console.log(`nav: ${JSON.stringify(navigation)}`);
   const [productsToQuantity, setProductsToQuantity] = useState(null);
@@ -48,9 +46,20 @@ const OrdersItemsQuantity = (props) => {
   };
 
   useEffect(() => {
-    fetchOrdersByDelivery(deliveryId);
-    mapProductsToQuantity();
-  }, [orders]);
+    const unsubscribe = props.navigation.addListener('focus', () => {
+      // The screen is focused
+      // Call any action
+      fetchOrdersByDelivery(delivery.id);
+      mapProductsToQuantity();
+    });
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, []);
+
+  // useEffect(() => {
+  //   fetchOrdersByDelivery(delivery.id);
+  //   mapProductsToQuantity();
+  // }, [delivery]);
 
   const renderSearchIcon = () => {
     return !filterText.length
@@ -85,7 +94,8 @@ const OrdersItemsQuantity = (props) => {
     return (
       <ListItem
         containerStyle={styles.listItemContainer}
-        title={`${item.name} (${item.quantity})`}
+        // title={`${item.name} (${item.quantity})`}
+        title={`${item.quantity} ${item.name}`}
         titleStyle={styles.listItemTitle}
         bottomDivider
       />
@@ -93,41 +103,54 @@ const OrdersItemsQuantity = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* <NavigationEvents onWillFocus={() => fetchOrdersByDelivery(deliveryId)} /> */}
-      <Input
-        containerStyle={styles.searchInput}
-        placeholder="Buscar produto"
-        value={filterText}
-        onChangeText={setFilterText}
-        onEndEditing={searchProductsByFilter}
-        returnKeyType="done"
-        autoCorrect={false}
-        rightIcon={renderSearchIcon()}
-      />
-      {!orderLoading ? (
-        <FlatList
-          data={
-            filteredProducts && filteredProducts.length
-              ? filteredProducts
-              : productsToQuantity
-          }
-          renderItem={renderItem}
-          keyExtractor={(item) => item.name}
-          style={styles.productsList}
+    <View style={styles.screen}>
+      <View style={styles.container}>
+        {/* <NavigationEvents onWillFocus={() => fetchOrdersByDelivery(deliveryId)} /> */}
+        <Input
+          containerStyle={styles.searchInput}
+          placeholder="Buscar produto"
+          value={filterText}
+          onChangeText={setFilterText}
+          onEndEditing={searchProductsByFilter}
+          returnKeyType="done"
+          autoCorrect={false}
+          rightIcon={renderSearchIcon()}
         />
-      ) : (
-        <Spinner />
-      )}
+        {!orderLoading ? (
+          <FlatList
+            data={
+              filteredProducts && filteredProducts.length
+                ? filteredProducts
+                : productsToQuantity
+            }
+            renderItem={renderItem}
+            keyExtractor={(item) => item.name}
+            style={styles.productsList}
+          />
+        ) : (
+          <Spinner />
+        )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: Colors.backGroundColor,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: "black",
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 25
+  },
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: '#ebebeb',
+    margin: 25
   },
   text: {
     color: '#101010',

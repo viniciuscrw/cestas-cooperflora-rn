@@ -109,6 +109,7 @@ const setDeliveryInfo = (dispatch) => async (
 };
 
 const createDelivery = (dispatch) => async ({ delivery }) => {
+  console.log('[createDelivery delivery context]');
   dispatch({ type: 'loading' });
   console.log(`Creating new delivery: ${JSON.stringify(delivery)}`);
 
@@ -118,8 +119,9 @@ const createDelivery = (dispatch) => async ({ delivery }) => {
     GLOBALS.COLLECTION.DELIVERIES,
     delivery
   ).then(() => {
+    console.log('[createDelivery delivery context] then');
     dispatch({ type: 'add_delivery' });
-    navigate('Deliveries');
+    // navigate('Deliveries');
   });
 };
 
@@ -150,7 +152,7 @@ const deleteDelivery = (dispatch) => async ({ deliveryId }) => {
     deliveryId
   ).then(() => {
     dispatch({ type: 'delete_delivery' });
-    navigate('Deliveries');
+    // navigate('Deliveries');
   });
 };
 
