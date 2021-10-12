@@ -1,8 +1,8 @@
 import React, { useEffect, useContext } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Divider } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-import { Divider, ListItem } from 'react-native-elements';
 import HeaderTitle from '../components/HeaderTitle';
 import FrontArrow from '../../assets/images/icons/frontarrow.png';
 import { stardardScreenStyle as screen } from './screenstyles/ScreenStyles';
@@ -25,8 +25,12 @@ const AccountOptionsScreen = ({ navigation }) => {
           {state.loggedUser ? (
             <View>
               <View style={styles.headerContainer}>
-                <Text style={styles.listItemTitle}>{state.loggedUser.name}</Text>
-                <Text style={styles.listItemText}>{state.loggedUser.email}</Text>
+                <Text style={styles.listItemTitle}>
+                  {state.loggedUser.name}
+                </Text>
+                <Text style={styles.listItemText}>
+                  {state.loggedUser.email}
+                </Text>
                 <Text>{state.loggedUser.phoneNumber}</Text>
               </View>
               <Divider />
@@ -39,13 +43,14 @@ const AccountOptionsScreen = ({ navigation }) => {
                   <Image source={FrontArrow} />
                 </View>
                 <Divider />
-
               </TouchableOpacity>
             </View>
           ) : null}
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('UpdateAccountInfoScreen', { user: state.loggedUser })
+              navigation.navigate('UpdateAccountInfoScreen', {
+                user: state.loggedUser,
+              })
             }
           >
             <View style={styles.listItemContainer}>
@@ -86,10 +91,10 @@ const AccountOptionsScreen = ({ navigation }) => {
   );
 };
 
-export const AccountOptionsScreenOptions = (navData) => {
+export const AccountOptionsScreenOptions = () => {
   return {
     headerTitle: () => (
-      <View style={styles.header} >
+      <View style={styles.header}>
         <HeaderTitle title="Minha Conta" />
       </View>
     ),
@@ -121,7 +126,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // backgroundColor: '#f2f2f2',
     padding: 10,
     minHeight: 60,
     marginTop: 5,
@@ -138,9 +142,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#505050',
   },
-  header:{
-    alignItems: 'flex-start'
-  }
+  header: {
+    alignItems: 'flex-start',
+  },
 });
 
 export default AccountOptionsScreen;

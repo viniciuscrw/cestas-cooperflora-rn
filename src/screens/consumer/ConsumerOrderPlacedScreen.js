@@ -10,26 +10,25 @@ import {
 import { format } from 'date-fns';
 import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
-import Button from '../../components/Button';
 import { Context as OrderContext } from '../../context/OrderContext';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import VegetableImage from '../../../assets/images/vegetable1.png';
 import GLOBALS from '../../Globals';
 
-const ConsumerOrderPlacedScreen = (props) => {
+const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
   console.log('[ConsumerOrderPlacedScreen]');
   const {
     state: { order },
   } = useContext(OrderContext);
   // const { delivery } = props.navigation.state.params;
-  const { delivery } = props.route.params;
+  const { delivery } = route.params;
 
   // console.log('[ConsumerOrderPlacedScreen]', order);
 
   // TODO Resolver aqui pra quem nao tem pedido
   if (order && !order.id) {
-    props.navigation.navigate('Deliveries');
+    navigation.navigate('Deliveries');
   }
 
   const hasAnyProduct = () => {
@@ -40,11 +39,11 @@ const ConsumerOrderPlacedScreen = (props) => {
     );
   };
 
-  const handleOnConfirmPayment = () => {
-    props.navigation.navigate('ConsumerAddPaymentScreen', {
-      orderTotalAmount: order.totalAmount,
-    });
-  };
+  // const handleOnConfirmPayment = () => {
+  //   navigation.navigate('ConsumerAddPaymentScreen', {
+  //     orderTotalAmount: order.totalAmount,
+  //   });
+  // };
 
   return (
     <View style={styles.screen}>
@@ -74,7 +73,7 @@ const ConsumerOrderPlacedScreen = (props) => {
                 ).toFixed(2);
                 return (
                   <View>
-                    {total != 0 ? (
+                    {total !== 0 ? (
                       <View style={styles.orderItemContainer}>
                         <View style={styles.textContainer}>
                           <Text style={styles.itemText}>
@@ -146,7 +145,6 @@ export const consumerOrderPlacedScreenOptions = (navData) => {
     ),
     headerBackImage: () => <BackArrow />,
     headerStyle: {
-      headerTitleAlign: 'left',
       backgroundColor: 'transparent',
       elevation: 0,
       shadowOpacity: 0,
@@ -226,7 +224,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   header: {
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
   imageContainer: {
     position: 'absolute',
