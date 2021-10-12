@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 
@@ -5,7 +6,7 @@ const Button = ({ onPress, children, style, textColor }) => {
   const { button, text } = styles;
   return (
     <TouchableOpacity onPress={onPress} style={[button, style]}>
-      <Text style={[text, {color:textColor}] }>{children}</Text>
+      <Text style={[text, { color: textColor }]}>{children}</Text>
     </TouchableOpacity>
   );
 };

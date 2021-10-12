@@ -3,9 +3,9 @@ import { Context as AuthContext } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Divider, ListItem } from 'react-native-elements';
-import { NavigationEvents, withNavigation } from 'react-navigation';
 import HeaderTitle from '../components/HeaderTitle';
 import FrontArrow from '../../assets/images/icons/frontarrow.png';
+import { stardardScreenStyle as screen } from './screenstyles/ScreenStyles';
 
 const AccountOptionsScreen = ({ navigation }) => {
   const { state, signout, fetchLoggedUser } = useContext(AuthContext);
@@ -103,19 +103,7 @@ export const AccountOptionsScreenOptions = (navData) => {
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    marginTop: 4,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: 'black',
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 4, height: -3 },
-    shadowRadius: 8,
-    elevation: 25,
-    // backgroundColor: 'red',
-  },
+  screen,
   container: {
     flex: 1,
     margin: 25,

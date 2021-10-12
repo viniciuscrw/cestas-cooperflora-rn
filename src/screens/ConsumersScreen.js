@@ -1,7 +1,6 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Context as UserContext } from '../context/UserContext';
 import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { NavigationEvents, withNavigation } from 'react-navigation';
 import { FontAwesome5 } from '@expo/vector-icons';
 import UsersList from '../components/UsersList';
 import Spinner from '../components/Spinner';

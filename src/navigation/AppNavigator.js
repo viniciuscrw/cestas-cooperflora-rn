@@ -16,12 +16,12 @@ const AppNavigator = (props) => {
 
     return (
         <NavigationContainer>
-            {!authId
+            {/* {!authId
                 ? <AuthNavigator />
                 : <MainNavigator />
-            }
+            } */}
             {/* <AccountNavigator /> */}
-            {/* <MainNavigator /> */}
+            <MainNavigator />
             {/* <ConsumerGroupNavigator /> */}
         </NavigationContainer>
     );

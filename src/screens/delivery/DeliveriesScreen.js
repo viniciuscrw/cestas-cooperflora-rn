@@ -11,7 +11,7 @@ import DeliveryCard from '../../components/DeliveryCard';
 import GLOBALS from '../../Globals';
 import BasketProductsImage from '../../../assets/images/basketproducts.png';
 import Colors from '../../constants/Colors';
-import { AntDesign } from '@expo/vector-icons';
+import { stardardScreenStyle as screen } from '../screenstyles/ScreenStyles';
 
 const DeliveriesScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -149,18 +149,7 @@ export const deliveriesNavigationOptions = (navigation) => {
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    marginTop: 4,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: "black",
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 25
-  },
+  screen,
   container: {
     flex: 1,
     margin: 5

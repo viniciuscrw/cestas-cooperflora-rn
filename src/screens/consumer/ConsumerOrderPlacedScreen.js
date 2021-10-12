@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { withNavigation } from 'react-navigation';
 import {
   FlatList,
   Image,
@@ -241,4 +240,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(ConsumerOrderPlacedScreen);
+export default ConsumerOrderPlacedScreen;

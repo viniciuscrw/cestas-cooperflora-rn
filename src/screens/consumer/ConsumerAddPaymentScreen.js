@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { withNavigation } from 'react-navigation';
 import { format } from 'date-fns';
 import { StyleSheet, Text, View, ActivityIndicator, Alert } from 'react-native';
 import HeaderTitle from '../../components/HeaderTitle';
@@ -279,4 +278,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default withNavigation(ConsumerAddPaymentScreen);
+export default ConsumerAddPaymentScreen;

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { NavigationEvents } from 'react-navigation';
 import { Input, ListItem } from 'react-native-elements';
 import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';

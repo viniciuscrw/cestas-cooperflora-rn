@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';
-import { NavigationEvents } from 'react-navigation';
 import { Input, ListItem } from 'react-native-elements';
 import GLOBALS from '../Globals';
 import { Context as OrderContext } from '../context/OrderContext';

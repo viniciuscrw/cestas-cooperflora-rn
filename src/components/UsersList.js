@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { withNavigation } from 'react-navigation';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome5 } from '@expo/vector-icons'; 

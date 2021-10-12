@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-// import { withNavigationFocus } from 'react-navigation';
 import {
   ActivityIndicator,
   Alert,

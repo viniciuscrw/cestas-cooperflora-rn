@@ -17,7 +17,6 @@ import { Text } from 'react-native-elements';
 import TextCardSection from '../components/TextCardSection';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';
-import { withNavigation } from 'react-navigation';
 import { AntDesign } from '@expo/vector-icons';
 import BasketProductsImage from '../../assets/images/basketproducts3.png';
 import Colors from '../constants/Colors';

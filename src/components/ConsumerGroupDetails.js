@@ -1,7 +1,6 @@
 import React from 'react';
 import { Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { withNavigation } from 'react-navigation';
 import FrontArrow from '../../assets/images/icons/frontarrow.png';
 import useUser from '../hooks/useUser';
 import HeaderTitle from './HeaderTitle';

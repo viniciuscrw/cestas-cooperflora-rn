@@ -12,7 +12,6 @@ import Spacer from '../components/Spacer';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
 import { Context as AuthContext } from '../context/AuthContext';
-import { withNavigation } from 'react-navigation';
 import TextLink from '../components/TextLink';
 
 const ForgotPasswordScreen = ({ navigation }) => {
@@ -98,4 +97,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(ForgotPasswordScreen);
+export default ForgotPasswordScreen;

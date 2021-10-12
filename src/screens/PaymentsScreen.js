@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { withNavigation } from 'react-navigation';
 import { Text, StyleSheet, View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
@@ -172,4 +171,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default withNavigation(PaymentsScreen);
+export default PaymentsScreen;

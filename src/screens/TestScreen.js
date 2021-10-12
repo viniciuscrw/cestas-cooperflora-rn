@@ -15,12 +15,9 @@ import { Text } from 'react-native-elements';
 import TextCardSection from '../components/TextCardSection';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';
-import { withNavigation } from 'react-navigation';
 
 const TestScreen = ({ navigation }) => {
   
-
-
   return (
       <View style={styles.backGroundView}>
         <View style={styles.container}>

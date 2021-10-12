@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { withNavigation } from 'react-navigation';
 import { format } from 'date-fns';
 import { StyleSheet, Text, ScrollView, View, TouchableOpacity, ActivityIndicator, Image, Modal, TouchableHighlight, Alert } from 'react-native';
 import HeaderTitle from '../../components/HeaderTitle';
@@ -12,21 +11,22 @@ import useUser from '../../hooks/useUser';
 import { Context as userContext } from '../../context/UserContext';
 import firebase from 'firebase';
 import GLOBALS from '../../Globals';
-import ClipIcon from '../../../assets/images/icons/clipicon.png'
+import ClipIcon from '../../../assets/images/icons/clipicon.png';
+import { stardardScreenStyle as screen } from '../screenstyles/ScreenStyles';
 
 const ConsumerPaymentsScreen = (props) => {
+
+    // console.log(stardardScreen);
+
     console.log('[ConsumerPaymentScreen started]');
     const [isLoading, setIsLoading] = useState(true);
     const [userData, setUserData] = useState();
     const [userPayments, setUserPayments] = useState([]);
 
-    // console.log('[ConsumerPaymentScreen started]',props.route);
-
     let userId;
-    if(props.route.params.userId){
+    if (props.route.params.userId) {
         userId = props.route.params.userId;
     } else {
-        console.log('[ConsumerPaymentScreen] Entrei else');
         userId = useUser().id;
     }
     const { getUserById } = useContext(userContext);
@@ -44,7 +44,6 @@ const ConsumerPaymentsScreen = (props) => {
         const db = firebase.firestore();
         const ref = db.collection(collection);
         const doc = userId + 'pay';
-        // console.log('[Payments Screen] user.id =', user.id, 'subcollection', subcollection, ' ')
         setIsLoading(true);
         await ref
             .doc(doc)
@@ -75,7 +74,6 @@ const ConsumerPaymentsScreen = (props) => {
     }
 
     useEffect(() => {
-        console.log('[ConsumerPaymentsScreen] user changed');
         setIsLoading(true);
         if (userId) {
             getUserById(userId)
@@ -86,8 +84,6 @@ const ConsumerPaymentsScreen = (props) => {
                 });
         }
     }, [userId]);
-
-    console.log(userPayments);
 
     const showImage = (index) => {
         // console.log('[show Receipt Image]' , receiptImage);
@@ -176,16 +172,13 @@ const ConsumerPaymentsScreen = (props) => {
 export const consumerPaymentsScreenOptions = (navData) => {
     return {
         headerTitle: () => (
-            <HeaderTitle title="Pagamentos" />
+            <View style={styles.header}>
+                <HeaderTitle title="Pagamentos" />
+            </View>
         ),
         headerBackImage: () => (<BackArrow />),
         headerStyle: {
             backgroundColor: 'transparent',
-            // position: 'absolute',
-            // zIndex: 100,
-            // top: 0,
-            // left: 0,
-            // right: 0,
             elevation: 0,
             shadowOpacity: 0,
             borderBottomWidth: 0,
@@ -194,24 +187,12 @@ export const consumerPaymentsScreenOptions = (navData) => {
 };
 
 const styles = StyleSheet.create({
-    screen: {
-        flex: 1,
-        marginTop: 4,
-        backgroundColor: 'white',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        shadowColor: "black",
-        shadowOpacity: 0.26,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 8,
-        elevation: 2
-    },
+    screen,
     container: {
         flex: 1,
         margin: 20
     },
     titleContainer: {
-        // flex: 1,
         alignItems: 'center',
         alignContent: 'center'
     },
@@ -226,7 +207,7 @@ const styles = StyleSheet.create({
     },
     paymentsContainer: {
         marginTop: 5,
-        height: '80%',
+        height: '75%',
     },
     paymentContainer: {
         marginTop: 15,
@@ -274,16 +255,16 @@ const styles = StyleSheet.create({
         margin: 10,
         alignItems: 'center',
         height: 200,
-        // borderColor: 'green',
-        // borderWidth: 2
-        // // backgroundColor: 'green'
     },
     image: {
         flex: 1,
         width: 200,
         height: 200,
         resizeMode: 'contain'
+    },
+    header:{
+        alignItems: 'flex-start'
     }
 });
 
-export default withNavigation(ConsumerPaymentsScreen);
+export default ConsumerPaymentsScreen;

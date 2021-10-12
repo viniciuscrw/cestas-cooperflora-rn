@@ -12,7 +12,6 @@ import {
 import { AntDesign } from '@expo/vector-icons';
 import endOfDay from 'date-fns/endOfDay';
 import { Input, ListItem } from 'react-native-elements';
-import { NavigationEvents } from 'react-navigation';
 import { Context as ProductContext } from '../../context/ProductContext';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import Spinner from '../../components/Spinner';
