@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "cestas",
-    "slug": "cestas",
+    "name": "cestascooperflora",
+    "slug": "cestascooperflora",
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,6 +17,10 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "br.pro.bordignon",
+      "versionCode": 1
     },
     "hooks": {
       "postPublish": [

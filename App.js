@@ -1,8 +1,6 @@
 import React from 'react';
 import { LogBox } from 'react-native';
 import firebase from 'firebase';
-import Logs from './src/logs/log';
-import MainNavigation from './src/navigation/MainNavigation';
 import { Provider as AuthProvider } from './src/context/AuthContext';
 import { Provider as UserProvider } from './src/context/UserContext';
 import { Provider as ConsumerGroupProvider } from './src/context/ConsumerGroupContext';
@@ -16,7 +14,7 @@ import AppNavigator from './src/navigation/AppNavigator';
 
 // const App = createAppContainer(MainNavigation);
 
-export default () => {
+export default App = () => {
   LogBox.ignoreLogs(['Setting a timer']);
   LogBox.ignoreLogs(['It appears']);
   LogBox.ignoreLogs(["'Card."]);
