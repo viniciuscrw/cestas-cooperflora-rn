@@ -12,6 +12,8 @@ const orderReducer = (state, action) => {
           ...state.order,
           baseProducts: 0,
           extraProducts: action.payload.extraProducts,
+          productsPriceSum: 0,
+          totalAmount: 0,
         },
       };
     case 'add_base_products':
@@ -161,7 +163,7 @@ const fetchUserOrder = (dispatch) => async (
     });
 };
 
-const addOrder = (dispatch) => (
+const addOrder = (dispatch) => async (
   userId,
   userName,
   deliveryId,
@@ -171,7 +173,10 @@ const addOrder = (dispatch) => (
   dispatch({ type: 'loading' });
   console.log('[Order Context] adding Order ---------');
 
-  const extraProducts = order.extraProducts.filter((prod) => prod.quantity > 0);
+  const extraProducts = order.extraProducts
+    ? order.extraProducts.filter((prod) => prod.quantity > 0)
+    : [];
+
   const totalAmount =
     order.productsPriceSum > 0 ? order.productsPriceSum + deliveryFee : 0;
 
@@ -184,27 +189,29 @@ const addOrder = (dispatch) => (
     totalAmount,
   };
 
-  getByAttribute(GLOBALS.COLLECTION.ORDERS, 'userId', userId).then((data) => {
-    const deliveryOrder = data.filter(
-      (orderData) => orderData.deliveryId === deliveryId
-    );
-    if (deliveryOrder.length > 0) {
-      console.log('[Add order] update order');
-      const orderId = deliveryOrder[0].id;
-      newOrder.updatedAt = new Date().toISOString();
-      updateDoc(GLOBALS.COLLECTION.ORDERS, orderId, newOrder).then(() =>
-        dispatch({ type: 'add_order', payload: newOrder })
+  await getByAttribute(GLOBALS.COLLECTION.ORDERS, 'userId', userId).then(
+    (data) => {
+      const deliveryOrder = data.filter(
+        (orderData) => orderData.deliveryId === deliveryId
       );
-    } else {
-      console.log('[Add order] new order');
-      newOrder.date = new Date().toISOString();
-      insertDoc(GLOBALS.COLLECTION.ORDERS, newOrder)
-        .then(() => dispatch({ type: 'add_order', payload: newOrder }))
-        .catch((error) => {
-          console.log('[Order Context - Add order] - ERRO', error);
-        });
+      if (deliveryOrder.length > 0) {
+        console.log('[Add order] update order');
+        const orderId = deliveryOrder[0].id;
+        newOrder.updatedAt = new Date().toISOString();
+        updateDoc(GLOBALS.COLLECTION.ORDERS, orderId, newOrder).then(() =>
+          dispatch({ type: 'add_order', payload: newOrder })
+        );
+      } else {
+        console.log('[Add order] new order');
+        newOrder.date = new Date().toISOString();
+        insertDoc(GLOBALS.COLLECTION.ORDERS, newOrder)
+          .then(() => dispatch({ type: 'add_order', payload: newOrder }))
+          .catch((error) => {
+            console.log('[Order Context - Add order] - ERRO', error);
+          });
+      }
     }
-  });
+  );
 };
 
 export const { Provider, Context } = createDataContext(

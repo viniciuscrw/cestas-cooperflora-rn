@@ -79,7 +79,7 @@ const OrdersItemsQuantity = ({ navigation }) => {
     return (
       <ListItem
         containerStyle={styles.listItemContainer}
-        title={`${item.name} (${item.quantity})`}
+        title={`${item.quantity} ${item.name}`}
         titleStyle={styles.listItemTitle}
         bottomDivider
       />
