@@ -11,9 +11,6 @@ import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
 
 const OrdersByConsumerScreen = (props) => {
-  // console.log('[OrdersbyConsumer Screen] started');
-  // console.log('[OrdersbyConsumer Screen] props', props);
-
   const {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
@@ -46,16 +43,6 @@ const OrdersByConsumerScreen = (props) => {
     }
   }, [])
 
-  // useEffect(() => {
-  //   const unsubscribe = props.navigation.addListener('focus', () => {
-  //     // The screen is focused
-  //     // Call any action
-  //     fetchOrdersByDelivery(delivery.id)
-  //   });
-  //   // Return the function to unsubscribe from the event so it gets removed on unmount
-  //   return unsubscribe;
-  // }, [props.navigation]);
-
   const resolveUserOrderItemSubtitle = (order) => {
     const hasBaseProducts =
       order.baseProducts != null && order.baseProducts > 0;
@@ -74,7 +61,6 @@ const OrdersByConsumerScreen = (props) => {
   };
 
   const matchUsersWithOrders = () => {
-    // console.log('[OrdersbyConsumer Screen] matchuserswithorders');
     const userOrderItems = [];
     let userOrderItem;
     users.forEach((user) => {
@@ -169,12 +155,6 @@ const OrdersByConsumerScreen = (props) => {
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
-        {/* <NavigationEvents
-        onWillFocus={() => {
-          fetchOrdersByDelivery(delivery.id);
-          fetchUsers();
-        }}
-      /> */}
         <Input
           containerStyle={styles.searchInput}
           placeholder="Buscar pessoa consumidora"

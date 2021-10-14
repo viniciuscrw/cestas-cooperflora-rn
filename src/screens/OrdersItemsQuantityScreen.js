@@ -93,7 +93,6 @@ const OrdersItemsQuantity = (props) => {
     return (
       <ListItem
         containerStyle={styles.listItemContainer}
-        // title={`${item.name} (${item.quantity})`}
         title={`${item.quantity} ${item.name}`}
         titleStyle={styles.listItemTitle}
         bottomDivider
@@ -104,7 +103,6 @@ const OrdersItemsQuantity = (props) => {
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
-        {/* <NavigationEvents onWillFocus={() => fetchOrdersByDelivery(deliveryId)} /> */}
         <Input
           containerStyle={styles.searchInput}
           placeholder="Buscar produto"

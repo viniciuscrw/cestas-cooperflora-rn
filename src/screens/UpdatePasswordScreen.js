@@ -17,7 +17,10 @@ import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import Spinner from '../components/Spinner';
 import Colors from '../constants/Colors';
+<<<<<<< HEAD
 import { stardardScreenStyle as screen } from './screenstyles/ScreenStyles';
+=======
+>>>>>>> master
 
 const UpdatePasswordScreen = (props) => {
   const email = props.route.params.userEmail;

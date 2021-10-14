@@ -246,13 +246,6 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
           onPress={deleteCurrentDelivery}>
           Excluir entrega
         </Button>
-        {/* <LoadingButton
-          loading={state.loading}
-          color="darkorange"
-          onPress={deleteCurrentDelivery}
-        >
-          Excluir entrega
-        </LoadingButton> */}
       </View>
     );
   };

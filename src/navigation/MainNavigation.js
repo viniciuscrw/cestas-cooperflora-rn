@@ -3,10 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// import {
-//   createBottomTabNavigator,
-//   createMaterialTopTabNavigator,
-// } from 'react-navigation-tabs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import DeliveriesScreen, {
   deliveriesNavigationOptions,
@@ -341,8 +337,6 @@ const tabBarOptions = {
   },
 };
 
-import { Ionicons } from '@expo/vector-icons';
-
 const BottomTab = createBottomTabNavigator();
 export const BottomTabNavigator = () => {
   return (
@@ -440,4 +434,4 @@ export const MainNavigator = () => {
       /> */}
     </MainStackNavigator.Navigator>
   );
-};
+}

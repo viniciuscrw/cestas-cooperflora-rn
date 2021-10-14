@@ -144,7 +144,7 @@ export const deliveriesNavigationOptions = (navigation) => {
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
-    }
+    },
   };
 };
 
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   screen,
   container: {
     flex: 1,
-    margin: 5
+    margin: 5,
   },
   deliveriesListHeader: {
     flex: 1,
@@ -202,7 +202,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.secondary,
     alignSelf: 'center',
   },
-
 });
 
 export default DeliveriesScreen;

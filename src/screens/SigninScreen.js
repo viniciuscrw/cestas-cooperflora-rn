@@ -102,7 +102,6 @@ const SigninScreen = ({ navigation }) => {
       return (
         <>
           {state.userId ? (
-
             <TextCardSection text="Cadastre sua senha:">
               <PasswordInput
                 label="Senha"
@@ -116,7 +115,6 @@ const SigninScreen = ({ navigation }) => {
                 autoFocus
                 style={styleForMultiplePasswordInput}
               />
-
               <PasswordInput
                 style={{
                   borderBottomColor: 'black',
@@ -125,7 +123,6 @@ const SigninScreen = ({ navigation }) => {
                   //alignContent: 'center',
                   //alignItems: 'center',
                   alignSelf: 'center'
-
                 }}
                 label="Confimar senha"
                 value={passwordConfirmation}

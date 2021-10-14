@@ -32,7 +32,6 @@ export default App = () => {
           <OrderProvider>
             <DeliveryProvider>
               <ProductProvider>
-
                 <AppNavigator />
               </ProductProvider>
             </DeliveryProvider>
