@@ -32,11 +32,7 @@ export default App = () => {
           <OrderProvider>
             <DeliveryProvider>
               <ProductProvider>
-                {/* <App
-                  ref={(navigator) => {
-                    setNavigator(navigator);
-                  }}
-                /> */}
+
                 <AppNavigator />
               </ProductProvider>
             </DeliveryProvider>
