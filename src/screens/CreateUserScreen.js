@@ -9,16 +9,17 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Spacer from '../components/Spacer';
 import FormInput from '../components/FormInput';
 import Button from '../components/Button';
 import { Context as UserContext } from '../context/UserContext';
 import Spinner from '../components/Spinner';
 import GLOBALS from '../Globals';
 import TextLink from '../components/TextLink';
+import Colors from '../constants/Colors';
 
-const CreateUserScreen = ({ navigation }) => {
-  const user = navigation.getParam('user');
+const CreateUserScreen = (props) => {
+  // const user = props.navigation.getParam('user');
+  const user = props.route.params.user;
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [phoneNumber, setPhoneNumber] = useState(user ? user.phoneNumber : '');
@@ -28,7 +29,8 @@ const CreateUserScreen = ({ navigation }) => {
   const emailTextInput = React.createRef();
   const phoneNumberTextInput = React.createRef();
 
-  const userRole = user ? user.role : navigation.getParam('role');
+  // const userRole = user ? user.role : navigation.getParam('role');
+  const userRole = user ? user.role : props.route.params.role;
   const authenticatedUser = !!(user && user.authId);
   const roleText =
     userRole === GLOBALS.USER.ROLE.CONSUMER
@@ -71,6 +73,7 @@ const CreateUserScreen = ({ navigation }) => {
         }
       });
     }
+    props.navigation.goBack(null);
   };
 
   const renderButton = () => {
@@ -78,78 +81,95 @@ const CreateUserScreen = ({ navigation }) => {
       return state.loading ? (
         <Spinner size="small" />
       ) : (
-        <Button onPress={createOrUpdateUser}>
-          {user ? 'Atualizar Informações' : 'Adicionar ' + roleText}
-        </Button>
+        <View style={styles.buttonContainer}>
+          <Button style={styles.button}
+            textColor='white'
+            onPress={createOrUpdateUser}>
+            {user ? 'Atualizar Informações' : 'Adicionar ' + roleText}
+          </Button>
+        </View>
       );
     }
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        enabled
-        keyboardVerticalOffset={100}
-      >
-        <ScrollView style={styles.container}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{title}</Text>
-            <TextLink
-              text="Cancelar"
-              onPress={() => navigation.goBack(null)}
-              style={styles.cancelButton}
-            />
-          </View>
-          <Spacer />
-          <FormInput
-            label="Nome"
-            value={name}
-            returnKeyType="next"
-            onChangeText={setName}
-            onSubmitEditing={() => emailTextInput.current.focus()}
-            autoCapitalize="words"
-            autoCorrect={false}
-            maxLength={50}
-          />
-          <Spacer />
-          <FormInput
-            label="E-mail"
-            value={email}
-            reference={emailTextInput}
-            returnKeyType="next"
-            onChangeText={setEmail}
-            onSubmitEditing={() => phoneNumberTextInput.current.focus()}
-            autoCapitalize="none"
-            autoCorrect={false}
-            maxLength={50}
-            disabled={authenticatedUser}
-            hasError={isInvalidEmail()}
-            errorMessage="Endereço de e-mail inválido."
-          />
-          <Spacer />
-          <FormInput
-            label="Celular"
-            value={phoneNumber}
-            returnKeyType="done"
-            reference={phoneNumberTextInput}
-            maxLength={25}
-            onChangeText={setPhoneNumber}
-            keyboardType="phone-pad"
-          />
-          <Spacer />
-          {renderButton()}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+    <View style={styles.screen} >
+      <View style={styles.container} >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <KeyboardAvoidingView
+            style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
+            behavior={Platform.OS === 'ios' ? 'padding' : null}
+            enabled
+            keyboardVerticalOffset={100}
+          >
+            <ScrollView style={styles.dataContainer}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>{title}</Text>
+                <TextLink
+                  text="Cancelar"
+                  onPress={() => props.navigation.goBack(null)}
+                  style={styles.cancelButton}
+                />
+              </View>
+              <FormInput
+                label="Nome"
+                value={name}
+                returnKeyType="next"
+                onChangeText={setName}
+                onSubmitEditing={() => emailTextInput.current.focus()}
+                autoCapitalize="words"
+                autoCorrect={false}
+                maxLength={50}
+              />
+              <FormInput
+                label="E-mail"
+                value={email}
+                reference={emailTextInput}
+                returnKeyType="next"
+                onChangeText={setEmail}
+                onSubmitEditing={() => phoneNumberTextInput.current.focus()}
+                autoCapitalize="none"
+                autoCorrect={false}
+                maxLength={50}
+                disabled={authenticatedUser}
+                hasError={isInvalidEmail()}
+                errorMessage="Endereço de e-mail inválido."
+              />
+              <FormInput
+                label="Celular"
+                value={phoneNumber}
+                returnKeyType="done"
+                reference={phoneNumberTextInput}
+                maxLength={25}
+                onChangeText={setPhoneNumber}
+                keyboardType="phone-pad"
+              />
+              {renderButton()}
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    // backgroundColor: '#F0F5F9',
+    shadowColor: "black",
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 25
+  },
   container: {
     flex: 1,
-    padding: 10,
+    margin: 10,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -165,6 +185,16 @@ const styles = StyleSheet.create({
   cancelButton: {
     marginRight: 6,
     // marginTop: 5,
+  },
+  buttonContainer: {
+    // position: 'absolute',
+    width: '100%',
+    // bottom: 0,
+  },
+  button: {
+    marginTop: 5,
+    backgroundColor: Colors.secondary,
+    alignSelf: 'center',
   },
 });
 

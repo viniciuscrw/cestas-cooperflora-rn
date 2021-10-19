@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { withNavigationFocus } from 'react-navigation';
 import {
   Alert,
   Image,
@@ -10,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { format } from 'date-fns';
+import { useFocusEffect } from '@react-navigation/native';
 import GLOBALS from '../../Globals';
 import { Context as OrderContext } from '../../context/OrderContext';
 import Colors from '../../constants/Colors';
@@ -21,6 +21,7 @@ import VegetableImage from '../../../assets/images/vegetable2.png';
 import Spinner from '../../components/Spinner';
 
 const ConsumerOrderScreen = (props) => {
+  console.log('[ConsumerOrderScreen started]');
   const [baseProducts, setBaseProducts] = useState();
   const [orderProducts, setOrderProducts] = useState([]);
   const [limitDateToOrder, setLimitDateToOrder] = useState();
@@ -35,7 +36,8 @@ const ConsumerOrderScreen = (props) => {
     fetchUserOrder,
   } = useContext(OrderContext);
 
-  const { user, delivery } = props.navigation.state.params;
+  // const { user, delivery } = props.navigation.state.params;
+  const { user, delivery } = props.route.params;
 
   if (props.isFocused) {
     if (limitDateToOrder < new Date()) {
@@ -73,17 +75,19 @@ const ConsumerOrderScreen = (props) => {
     setOrderProducts(transformedOrderProducts);
   };
 
-  useEffect(() => {
-    console.log('[Consumer Order Product Screen - useEffect fetch orders');
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('[Consumer Order Product Screen - useEffect fetch orders');
 
-    if (user && delivery) {
-      setLimitDateToOrder(delivery.limitDate);
-      // console.log('[ConsumerOrderProduct] delivery', delivery.limitDate);
-      fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
-      setBaseProducts(delivery.baseProducts);
-      props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
-    }
-  }, [user, delivery]);
+      if (user && delivery) {
+        setLimitDateToOrder(delivery.limitDate);
+        // console.log('[ConsumerOrderProduct] delivery', delivery.limitDate);
+        fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
+        setBaseProducts(delivery.baseProducts);
+        props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
+      }
+    }, [user, delivery])
+  );
 
   useEffect(() => {
     transformOrderProducts();
@@ -190,9 +194,10 @@ const ConsumerOrderScreen = (props) => {
   );
 };
 
-ConsumerOrderScreen.navigationOptions = (navData) => {
+export const consumerOrderScreenOptions = (navData) => {
+  // console.log(navData.route.params.delivery.deliveryDate);
   const deliveryDate = format(
-    navData.navigation.state.params.delivery.deliveryDate,
+    navData.route.params.delivery.deliveryDate,
     GLOBALS.FORMAT.DD_MM
   );
 
@@ -321,9 +326,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     justifyContent: 'space-between',
   },
+  header: {
+    alignItems: 'flex-start',
+  },
   imageContainer: {
     position: 'absolute',
-    right: -100,
+    right: -10,
     width: 80,
     height: 55,
   },
@@ -333,4 +341,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigationFocus(ConsumerOrderScreen);
+export default ConsumerOrderScreen;

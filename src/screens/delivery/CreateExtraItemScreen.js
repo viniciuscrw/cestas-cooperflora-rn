@@ -21,10 +21,14 @@ import {
   showAlert,
 } from '../../helper/HelperFunctions';
 
-const CreateExtraItemScreen = ({ navigation }) => {
-  const products = navigation.getParam('products');
-  const product = navigation.getParam('product');
-  const selectedProducts = navigation.getParam('selectedProducts');
+const CreateExtraItemScreen = (props) => {
+  const products = props.route.params.products;
+  const product = props.route.params.product;
+  const selectedProducts = props.route.params.selectedProducts;
+
+  // const products = navigation.getParam('products');
+  // const product = navigation.getParam('product');
+  // const selectedProducts = navigation.getParam('selectedProducts');
 
   const { state, createProduct, updateProduct, deleteProduct } = useContext(
     ProductContext
@@ -87,7 +91,7 @@ const CreateExtraItemScreen = ({ navigation }) => {
       maxOrderQuantity,
     };
 
-    createProduct({ product }).then(() => navigation.goBack(null));
+    createProduct({ product }).then(() => props.navigation.goBack(null));
   };
 
   const productDidNotChange = (updatedProduct) => {
@@ -116,10 +120,10 @@ const CreateExtraItemScreen = ({ navigation }) => {
     };
 
     if (productDidNotChange(updatedProduct)) {
-      navigation.goBack(null);
+      props.navigation.goBack(null);
     } else {
       updateProduct({ productId: product.id, updatedProduct }).then(() =>
-        navigation.goBack(null)
+        props.navigation.goBack(null)
       );
     }
   };
@@ -138,7 +142,7 @@ const CreateExtraItemScreen = ({ navigation }) => {
             text: 'Confirmar',
             onPress: () => {
               deleteProduct({ productId: product.id }).then(() =>
-                navigation.goBack(null)
+                props.navigation.goBack(null)
               );
             },
           },
@@ -146,7 +150,7 @@ const CreateExtraItemScreen = ({ navigation }) => {
       );
     } else {
       deleteProduct({ productId: product.id }).then(() =>
-        navigation.goBack(null)
+        props.navigation.goBack(null)
       );
     }
   };
@@ -202,7 +206,7 @@ const CreateExtraItemScreen = ({ navigation }) => {
               </Text>
               <TextLink
                 text="Cancelar"
-                onPress={() => navigation.goBack(null)}
+                onPress={() => props.navigation.goBack(null)}
                 style={styles.cancelButton}
               />
             </View>

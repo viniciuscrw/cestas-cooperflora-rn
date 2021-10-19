@@ -1,14 +1,20 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { Divider } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-import { Divider, ListItem } from 'react-native-elements';
-import { NavigationEvents, withNavigation } from 'react-navigation';
 import HeaderTitle from '../components/HeaderTitle';
 import FrontArrow from '../../assets/images/icons/frontarrow.png';
+import { stardardScreenStyle as screen } from './screenstyles/ScreenStyles';
 
 const AccountOptionsScreen = ({ navigation }) => {
   const { state, signout, fetchLoggedUser } = useContext(AuthContext);
+  console.log('AccountOptionScreen');
+
+  useEffect(() => {
+    fetchLoggedUser();
+    console.log('AccountOptionScreen] fetchLoggedUser');
+  }, []);
 
   return (
     <View style={styles.screen}>
@@ -16,12 +22,15 @@ const AccountOptionsScreen = ({ navigation }) => {
         <Spinner />
       ) : (
         <View style={styles.container}>
-          <NavigationEvents onWillFocus={fetchLoggedUser} />
           {state.loggedUser ? (
             <View>
               <View style={styles.headerContainer}>
-                <Text style={styles.listItemTitle}>{state.loggedUser.name}</Text>
-                <Text style={styles.listItemText}>{state.loggedUser.email}</Text>
+                <Text style={styles.listItemTitle}>
+                  {state.loggedUser.name}
+                </Text>
+                <Text style={styles.listItemText}>
+                  {state.loggedUser.email}
+                </Text>
                 <Text>{state.loggedUser.phoneNumber}</Text>
               </View>
               <Divider />
@@ -34,23 +43,14 @@ const AccountOptionsScreen = ({ navigation }) => {
                   <Image source={FrontArrow} />
                 </View>
                 <Divider />
-
               </TouchableOpacity>
-              {/* <TouchableOpacity onPress={() => navigation.navigate('Payments')}>
-                <ListItem
-                  containerStyle={styles.listItemContainer}
-                  title="Meu saldo"
-                  titleStyle={styles.listItemTitle}
-                  subtitle={`R$ ${state.loggedUser.balance}`}
-                  chevron
-                  bottomDivider
-                />
-              </TouchableOpacity> */}
             </View>
           ) : null}
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('UpdateAccountInfo', { user: state.loggedUser })
+              navigation.navigate('UpdateAccountInfoScreen', {
+                user: state.loggedUser,
+              })
             }
           >
             <View style={styles.listItemContainer}>
@@ -60,17 +60,10 @@ const AccountOptionsScreen = ({ navigation }) => {
               <Image source={FrontArrow} />
             </View>
             <Divider />
-            {/* <ListItem
-              containerStyle={styles.listItemContainer}
-              title="Alterar informações"
-              titleStyle={styles.listItemTitle}
-              chevron
-              bottomDivider
-            /> */}
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('UpdatePassword', {
+              navigation.navigate('UpdatePasswordScreen', {
                 userEmail: state.loggedUser.email,
                 navigation,
               })
@@ -83,13 +76,6 @@ const AccountOptionsScreen = ({ navigation }) => {
               <Image source={FrontArrow} />
             </View>
             <Divider />
-            {/* <ListItem
-              containerStyle={styles.listItemContainer}
-              title="Alterar senha"
-              titleStyle={styles.listItemTitle}
-              chevron
-              bottomDivider
-            /> */}
           </TouchableOpacity>
           <TouchableOpacity onPress={signout}>
             <View style={styles.listItemContainer}>
@@ -98,13 +84,6 @@ const AccountOptionsScreen = ({ navigation }) => {
               </View>
               <Image source={FrontArrow} />
             </View>
-            {/* <ListItem
-              containerStyle={styles.listItemContainer}
-              title="Sair"
-              titleStyle={styles.listItemTitle}
-              bottomDivider
-              chevron
-            /> */}
           </TouchableOpacity>
         </View>
       )}
@@ -112,10 +91,12 @@ const AccountOptionsScreen = ({ navigation }) => {
   );
 };
 
-AccountOptionsScreen.navigationOptions = (navData) => {
+export const AccountOptionsScreenOptions = () => {
   return {
     headerTitle: () => (
-      <HeaderTitle title="Minha Conta" />
+      <View style={styles.header}>
+        <HeaderTitle title="Minha Conta" />
+      </View>
     ),
     headerStyle: {
       backgroundColor: 'transparent',
@@ -127,19 +108,7 @@ AccountOptionsScreen.navigationOptions = (navData) => {
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    marginTop: 4,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: 'black',
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 4, height: -3 },
-    shadowRadius: 8,
-    elevation: 25,
-    // backgroundColor: 'red',
-  },
+  screen,
   container: {
     flex: 1,
     margin: 25,
@@ -157,7 +126,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // backgroundColor: '#f2f2f2',
     padding: 10,
     minHeight: 60,
     marginTop: 5,
@@ -174,6 +142,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#505050',
   },
+  header: {
+    alignItems: 'flex-start',
+  },
 });
 
-export default withNavigation(AccountOptionsScreen);
+export default AccountOptionsScreen;

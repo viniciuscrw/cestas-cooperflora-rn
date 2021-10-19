@@ -5,7 +5,7 @@ import Arrow from '../../assets/images/icons/backarrow.png';
 const BackArrow = () => {
   return (
     <View>
-        <Image source={Arrow}/>
+      <Image source={Arrow} />
     </View>
   );
 };

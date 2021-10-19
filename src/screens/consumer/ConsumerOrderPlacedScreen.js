@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { withNavigation } from 'react-navigation';
 import {
   FlatList,
   Image,
@@ -11,7 +10,6 @@ import {
 import { format } from 'date-fns';
 import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
-import Button from '../../components/Button';
 import { Context as OrderContext } from '../../context/OrderContext';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
@@ -19,16 +17,17 @@ import VegetableImage from '../../../assets/images/vegetable1.png';
 import GLOBALS from '../../Globals';
 import Spinner from '../../components/Spinner';
 
-const ConsumerOrderPlacedScreen = (props) => {
+const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
   console.log('[ConsumerOrderPlacedScreen]');
   const {
     state: { order, loading },
   } = useContext(OrderContext);
-  const { delivery } = props.navigation.state.params;
+  // const { delivery } = props.navigation.state.params;
+  const { delivery } = route.params;
 
   // TODO Resolver aqui pra quem nao tem pedido
   if (order && !order.id) {
-    props.navigation.navigate('Deliveries');
+    navigation.navigate('Deliveries');
   }
 
   const hasAnyProduct = () => {
@@ -39,11 +38,11 @@ const ConsumerOrderPlacedScreen = (props) => {
     );
   };
 
-  const handleOnConfirmPayment = () => {
-    props.navigation.navigate('ConsumerAddPaymentScreen', {
-      orderTotalAmount: order.totalAmount,
-    });
-  };
+  // const handleOnConfirmPayment = () => {
+  //   navigation.navigate('ConsumerAddPaymentScreen', {
+  //     orderTotalAmount: order.totalAmount,
+  //   });
+  // };
 
   return loading ? (
     <Spinner />
@@ -75,7 +74,7 @@ const ConsumerOrderPlacedScreen = (props) => {
                 ).toFixed(2);
                 return (
                   <View>
-                    {total != 0 ? (
+                    {total !== 0 ? (
                       <View style={styles.orderItemContainer}>
                         <View style={styles.textContainer}>
                           <Text style={styles.itemText}>
@@ -114,7 +113,7 @@ const ConsumerOrderPlacedScreen = (props) => {
             </Text>
           </View>
         </View>
-        <View style={styles.buttonContainer}>
+        {/* <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
           <Button
             style={styles.confirmButton}
@@ -123,16 +122,18 @@ const ConsumerOrderPlacedScreen = (props) => {
           >
             Adicionar Pagamento
           </Button>
-        </View>
+        </View> */}
       </View>
     </View>
   );
 };
 
-ConsumerOrderPlacedScreen.navigationOptions = (navData) => {
+export const consumerOrderPlacedScreenOptions = (navData) => {
   console.log(`navData:`);
   const deliveryDate = format(
-    navData.navigation.state.params.delivery.deliveryDate,
+    // navData.navigation.state.params.delivery.deliveryDate,
+    navData.route.params.delivery.deliveryDate,
+
     GLOBALS.FORMAT.DD_MM
   );
   return {
@@ -228,6 +229,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     alignSelf: 'center',
   },
+  header: {
+    alignItems: 'flex-start',
+  },
   imageContainer: {
     position: 'absolute',
     right: -100,
@@ -240,4 +244,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNavigation(ConsumerOrderPlacedScreen);
+export default ConsumerOrderPlacedScreen;

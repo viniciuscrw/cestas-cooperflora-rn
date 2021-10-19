@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { withNavigation } from 'react-navigation';
 import { Text, StyleSheet, View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
@@ -34,6 +33,7 @@ const PaymentsScreen = (props) => {
   }, []);
 
   if (user) {
+    console.log('[PaymentsScreen] consumer');
     if (user.role === GLOBALS.USER.ROLE.CONSUMER) {
       props.navigation.navigate('ConsumerPaymentsScreen',{ userId: user.id });
     }
@@ -79,6 +79,21 @@ const PaymentsScreen = (props) => {
       </View>
     </View>
   );
+};
+
+export const paymentsScreenOptions = (navData) => {
+  return {
+    headerTitle: () => (
+      <HeaderTitle title="Pagamentos" />
+    ),
+    headerBackImage: () => (<BackArrow />),
+    headerStyle: {
+      backgroundColor: 'white',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+    }
+  };
 };
 
 const styles = StyleSheet.create({
@@ -156,19 +171,4 @@ const styles = StyleSheet.create({
   }
 });
 
-PaymentsScreen.navigationOptions = (navData) => {
-  return {
-    headerTitle: () => (
-      <HeaderTitle title="Pagamentos" />
-    ),
-    headerBackImage: () => (<BackArrow />),
-    headerStyle: {
-      backgroundColor: 'white',
-      elevation: 0,
-      shadowOpacity: 0,
-      borderBottomWidth: 0,
-    }
-  };
-};
-
-export default withNavigation(PaymentsScreen);
+export default PaymentsScreen;

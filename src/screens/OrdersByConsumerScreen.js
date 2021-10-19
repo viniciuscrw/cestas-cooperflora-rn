@@ -1,14 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';
-import { NavigationEvents } from 'react-navigation';
 import { Input, ListItem } from 'react-native-elements';
+import { useFocusEffect } from '@react-navigation/native';
 import GLOBALS from '../Globals';
 import { Context as OrderContext } from '../context/OrderContext';
 import { Context as UserContext } from '../context/UserContext';
 import Spinner from '../components/Spinner';
+import HeaderTitle from '../components/HeaderTitle';
+import BackArrow from '../components/BackArrow';
+import Colors from '../constants/Colors';
 
-const OrdersByConsumerScreen = ({ navigation }) => {
+const OrdersByConsumerScreen = (props) => {
   const {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
@@ -19,12 +22,30 @@ const OrdersByConsumerScreen = ({ navigation }) => {
     fetchUsers,
   } = useContext(UserContext);
 
-  const { delivery } = navigation.state.params;
+  // const { delivery } = navigation.state.params;
+  const delivery = props.route.params ? props.route.params.delivery : null;
+  // console.log('[OrdersbyConsumer Screen] delivery id', delivery.id);
+
   const [usersOrders, setUsersOrders] = useState([]);
-  const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] = useState(
-    null
-  );
+  const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] =
+    useState(null);
   const [filterText, setFilterText] = useState('');
+
+  useEffect(() => {
+    matchUsersWithOrders();
+  }, [users, orders]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (delivery) {
+        fetchOrdersByDelivery(delivery.id);
+        fetchUsers();
+        props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
+      } else {
+        console.log('delivery ainda não existe');
+      }
+    }, [])
+  );
 
   const resolveUserOrderItemSubtitle = (order) => {
     const hasBaseProducts =
@@ -82,10 +103,6 @@ const OrdersByConsumerScreen = ({ navigation }) => {
     setUsersOrders(userOrderItems);
   };
 
-  useEffect(() => {
-    matchUsersWithOrders();
-  }, [users, orders]);
-
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
@@ -118,75 +135,96 @@ const OrdersByConsumerScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate('ConsumerOrderScreen', {
+          props.navigation.navigate('ConsumerOrderScreen', {
             user: { id: userOrderItem.userId, name: userOrderItem.userName },
             delivery,
           })
         }
       >
-        <ListItem
-          containerStyle={styles.listItemContainer}
-          title={`${userOrderItem.userName}`}
-          titleStyle={styles.listItemTitle}
-          subtitle={`${userOrderItem.subtitle}`}
-          // subtitle={<Text>{userOrderItem.subtitle}</Text>}
-          bottomDivider
-          chevron
-        />
+        <View style={styles.itemContainer}>
+          <ListItem
+            containerStyle={styles.listItemContainer}
+            title={`${userOrderItem.userName}`}
+            titleStyle={styles.listItemTitle}
+            subtitle={`${userOrderItem.subtitle}`}
+            bottomDivider
+            chevron
+          />
+        </View>
       </TouchableOpacity>
     );
   };
 
   return (
-    <View style={styles.container}>
-      <NavigationEvents
-        onWillFocus={() => {
-          fetchOrdersByDelivery(delivery.id);
-          fetchUsers();
-        }}
-      />
-      <Input
-        containerStyle={styles.searchInput}
-        placeholder="Buscar pessoa consumidora"
-        value={filterText}
-        onChangeText={setFilterText}
-        onEndEditing={searchConsumersByFilter}
-        returnKeyType="done"
-        autoCorrect={false}
-        rightIcon={renderSearchIcon()}
-      />
-      {!orderLoading && !userLoading ? (
-        <FlatList
-          data={
-            filteredOrdersByConsumer && filteredOrdersByConsumer.length
-              ? filteredOrdersByConsumer
-              : usersOrders
-          }
-          renderItem={renderItem}
-          keyExtractor={(item) => item.userId}
-          style={styles.productsList}
+    <View style={styles.screen}>
+      <View style={styles.container}>
+        <Input
+          containerStyle={styles.searchInput}
+          placeholder="Buscar pessoa consumidora"
+          value={filterText}
+          onChangeText={setFilterText}
+          onEndEditing={searchConsumersByFilter}
+          returnKeyType="done"
+          autoCorrect={false}
+          rightIcon={renderSearchIcon()}
         />
-      ) : (
-        <Spinner />
-      )}
+        {!orderLoading && !userLoading ? (
+          <FlatList
+            data={
+              filteredOrdersByConsumer && filteredOrdersByConsumer.length
+                ? filteredOrdersByConsumer
+                : usersOrders
+            }
+            renderItem={renderItem}
+            keyExtractor={(item) => item.userId}
+            style={styles.productsList}
+          />
+        ) : (
+          <Spinner />
+        )}
+      </View>
     </View>
   );
 };
 
-export const ordersManagementNavigationOptions = ({ navigation }) => {
+export const ordersManagementScreenOptions = (props) => {
+  const deliveryDate = format(
+    props.route.params.delivery.deliveryDate,
+    GLOBALS.FORMAT.DEFAULT_DATE
+  );
   return {
-    headerTitle: `Pedidos - ${format(
-      navigation.state.params.delivery.deliveryDate,
-      GLOBALS.FORMAT.DEFAULT_DATE
-    )}`,
+    headerTitle: () => (
+      <View style={styles.header}>
+        <HeaderTitle title={`Pedidos - ${deliveryDate}`} />
+      </View>
+    ),
+    headerBackImage: () => <BackArrow />,
+    headerStyle: {
+      backgroundColor: 'transparent',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+    },
   };
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: Colors.backGroundColor,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: 'black',
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 25,
+  },
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: '#ebebeb',
+    marginHorizontal: 15,
+    marginVertical: 5,
   },
   text: {
     color: '#101010',
@@ -195,6 +233,12 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     width: 300,
+  },
+  itemContainer: {
+    marginBottom: 5,
+    // flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 25,
   },
   productsList: {
     marginTop: -10,
@@ -208,6 +252,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
     fontSize: 20,
+  },
+  header: {
+    alignItems: 'flex-start',
   },
 });
 

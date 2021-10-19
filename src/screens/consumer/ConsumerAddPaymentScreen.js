@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { withNavigation } from 'react-navigation';
 import { format } from 'date-fns';
 import { StyleSheet, Text, View, ActivityIndicator, Alert } from 'react-native';
 import HeaderTitle from '../../components/HeaderTitle';
@@ -30,7 +29,8 @@ const ConsumerAddPaymentScreen = (props) => {
     const user = useUser();
     // console.log('[Consumer Payments Screen] user', user);
     // console.log('[ConsumerAddPaymentScreen] started');
-    const orderTotalAmount = props.navigation.state.params.orderTotalAmount;
+    // const orderTotalAmount = props.navigation.state.params.orderTotalAmount;
+    const orderTotalAmount = props.route.params.orderTotalAmount;
 
     const { getUserById } = useContext(userContext);
 
@@ -173,17 +173,28 @@ const ConsumerAddPaymentScreen = (props) => {
     )
 }
 
+export const consumerAddPaymentScreenOptions = (navData) => {
+    return {
+        headerTitle: () => (
+            <HeaderTitle title="Adicionar Pagamento" />
+        ),
+        headerBackImage: () => (<BackArrow />),
+        headerStyle: {
+            backgroundColor: 'transparent',
+            elevation: 0,
+            shadowOpacity: 0,
+            borderBottomWidth: 0, 
+        }
+    };
+};
+
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
         marginTop: 4,
         backgroundColor: 'white',
-        // paddingLeft: 25,
-        // paddingRight: 25,
-        // borderRadius: 25,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        // backgroundColor: 'grey',
         shadowColor: "black",
         shadowOpacity: 0.26,
         shadowOffset: { width: 0, height: 2 },
@@ -267,19 +278,4 @@ const styles = StyleSheet.create({
     },
 });
 
-ConsumerAddPaymentScreen.navigationOptions = (navData) => {
-    return {
-        headerTitle: () => (
-            <HeaderTitle title="Adicionar Pagamento" />
-        ),
-        headerBackImage: () => (<BackArrow />),
-        headerStyle: {
-            backgroundColor: 'transparent',
-            elevation: 0,
-            shadowOpacity: 0,
-            borderBottomWidth: 0,
-        }
-    };
-};
-
-export default withNavigation(ConsumerAddPaymentScreen);
+export default ConsumerAddPaymentScreen;

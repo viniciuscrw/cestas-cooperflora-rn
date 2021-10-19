@@ -17,9 +17,10 @@ import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import Spinner from '../components/Spinner';
 import Colors from '../constants/Colors';
+import { stardardScreenStyle as screen } from './screenstyles/ScreenStyles';
 
-const UpdatePasswordScreen = ({ navigation }) => {
-  const email = navigation.getParam('userEmail');
+const UpdatePasswordScreen = (props) => {
+  const email = props.route.params.userEmail;
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const { state, updatePassword, clearError } = useContext(AuthContext);
@@ -102,12 +103,14 @@ const UpdatePasswordScreen = ({ navigation }) => {
   );
 };
 
-UpdatePasswordScreen.navigationOptions = (navData) => {
+export const updatePasswordScreenOptions = (navData) => {
   return {
     headerTitle: () => (
-      <HeaderTitle title="Atualizar Senha" />
+      <View style={styles.header}>
+        <HeaderTitle title="Atualizar Senha" />
+      </View>
     ),
-    headerBackImage: () => (<BackArrow />),
+    headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
@@ -118,19 +121,7 @@ UpdatePasswordScreen.navigationOptions = (navData) => {
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    marginTop: 4,
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: 'black',
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 4, height: -3 },
-    shadowRadius: 8,
-    elevation: 25,
-    // backgroundColor: 'red',
-  },
+  screen,
   container: {
     flex: 1,
     margin: 25,
@@ -149,6 +140,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
     backgroundColor: Colors.primary,
     alignSelf: 'center',
+  },
+  header: {
+    alignItems: 'flex-start',
   },
 });
 

@@ -24,8 +24,8 @@ import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
 
-const UpdateAccountInfoScreen = ({ navigation }) => {
-  const user = navigation.getParam('user');
+const UpdateAccountInfoScreen = ( props ) => {
+  const user = props.route.params.user;
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [password, setPassword] = useState('');
@@ -196,10 +196,10 @@ const UpdateAccountInfoScreen = ({ navigation }) => {
   );
 };
 
-UpdateAccountInfoScreen.navigationOptions = (navData) => {
+export const updateAccountInfoScreenOptions = (navData) => {
   return {
     headerTitle: () => (
-      <HeaderTitle title="Atualizar Informações" />
+      <HeaderTitle title="Meus Dados" />
     ),
     headerBackImage: () => (<BackArrow />),
     headerStyle: {
