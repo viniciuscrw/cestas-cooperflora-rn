@@ -7,18 +7,14 @@ import { Provider as ConsumerGroupProvider } from './src/context/ConsumerGroupCo
 import { Provider as DeliveryProvider } from './src/context/DeliveryContext';
 import { Provider as ProductProvider } from './src/context/ProductContext';
 import { Provider as OrderProvider } from './src/context/OrderContext';
-
 import FirebaseConfig from './src/constants/FirebaseConfig';
-
 import AppNavigator from './src/navigation/AppNavigator';
-
-// const App = createAppContainer(MainNavigation);
 
 export default App = () => {
   LogBox.ignoreLogs(['Setting a timer']);
   LogBox.ignoreLogs(['It appears']);
   LogBox.ignoreLogs(["'Card."]);
-  // LogBox.ignoreLogs(["'ListItem."]);
+  LogBox.ignoreLogs(["'ListItem."]);
   LogBox.ignoreAllLogs();
 
   if (!firebase.apps.length) {

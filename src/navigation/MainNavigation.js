@@ -361,7 +361,7 @@ export const BottomTabNavigator = () => {
           tabBarLabel: 'Minha Conta',
           tabBarAccessibilityLabel: 'Minha Conta',
           tabBarIcon: ({ color }) => {
-            return <FontAwesome5 name="user-alt" size={40} color={color} />;
+            return <FontAwesome5 name="user-alt" size={34} color={color} />;
           },
         }}
       />
@@ -369,10 +369,10 @@ export const BottomTabNavigator = () => {
         name="DeliveryNavigator"
         component={DeliveryNavigator}
         options={{
-          tabBarLabel: 'Cestas bottom tab',
-          tabBarAccessibilityLabel: 'Cestas bottom tab',
+          tabBarLabel: 'Cestas',
+          tabBarAccessibilityLabel: 'Cestas',
           tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="shopping-basket" size={40} color={color} />
+            <FontAwesome5 name="shopping-basket" size={34} color={color} />
           ),
         }}
       />
@@ -384,7 +384,7 @@ export const BottomTabNavigator = () => {
           tabBarAccessibilityLabel: 'Pagamentos',
           tabBarActiveTintColor: 'red',
           tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="dollar-sign" size={40} color={color} />
+            <FontAwesome5 name="dollar-sign" size={34} color={color} />
           ),
         }}
       />
@@ -434,4 +434,4 @@ export const MainNavigator = () => {
       /> */}
     </MainStackNavigator.Navigator>
   );
-}
+};

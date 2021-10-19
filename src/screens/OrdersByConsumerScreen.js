@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';
 import { Input, ListItem } from 'react-native-elements';
+import { useFocusEffect } from '@react-navigation/native';
 import GLOBALS from '../Globals';
 import { Context as OrderContext } from '../context/OrderContext';
 import { Context as UserContext } from '../context/UserContext';
@@ -26,22 +27,25 @@ const OrdersByConsumerScreen = (props) => {
   // console.log('[OrdersbyConsumer Screen] delivery id', delivery.id);
 
   const [usersOrders, setUsersOrders] = useState([]);
-  const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] = useState(null);
+  const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] =
+    useState(null);
   const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
     matchUsersWithOrders();
   }, [users, orders]);
 
-  useEffect(() => {
-    if (delivery) {
-      fetchOrdersByDelivery(delivery.id);
-      fetchUsers();
-      props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
-    } else {
-      console.log('delivery ainda não existe');
-    }
-  }, [])
+  useFocusEffect(
+    React.useCallback(() => {
+      if (delivery) {
+        fetchOrdersByDelivery(delivery.id);
+        fetchUsers();
+        props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
+      } else {
+        console.log('delivery ainda não existe');
+      }
+    }, [])
+  );
 
   const resolveUserOrderItemSubtitle = (order) => {
     const hasBaseProducts =
@@ -102,21 +106,21 @@ const OrdersByConsumerScreen = (props) => {
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-        type: 'ionicons',
-        name: 'search',
-        size: 25,
-        color: 'lightgrey',
-      }
+          type: 'ionicons',
+          name: 'search',
+          size: 25,
+          color: 'lightgrey',
+        }
       : {
-        type: 'material',
-        name: 'clear',
-        size: 25,
-        color: 'lightgrey',
-        onPress: () => {
-          setFilterText('');
-          setFilteredOrdersByConsumer(null);
-        },
-      };
+          type: 'material',
+          name: 'clear',
+          size: 25,
+          color: 'lightgrey',
+          onPress: () => {
+            setFilterText('');
+            setFilteredOrdersByConsumer(null);
+          },
+        };
   };
 
   const searchConsumersByFilter = () => {
@@ -143,7 +147,6 @@ const OrdersByConsumerScreen = (props) => {
             title={`${userOrderItem.userName}`}
             titleStyle={styles.listItemTitle}
             subtitle={`${userOrderItem.subtitle}`}
-            // subtitle={<Text>{userOrderItem.subtitle}</Text>}
             bottomDivider
             chevron
           />
@@ -184,23 +187,25 @@ const OrdersByConsumerScreen = (props) => {
   );
 };
 
-export const ordersManagementScreenOptions = ( props ) => {
-  const deliveryDate = format(props.route.params.delivery.deliveryDate,GLOBALS.FORMAT.DEFAULT_DATE);
-  console.log(deliveryDate);
+export const ordersManagementScreenOptions = (props) => {
+  const deliveryDate = format(
+    props.route.params.delivery.deliveryDate,
+    GLOBALS.FORMAT.DEFAULT_DATE
+  );
   return {
     headerTitle: () => (
-      <View style={styles.header} >
+      <View style={styles.header}>
         <HeaderTitle title={`Pedidos - ${deliveryDate}`} />
       </View>
     ),
-    headerBackImage: () => (<BackArrow />),
+    headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
-    }
-  }
+    },
+  };
 };
 
 const styles = StyleSheet.create({
@@ -210,15 +215,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backGroundColor,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
-    margin: 25
+    marginHorizontal: 15,
+    marginVertical: 5,
   },
   text: {
     color: '#101010',
@@ -248,7 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   header: {
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
 });
 

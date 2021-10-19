@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { Input, ListItem } from 'react-native-elements';
+import { useFocusEffect } from '@react-navigation/native';
 import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
 import Colors from '../constants/Colors';
@@ -31,7 +32,7 @@ const OrdersItemsQuantity = (props) => {
         if (product.productTitle && product.quantity && product.quantity > 0) {
           productsToQuantityMap[`${product.productTitle}`] =
             productsToQuantityMap[`${product.productTitle}`] +
-            product.quantity || product.quantity;
+              product.quantity || product.quantity;
         }
       });
     });
@@ -44,40 +45,31 @@ const OrdersItemsQuantity = (props) => {
     setProductsToQuantity(productsArray);
   };
 
-  useEffect(() => {
-    const unsubscribe = props.navigation.addListener('focus', () => {
-      // The screen is focused
-      // Call any action
+  useFocusEffect(
+    React.useCallback(() => {
       fetchOrdersByDelivery(delivery.id);
       mapProductsToQuantity();
-    });
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
-  }, []);
-
-  // useEffect(() => {
-  //   fetchOrdersByDelivery(delivery.id);
-  //   mapProductsToQuantity();
-  // }, [delivery]);
+    }, [])
+  );
 
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-        type: 'ionicons',
-        name: 'search',
-        size: 25,
-        color: 'lightgrey',
-      }
+          type: 'ionicons',
+          name: 'search',
+          size: 25,
+          color: 'lightgrey',
+        }
       : {
-        type: 'material',
-        name: 'clear',
-        size: 25,
-        color: 'lightgrey',
-        onPress: () => {
-          setFilterText('');
-          setFilteredProducts(null);
-        },
-      };
+          type: 'material',
+          name: 'clear',
+          size: 25,
+          color: 'lightgrey',
+          onPress: () => {
+            setFilterText('');
+            setFilteredProducts(null);
+          },
+        };
   };
 
   const searchProductsByFilter = () => {
@@ -139,15 +131,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backGroundColor,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
-    margin: 25
+    margin: 25,
   },
   text: {
     color: '#101010',

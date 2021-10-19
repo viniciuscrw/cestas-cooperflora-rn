@@ -32,9 +32,11 @@ const DeliveriesScreen = ({ navigation }) => {
     if (user && user.role === GLOBALS.USER.ROLE.ORGANIZER) {
       return (
         <View style={styles.buttonContainer}>
-          <Button style={styles.button}
-            textColor='white'
-            onPress={() => navigation.navigate('CreateDeliveryScreen')}>
+          <Button
+            style={styles.button}
+            textColor="white"
+            onPress={() => navigation.navigate('CreateDeliveryScreen')}
+          >
             Adicionar próxima entrega
           </Button>
         </View>
@@ -49,14 +51,14 @@ const DeliveriesScreen = ({ navigation }) => {
 
   const editDelivery = (delivery) => {
     navigation.navigate('DeliveryManagement', {
-      params: { delivery: delivery },
-      screen: 'CreateDeliveryScreen'
+      params: { delivery },
+      screen: 'CreateDeliveryScreen',
     });
   };
 
   const onCardClick = (delivery) => {
     if (user.role === GLOBALS.USER.ROLE.ORGANIZER) {
-      navigation.navigate('OrdersManagement', { delivery: delivery });
+      navigation.navigate('OrdersManagement', { delivery });
     } else {
       navigation.navigate('ConsumerOrderScreen', { user, delivery });
     }
@@ -115,7 +117,7 @@ const DeliveriesScreen = ({ navigation }) => {
             keyExtractor={(item) => item.id}
             onRefresh={() => {
               setRefreshing(true);
-              fetchDeliveries()
+              fetchDeliveries();
               setRefreshing(false);
             }}
             refreshing={refreshing}
@@ -138,7 +140,9 @@ export const deliveriesNavigationOptions = (navigation) => {
         <MainHeader />
       </View>
     ),
-    headerRight: () => <ConsumerGroupDetails navigation={navigation.navigation} />,
+    headerRight: () => (
+      <ConsumerGroupDetails navigation={navigation.navigation} />
+    ),
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
@@ -190,7 +194,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   buttonContainer: {
     // position: 'absolute',

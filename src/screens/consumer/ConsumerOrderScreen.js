@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { format } from 'date-fns';
+import { useFocusEffect } from '@react-navigation/native';
 import GLOBALS from '../../Globals';
 import { Context as OrderContext } from '../../context/OrderContext';
 import Colors from '../../constants/Colors';
@@ -74,17 +75,19 @@ const ConsumerOrderScreen = (props) => {
     setOrderProducts(transformedOrderProducts);
   };
 
-  useEffect(() => {
-    console.log('[Consumer Order Product Screen - useEffect fetch orders');
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('[Consumer Order Product Screen - useEffect fetch orders');
 
-    if (user && delivery) {
-      setLimitDateToOrder(delivery.limitDate);
-      // console.log('[ConsumerOrderProduct] delivery', delivery.limitDate);
-      fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
-      setBaseProducts(delivery.baseProducts);
-      props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
-    }
-  }, [user, delivery]);
+      if (user && delivery) {
+        setLimitDateToOrder(delivery.limitDate);
+        // console.log('[ConsumerOrderProduct] delivery', delivery.limitDate);
+        fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
+        setBaseProducts(delivery.baseProducts);
+        props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
+      }
+    }, [user, delivery])
+  );
 
   useEffect(() => {
     transformOrderProducts();
@@ -192,7 +195,7 @@ const ConsumerOrderScreen = (props) => {
 };
 
 export const consumerOrderScreenOptions = (navData) => {
-  console.log(navData.route.params.delivery.deliveryDate);
+  // console.log(navData.route.params.delivery.deliveryDate);
   const deliveryDate = format(
     navData.route.params.delivery.deliveryDate,
     GLOBALS.FORMAT.DD_MM
@@ -324,7 +327,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   header: {
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
   imageContainer: {
     position: 'absolute',
