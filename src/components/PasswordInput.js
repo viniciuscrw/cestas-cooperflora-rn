@@ -1,10 +1,17 @@
 import React from 'react';
-import { Text, TextInput, View, StyleSheet } from 'react-native';
 import Input from './Input';
 
-const PasswordInput = ({ label, value, onChangeText, autoFocus, style }) => {
+const PasswordInput = ({
+  id,
+  label,
+  value,
+  onChangeText,
+  autoFocus,
+  style,
+}) => {
   return (
     <Input
+      id={id}
       autoFocus={autoFocus}
       placeholder="••••••••"
       label={label}

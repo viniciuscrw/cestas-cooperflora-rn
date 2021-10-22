@@ -1,6 +1,5 @@
 import React from 'react';
 import { Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
 import FrontArrow from '../../assets/images/icons/frontarrow.png';
 import useUser from '../hooks/useUser';
 import HeaderTitle from './HeaderTitle';
@@ -10,35 +9,26 @@ const ConsumerGroupDetails = ({ navigation }) => {
   const user = useUser();
 
   return user ? (
-    <TouchableOpacity onPress={() => {
-      if (user.role === 'organizer') {
-        // console.log('[Consumer Group Details Screen] user role', user.role);
-        navigation.navigate('ConsumerGroupManagement', { userRole: user.role });
-      } else if (user.role === 'consumer') {
-        // console.log('ConsumerGroupInfoScreen', navigation.navigate);
-        // navigation.navigate('ConsumerGroupInfoScreen', { userRole: user.role });
-        navigation.navigate('ConsumerGroupInfoScreen', { userRole: user.role });
-      } else {
-        console.log("Ocorreu um erro");
-      }
-
-    }}>
-      <Image
-        source={FrontArrow}
-      />
+    <TouchableOpacity
+      onPress={() => {
+        if (user.role === 'organizer') {
+          // console.log('[Consumer Group Details Screen] user role', user.role);
+          navigation.navigate('ConsumerGroupManagement', {
+            userRole: user.role,
+          });
+        } else if (user.role === 'consumer') {
+          // console.log('ConsumerGroupInfoScreen', navigation.navigate);
+          // navigation.navigate('ConsumerGroupInfoScreen', { userRole: user.role });
+          navigation.navigate('ConsumerGroupInfoScreen', {
+            userRole: user.role,
+          });
+        } else {
+          console.log('Ocorreu um erro');
+        }
+      }}
+    >
+      <Image source={FrontArrow} />
     </TouchableOpacity>
-    // <AntDesign
-    //   name="infocirlceo"
-    //   size={22}
-    //   color="#2d98d6"
-    //   style={styles.icon}
-    //   onPress={() => {
-    //     if (user.role === 'organizer') {
-    //       navigation.navigate('ConsumerGroup', { userRole: user.role });
-    //     }
-    //     navigation.navigate('ConsumerGroupInfo', { userRole: user.role });
-    //   }}
-    // />
   ) : null;
 };
 
@@ -47,7 +37,7 @@ export const consumerGroupDetailsScreenOptions = () => {
     headerTitle: () => (
       <HeaderTitle title="Informações sobre o grupo de consumo" />
     ),
-    headerBackImage: () => (<BackArrow />),
+    headerBackImage: () => <BackArrow />,
     headerBackTitleVisible: false,
   };
 };

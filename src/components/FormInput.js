@@ -1,8 +1,10 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Input, Text } from 'react-native-elements';
+import { accessibilityLabel } from '../utils';
 
 const FormInput = ({
+  id,
   label,
   value,
   placeholder,
@@ -30,6 +32,7 @@ const FormInput = ({
   return (
     <View>
       <Input
+        {...accessibilityLabel(id)}
         label={label}
         value={value}
         placeholder={placeholder}

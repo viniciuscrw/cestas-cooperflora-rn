@@ -24,7 +24,7 @@ import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
 
-const UpdateAccountInfoScreen = ( props ) => {
+const UpdateAccountInfoScreen = (props) => {
   const user = props.route.params.user;
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
@@ -90,6 +90,7 @@ const UpdateAccountInfoScreen = ( props ) => {
             Para alterar o e-mail, é necessário informar sua senha:
           </Text>
           <FormInput
+            id="password"
             placeholder="Senha"
             value={password}
             onChangeText={(password) => {
@@ -143,6 +144,7 @@ const UpdateAccountInfoScreen = ( props ) => {
             <ScrollView>
               {/* <Spacer /> */}
               <FormInput
+                id="name"
                 label="Nome"
                 value={name}
                 returnKeyType="next"
@@ -154,6 +156,7 @@ const UpdateAccountInfoScreen = ( props ) => {
               />
               <Spacer />
               <FormInput
+                id="e-mail"
                 label="E-mail"
                 value={email}
                 reference={emailTextInput}
@@ -168,6 +171,7 @@ const UpdateAccountInfoScreen = ( props ) => {
               />
               <Spacer />
               <FormInput
+                id="mobile"
                 label="Celular"
                 value={phoneNumber}
                 returnKeyType="done"
@@ -184,6 +188,7 @@ const UpdateAccountInfoScreen = ( props ) => {
         <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
           <Button
+            id="updateUserInfoButton"
             style={styles.confirmButton}
             textColor="white"
             onPress={updateUserInfo}

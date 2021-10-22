@@ -113,16 +113,6 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
             </Text>
           </View>
         </View>
-        {/* <View style={styles.buttonContainer}>
-          <Divider style={{ borderBottomColor: Colors.secondary }} />
-          <Button
-            style={styles.confirmButton}
-            textColor="white"
-            onPress={handleOnConfirmPayment}
-          >
-            Adicionar Pagamento
-          </Button>
-        </View> */}
       </View>
     </View>
   );
@@ -131,9 +121,7 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
 export const consumerOrderPlacedScreenOptions = (navData) => {
   console.log(`navData:`);
   const deliveryDate = format(
-    // navData.navigation.state.params.delivery.deliveryDate,
     navData.route.params.delivery.deliveryDate,
-
     GLOBALS.FORMAT.DD_MM
   );
   return {

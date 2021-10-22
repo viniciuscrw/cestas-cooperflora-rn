@@ -1,7 +1,9 @@
 import React from 'react';
 import { Text, TextInput, View, StyleSheet } from 'react-native';
+import { accessibilityLabel } from '../utils';
 
 const Input = ({
+  id,
   label,
   value,
   onChangeText,
@@ -16,6 +18,7 @@ const Input = ({
         {label}
       </Text>
       <TextInput
+        {...accessibilityLabel(id)}
         autoFocus={autoFocus}
         autoCapitalize="none"
         secureTextEntry={secureTextEntry}

@@ -14,7 +14,6 @@ import PaymentsScreen, {
   paymentsScreenOptions,
 } from '../screens/PaymentsScreen';
 import SigninScreen, { signinScreenOptions } from '../screens/SigninScreen';
-import InitialScreen from '../screens/InitialScreen';
 import ConsumersScreen from '../screens/ConsumersScreen';
 import OrganizersScreen from '../screens/OrganizersScreen';
 import CreateUserScreen from '../screens/CreateUserScreen';
@@ -174,7 +173,7 @@ export const ExtraItemsNavigator = () => {
 };
 
 const DelTopTabNavigator = createMaterialTopTabNavigator();
-export const DeliveryManagementTopTabNavigator = (props) => {
+export const DeliveryManagementTopTabNavigator = () => {
   return (
     <DelTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
       <DelTopTabNavigator.Screen
@@ -192,8 +191,8 @@ export const DeliveryManagementTopTabNavigator = (props) => {
 };
 
 const OrdTopTabNavigator = createMaterialTopTabNavigator();
-export const OrdersManagementTabNavigator = (props) => {
-  const delivery = props.route.params;
+export const OrdersManagementTabNavigator = ({ route }) => {
+  const delivery = route.params;
   return (
     <OrdTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
       <OrdTopTabNavigator.Screen
@@ -421,8 +420,9 @@ export const MainNavigator = () => {
         options={consumerGroupInfoScreenOptions}
       />
       {/* <MainStackNavigator.Screen
-        name="CreateDeliveryScreen" 
+        name="CreateDeliveryScreen"
         component={CreateDeliveryScreen}
+        options={createDeliveryScreenOptions}
       /> */}
       {/* <MainStackNavigator.Screen
         name="DeliveryTopTabNavigator" component={DeliveryTopTabNavigator}

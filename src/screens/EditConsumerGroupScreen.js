@@ -48,9 +48,12 @@ const EditConsumerGroupScreen = (props) => {
       <Spinner size="small" />
     ) : (
       <View style={styles.buttonContainer}>
-        <Button style={styles.button}
-          textColor='white'
-          onPress={updateInfo}>
+        <Button
+          id="updateGroupButton"
+          style={styles.button}
+          textColor="white"
+          onPress={updateInfo}
+        >
           Atualizar Informações
         </Button>
       </View>
@@ -58,15 +61,18 @@ const EditConsumerGroupScreen = (props) => {
   };
 
   return (
-    <View style={styles.screen} >
-      <View style={styles.container} >
+    <View style={styles.screen}>
+      <View style={styles.container}>
         <KeyboardAvoidingView
           style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           enabled
           keyboardVerticalOffset={100}
         >
-          <TouchableHighlight onPress={Keyboard.dismiss} underlayColor={'#f2f2f2'}>
+          <TouchableHighlight
+            onPress={Keyboard.dismiss}
+            underlayColor={'#f2f2f2'}
+          >
             <ScrollView>
               <View style={styles.container}>
                 <View style={styles.titleContainer}>
@@ -79,6 +85,7 @@ const EditConsumerGroupScreen = (props) => {
                 </View>
                 <Spacer />
                 <FormInput
+                  id="address"
                   label="Endereço"
                   value={address}
                   onChangeText={setAddress}
@@ -89,6 +96,7 @@ const EditConsumerGroupScreen = (props) => {
                 />
                 <Spacer />
                 <FormInput
+                  id="time"
                   label="Horário"
                   value={time}
                   onChangeText={setTime}
@@ -98,6 +106,7 @@ const EditConsumerGroupScreen = (props) => {
                 />
                 <Spacer />
                 <FormInput
+                  id="deliveries"
                   label="Entregas"
                   value={deliveryFrequencyText}
                   onChangeText={setDeliveryFrequencyText}
@@ -107,6 +116,7 @@ const EditConsumerGroupScreen = (props) => {
                 />
                 <Spacer />
                 <FormInput
+                  id="notes"
                   label="Observações"
                   value={notice}
                   multiline
@@ -127,16 +137,7 @@ const EditConsumerGroupScreen = (props) => {
 
 export const editConsumerGroupScreenOptions = (navData) => {
   return {
-    headerTitle: () => (
-      <HeaderTitle title="Edit COnsumer" />
-    ),
-    // headerBackImage: () => (<BackArrow />),
-    // headerStyle: {
-    //     backgroundColor: 'transparent',
-    //     elevation: 0,
-    //     shadowOpacity: 0,
-    //     borderBottomWidth: 0,
-    // }
+    headerTitle: () => <HeaderTitle title="Edit Consumer" />,
   };
 };
 
@@ -145,17 +146,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 4,
     backgroundColor: 'white',
-    // paddingLeft: 25,
-    // paddingRight: 25,
-    // borderRadius: 25,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: '#F0F5F9',
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,

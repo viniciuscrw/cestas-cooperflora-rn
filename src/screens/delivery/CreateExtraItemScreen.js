@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import React, { useContext, useState } from 'react';
 import {
   Alert,
@@ -11,6 +12,7 @@ import {
   View,
 } from 'react-native';
 import FormInput from '../../components/FormInput';
+import Button from '../../components/Button';
 import Spacer from '../../components/Spacer';
 import TextLink from '../../components/TextLink';
 import LoadingButton from '../../components/LoadingButton';
@@ -20,19 +22,19 @@ import {
   isNotEmpty,
   showAlert,
 } from '../../helper/HelperFunctions';
+import Colors from '../../constants/Colors';
 
-const CreateExtraItemScreen = (props) => {
-  const products = props.route.params.products;
-  const product = props.route.params.product;
-  const selectedProducts = props.route.params.selectedProducts;
+const CreateExtraItemScreen = ({ route, navigation }) => {
+  const { products } = route.params;
+  const { product } = route.params;
+  const { selectedProducts } = route.params;
 
   // const products = navigation.getParam('products');
   // const product = navigation.getParam('product');
   // const selectedProducts = navigation.getParam('selectedProducts');
 
-  const { state, createProduct, updateProduct, deleteProduct } = useContext(
-    ProductContext
-  );
+  const { state, createProduct, updateProduct, deleteProduct } =
+    useContext(ProductContext);
   const [name, setName] = useState(product ? product.name : '');
   const [itemPrice, setPrice] = useState(
     product ? formatCurrency(product.price) : ''
@@ -91,7 +93,7 @@ const CreateExtraItemScreen = (props) => {
       maxOrderQuantity,
     };
 
-    createProduct({ product }).then(() => props.navigation.goBack(null));
+    createProduct({ product }).then(() => navigation.goBack(null));
   };
 
   const productDidNotChange = (updatedProduct) => {
@@ -120,10 +122,10 @@ const CreateExtraItemScreen = (props) => {
     };
 
     if (productDidNotChange(updatedProduct)) {
-      props.navigation.goBack(null);
+      navigation.goBack(null);
     } else {
       updateProduct({ productId: product.id, updatedProduct }).then(() =>
-        props.navigation.goBack(null)
+        navigation.goBack(null)
       );
     }
   };
@@ -142,7 +144,7 @@ const CreateExtraItemScreen = (props) => {
             text: 'Confirmar',
             onPress: () => {
               deleteProduct({ productId: product.id }).then(() =>
-                props.navigation.goBack(null)
+                navigation.goBack(null)
               );
             },
           },
@@ -150,7 +152,7 @@ const CreateExtraItemScreen = (props) => {
       );
     } else {
       deleteProduct({ productId: product.id }).then(() =>
-        props.navigation.goBack(null)
+        navigation.goBack(null)
       );
     }
   };
@@ -158,21 +160,27 @@ const CreateExtraItemScreen = (props) => {
   const renderConfirmButton = () => {
     if (isNotEmpty(name) && isNotEmpty(itemPrice)) {
       return product ? (
-        <LoadingButton
-          style={styles.createItemButton}
-          loading={state.loading}
-          onPress={updateItem}
-        >
-          Atualizar item
-        </LoadingButton>
+        <View style={styles.buttonContainer}>
+          <Button
+            id="updateItemButton"
+            style={styles.button}
+            textColor="white"
+            onPress={updateItem}
+          >
+            Atualizar item
+          </Button>
+        </View>
       ) : (
-        <LoadingButton
-          style={styles.createItemButton}
-          loading={state.loading}
-          onPress={createItem}
-        >
-          Criar item
-        </LoadingButton>
+        <View style={styles.buttonContainer}>
+          <Button
+            id="createItemButton"
+            style={styles.button}
+            textColor="white"
+            onPress={createItem}
+          >
+            Criar item
+          </Button>
+        </View>
       );
     }
 
@@ -206,12 +214,13 @@ const CreateExtraItemScreen = (props) => {
               </Text>
               <TextLink
                 text="Cancelar"
-                onPress={() => props.navigation.goBack(null)}
+                onPress={() => navigation.goBack(null)}
                 style={styles.cancelButton}
               />
             </View>
             <Spacer />
             <FormInput
+              id="name"
               label="Nome"
               value={name}
               onChangeText={setName}
@@ -220,6 +229,7 @@ const CreateExtraItemScreen = (props) => {
               autoCapitalize="sentences"
             />
             <FormInput
+              id="price"
               label="Preço"
               value={itemPrice}
               onChangeText={setPrice}
@@ -228,6 +238,7 @@ const CreateExtraItemScreen = (props) => {
               maxLength={7}
             />
             <FormInput
+              id="amountavailable"
               label="Quantidade disponível"
               value={itemAvailableQuantity}
               onChangeText={setAvailableQuantity}
@@ -236,6 +247,7 @@ const CreateExtraItemScreen = (props) => {
               maxLength={7}
             />
             <FormInput
+              id="amountmax"
               label="Quantidade máxima por pedido"
               value={itemMaxOrderQuantity}
               onChangeText={setMaxOrderQuantity}
@@ -281,6 +293,16 @@ const styles = StyleSheet.create({
   },
   removeItemButton: {
     marginTop: 20,
+  },
+  buttonContainer: {
+    // position: 'absolute',
+    width: '100%',
+    // bottom: 0,
+  },
+  button: {
+    marginTop: 5,
+    backgroundColor: Colors.secondary,
+    alignSelf: 'center',
   },
 });
 

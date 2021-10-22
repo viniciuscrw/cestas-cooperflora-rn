@@ -1,5 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Text, StyleSheet, View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  View,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import { Context as UserContext } from '../context/UserContext';
@@ -12,36 +19,35 @@ const PaymentsScreen = (props) => {
   const [consumers, setConsumers] = useState([]);
 
   console.log('[PaymentsScreen started]');
-  const { fetchConsumers } = useContext(
-    UserContext
-  );
+  const { fetchConsumers } = useContext(UserContext);
 
   const user = useUser();
 
   useEffect(() => {
     setIsLoading(true);
-    fetchConsumers().then((consumers) => {
-      consumers.sort((a, b) => {
-        return (a.name > b.name ? 1 : -1)
+    fetchConsumers()
+      .then((consumers) => {
+        consumers.sort((a, b) => {
+          return a.name > b.name ? 1 : -1;
+        });
+        setConsumers(consumers);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
       });
-      setConsumers(consumers)
-      setIsLoading(false);
-    }).catch((error) => {
-      console.log(error);
-    });
-
   }, []);
 
   if (user) {
     console.log('[PaymentsScreen] consumer');
     if (user.role === GLOBALS.USER.ROLE.CONSUMER) {
-      props.navigation.navigate('ConsumerPaymentsScreen',{ userId: user.id });
+      props.navigation.navigate('ConsumerPaymentsScreen', { userId: user.id });
     }
   }
 
   const handleOnConsumerSelected = (consumerId) => {
     props.navigation.navigate('ConsumerPaymentsScreen', { userId: consumerId });
-  }
+  };
 
   if (isLoading) {
     return (
@@ -50,7 +56,6 @@ const PaymentsScreen = (props) => {
       </View>
     );
   }
-
 
   return (
     <View style={styles.screen}>
@@ -69,43 +74,42 @@ const PaymentsScreen = (props) => {
                   onPress={() => handleOnConsumerSelected(consumer.id)}
                 >
                   <Text style={styles.text}>{consumer.name}</Text>
-                  <Text style={styles.text}>R$ {consumer.balance.toFixed(2)}</Text>
+                  <Text style={styles.text}>
+                    R$ {consumer.balance.toFixed(2)}
+                  </Text>
                 </TouchableOpacity>
-              )
+              );
             })}
           </ScrollView>
-        </View >
-
+        </View>
       </View>
     </View>
   );
 };
 
-export const paymentsScreenOptions = (navData) => {
+export const paymentsScreenOptions = () => {
   return {
-    headerTitle: () => (
-      <HeaderTitle title="Pagamentos" />
-    ),
-    headerBackImage: () => (<BackArrow />),
+    headerTitle: () => <HeaderTitle title="Pagamentos" />,
+    headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'white',
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
-    }
+    },
   };
 };
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   container: {
     // backgroundColor: '#F0F5F9',
     backgroundColor: 'red',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
@@ -121,7 +125,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
     marginTop: -15,
-    paddingTop: 30
+    paddingTop: 30,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -141,7 +145,7 @@ const styles = StyleSheet.create({
     color: '#505050',
     textShadowColor: 'rgba(0, 0, 0, 0.35)',
     textShadowOffset: { width: -1, height: 2 },
-    textShadowRadius: 10
+    textShadowRadius: 10,
   },
   consumerContainer: {
     flexDirection: 'row',
@@ -152,7 +156,7 @@ const styles = StyleSheet.create({
     marginRight: 30,
     marginBottom: 3,
     backgroundColor: 'white',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 1,
       height: 4,
@@ -161,14 +165,13 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
 
     elevation: 2,
-
   },
   text: {
     fontFamily: 'Roboto',
     fontWeight: '700',
     fontSize: 16,
     color: '#505050',
-  }
+  },
 });
 
 export default PaymentsScreen;

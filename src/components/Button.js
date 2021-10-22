@@ -1,11 +1,17 @@
 /* eslint-disable no-use-before-define */
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { accessibilityLabel } from '../utils';
 
-const Button = ({ onPress, children, style, textColor }) => {
+const Button = ({ id, onPress, children, style, textColor }) => {
   const { button, text } = styles;
   return (
-    <TouchableOpacity onPress={onPress} style={[button, style]}>
+    <TouchableOpacity
+      {...accessibilityLabel(id)}
+      onPress={onPress}
+      style={[button, style]}
+      accessible
+    >
       <Text style={[text, { color: textColor }]}>{children}</Text>
     </TouchableOpacity>
   );
