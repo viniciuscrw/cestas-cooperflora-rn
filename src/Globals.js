@@ -11,6 +11,7 @@ export default {
       ROLE: 'role',
       EMAIL: 'email',
       AUTH_ID: 'authId',
+      BALANCE: 'balance',
     },
     ROLE: {
       CONSUMER: 'consumer',
@@ -31,6 +32,18 @@ export default {
     DEFAULT_DATE: 'dd/MM/yyyy',
     DEFAULT_TIME: 'HH:mm',
     DEFAULT_DATE_TIME: 'dd/MM/yyyy HH:mm',
-    DD_MM: 'dd/MM'
+    DD_MM: 'dd/MM',
+  },
+  ORDER: {
+    STATUS: {
+      OPENED: 'opened',
+      COMPLETED: 'completed',
+    },
+  },
+  PAYMENT: {
+    STATUS: {
+      OPENED: 'opened',
+      COMPLETED: 'completed',
+    },
   },
 };

@@ -35,7 +35,11 @@ const DeliveriesScreen = ({ navigation }) => {
           <Button
             style={styles.button}
             textColor="white"
-            onPress={() => navigation.navigate('CreateDeliveryScreen')}
+            onPress={() =>
+              navigation.navigate('DeliveryManagement', {
+                screen: 'CreateDeliveryScreen',
+              })
+            }
           >
             Adicionar próxima entrega
           </Button>
