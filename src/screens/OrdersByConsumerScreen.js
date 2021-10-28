@@ -67,7 +67,7 @@ const OrdersByConsumerScreen = (props) => {
   const matchUsersWithOrders = () => {
     const userOrderItems = [];
     let userOrderItem;
-    users.forEach((user) => {
+    users?.forEach((user) => {
       const userOrdersResult = orders.filter((order) => {
         return order.userId === user.id;
       });
@@ -78,6 +78,7 @@ const OrdersByConsumerScreen = (props) => {
           userId: user.id,
           userName: user.name,
           orderId: userOrder.id,
+          orderStatus: userOrder.status,
           subtitle: resolveUserOrderItemSubtitle(userOrder),
         };
       } else {
@@ -147,6 +148,12 @@ const OrdersByConsumerScreen = (props) => {
             title={`${userOrderItem.userName}`}
             titleStyle={styles.listItemTitle}
             subtitle={`${userOrderItem.subtitle}`}
+            rightSubtitle={
+              userOrderItem.orderStatus &&
+              userOrderItem.orderStatus === GLOBALS.ORDER.STATUS.COMPLETED
+                ? `Entrega concluída`
+                : null
+            }
             bottomDivider
             chevron
           />

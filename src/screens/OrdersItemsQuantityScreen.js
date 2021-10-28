@@ -1,18 +1,14 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { Input, ListItem } from 'react-native-elements';
-import { useFocusEffect } from '@react-navigation/native';
 import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
 import Colors from '../constants/Colors';
 
 const OrdersItemsQuantity = (props) => {
   const {
-    state: { loading: orderLoading, orders },
-    fetchOrdersByDelivery,
+    state: { orders, loading },
   } = useContext(OrderContext);
-
-  const delivery = props.route.params ? props.route.params.delivery : null;
 
   // console.log(`nav: ${JSON.stringify(navigation)}`);
   const [productsToQuantity, setProductsToQuantity] = useState(null);
@@ -45,12 +41,9 @@ const OrdersItemsQuantity = (props) => {
     setProductsToQuantity(productsArray);
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchOrdersByDelivery(delivery.id);
-      mapProductsToQuantity();
-    }, [])
-  );
+  useEffect(() => {
+    mapProductsToQuantity();
+  }, [orders]);
 
   const renderSearchIcon = () => {
     return !filterText.length
@@ -105,7 +98,7 @@ const OrdersItemsQuantity = (props) => {
           autoCorrect={false}
           rightIcon={renderSearchIcon()}
         />
-        {!orderLoading ? (
+        {!loading ? (
           <FlatList
             data={
               filteredProducts && filteredProducts.length

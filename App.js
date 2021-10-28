@@ -7,6 +7,7 @@ import { Provider as ConsumerGroupProvider } from './src/context/ConsumerGroupCo
 import { Provider as DeliveryProvider } from './src/context/DeliveryContext';
 import { Provider as ProductProvider } from './src/context/ProductContext';
 import { Provider as OrderProvider } from './src/context/OrderContext';
+import { Provider as PaymentProvider } from './src/context/PaymentContext';
 import FirebaseConfig from './src/constants/FirebaseConfig';
 import AppNavigator from './src/navigation/AppNavigator';
 
@@ -28,7 +29,9 @@ export default App = () => {
           <OrderProvider>
             <DeliveryProvider>
               <ProductProvider>
-                <AppNavigator />
+                <PaymentProvider>
+                  <AppNavigator />
+                </PaymentProvider>
               </ProductProvider>
             </DeliveryProvider>
           </OrderProvider>

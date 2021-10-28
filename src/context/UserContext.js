@@ -64,7 +64,7 @@ const fetchOrganizers = (dispatch) => async () => {
   dispatch({ type: 'fetch_users', payload: organizers });
 };
 
-const findUserById = (dispatch) => async ({ id }) => {
+const findUserById = (dispatch) => async (id) => {
   dispatch({ type: 'loading' });
 
   const existingUser = await getById(GLOBALS.COLLECTION.USERS, id);

@@ -12,6 +12,8 @@ import { format } from 'date-fns';
 import { useFocusEffect } from '@react-navigation/native';
 import GLOBALS from '../../Globals';
 import { Context as OrderContext } from '../../context/OrderContext';
+import { Context as PaymentContext } from '../../context/PaymentContext';
+import { Context as UserContext } from '../../context/UserContext';
 import Colors from '../../constants/Colors';
 import Divider from '../../components/Divider';
 import Button from '../../components/Button';
@@ -34,9 +36,19 @@ const ConsumerOrderScreen = (props) => {
     removeProduct,
     addOrder,
     fetchUserOrder,
+    completeOrderDelivery,
   } = useContext(OrderContext);
 
-  // const { user, delivery } = props.navigation.state.params;
+  const {
+    state: { loading: userLoading },
+    findUserById,
+  } = useContext(UserContext);
+
+  const {
+    state: { loading: paymentLoading },
+    createPaymentForUser,
+  } = useContext(PaymentContext);
+
   const { user, delivery } = props.route.params;
 
   if (props.isFocused) {
@@ -107,7 +119,51 @@ const ConsumerOrderScreen = (props) => {
     );
   };
 
-  return loading ? (
+  const completeDelivery = async () => {
+    if (order.id && order.deliveryId && order.userId) {
+      await completeOrderDelivery(order);
+      const orderUser = await findUserById(order.userId);
+      createPaymentForUser(orderUser, order);
+    }
+  };
+
+  const renderCompleteDeliveryButton = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    delivery.deliveryDate?.setHours(0, 0, 0, 0);
+
+    if (
+      order.status != null &&
+      order.status === GLOBALS.ORDER.STATUS.COMPLETED
+    ) {
+      return (
+        <Button style={styles.disabledButton} textColor="white" disabled>
+          Entrega concluída
+        </Button>
+      );
+    }
+
+    if (
+      today >= delivery.deliveryDate &&
+      !user.role &&
+      order.productsPriceSum > 0 &&
+      order.id
+    ) {
+      return (
+        <Button
+          style={styles.completeDeliveryButton}
+          textColor="white"
+          onPress={() => completeDelivery()}
+        >
+          Concluir entrega
+        </Button>
+      );
+    }
+
+    return null;
+  };
+
+  return loading || userLoading || paymentLoading ? (
     <Spinner />
   ) : (
     <View style={styles.screen}>
@@ -189,6 +245,7 @@ const ConsumerOrderScreen = (props) => {
           >
             Confirmar R$ {order.productsPriceSum?.toFixed(2)}
           </Button>
+          {renderCompleteDeliveryButton()}
         </View>
       </View>
     </View>
@@ -325,6 +382,16 @@ const styles = StyleSheet.create({
   confirmButton: {
     marginTop: 5,
     backgroundColor: Colors.primary,
+    justifyContent: 'space-between',
+  },
+  completeDeliveryButton: {
+    marginTop: 5,
+    backgroundColor: Colors.secondary,
+    justifyContent: 'space-between',
+  },
+  disabledButton: {
+    marginTop: 5,
+    backgroundColor: Colors.tertiary,
     justifyContent: 'space-between',
   },
   header: {
