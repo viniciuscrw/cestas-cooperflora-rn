@@ -5,35 +5,27 @@ import {
   TouchableWithoutFeedback,
   Image,
   View,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
+import { Text } from 'react-native-elements';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
-import Card from '../components/Card';
-import CardSection from '../components/CardSection';
 import Input from '../components/Input';
 import { Context as AuthContext } from '../context/AuthContext';
-import { Text } from 'react-native-elements';
 import TextCardSection from '../components/TextCardSection';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';
-import { AntDesign } from '@expo/vector-icons';
 import BasketProductsImage from '../../assets/images/basketproducts3.png';
 import Colors from '../constants/Colors';
 
 const SigninScreen = ({ navigation }) => {
-  const {
-    state,
-    signin,
-    checkAuthOrUser,
-    clearUserInfo,
-    clearError,
-  } = useContext(AuthContext);
+  const { state, signin, checkAuthOrUser, clearUserInfo, clearError } =
+    useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -59,15 +51,18 @@ const SigninScreen = ({ navigation }) => {
     if (state.loading) {
       return <Spinner onLayout={Keyboard.dismiss} size="small" />;
     }
-    let userId = state.userId;
+    const { userId } = state;
     return (
       <View style={styles.buttonContainer}>
-        <Button style={styles.button}
-          textColor='white'
+        <Button
+          id="enterLoginButton"
+          style={styles.button}
+          textColor="white"
           onPress={() => {
             // Keyboard.dismiss();
             signin({ email, password, passwordConfirmation, userId });
-          }}>
+          }}
+        >
           Entrar
         </Button>
       </View>
@@ -76,18 +71,19 @@ const SigninScreen = ({ navigation }) => {
 
   const renderNextButton = () => {
     if (!state.authorized && !state.userId) {
-      return (
-        state.loading ? (
-          <Spinner onLayout={Keyboard.dismiss} size="small" />
-        ) : (
-          <View style={styles.buttonContainer}>
-            <Button style={styles.button}
-              textColor='white'
-              onPress={() => checkAuthOrUser({ email })}>
-              Avançar
-            </Button>
-          </View>
-        )
+      return state.loading ? (
+        <Spinner onLayout={Keyboard.dismiss} size="small" />
+      ) : (
+        <View style={styles.buttonContainer}>
+          <Button
+            id="loginButton"
+            style={styles.button}
+            textColor="white"
+            onPress={() => checkAuthOrUser({ email })}
+          >
+            Avançar
+          </Button>
+        </View>
       );
     }
   };
@@ -104,8 +100,10 @@ const SigninScreen = ({ navigation }) => {
           {state.userId ? (
             <TextCardSection text="Cadastre sua senha:">
               <PasswordInput
+                id="password"
                 label="Senha"
                 value={password}
+                // eslint-disable-next-line no-shadow
                 onChangeText={(password) => {
                   setPassword(password);
                   if (state.errorMessage) {
@@ -116,16 +114,16 @@ const SigninScreen = ({ navigation }) => {
                 style={styleForMultiplePasswordInput}
               />
               <PasswordInput
+                id="confirmpassword"
                 style={{
                   borderBottomColor: 'black',
                   borderBottomWidth: 1,
                   width: 305,
-                  //alignContent: 'center',
-                  //alignItems: 'center',
-                  alignSelf: 'center'
+                  alignSelf: 'center',
                 }}
                 label="Confimar senha"
                 value={passwordConfirmation}
+                // eslint-disable-next-line no-shadow
                 onChangeText={(passwordConfirmation) => {
                   setPasswordConfirmation(passwordConfirmation);
                   if (state.errorMessage) {
@@ -150,7 +148,7 @@ const SigninScreen = ({ navigation }) => {
               />
             </View>
           )}
-          <View style={styles.divider}></View>
+          <View style={styles.divider} />
           {renderLoginButton()}
         </>
       );
@@ -158,22 +156,17 @@ const SigninScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.screen} >
-      <View style={styles.container} >
+    <View style={styles.screen}>
+      <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.textTitle}>
-            Cestas Cooperflora
-          </Text>
-          <Image
-            style={styles.image}
-            source={BasketProductsImage}
-          />
+          <Text style={styles.textTitle}>Cestas Cooperflora</Text>
+          <Image style={styles.image} source={BasketProductsImage} />
         </View>
 
         <View>
           <View style={styles.inputContainer}>
             <Input
-              label='E-mail:'
+              label="E-mail:"
               value={email}
               onChangeText={(email) => {
                 setEmail(email);
@@ -195,28 +188,25 @@ const SigninScreen = ({ navigation }) => {
               style={styles.forgotPasswordLink}
               text="Esqueceu sua senha?"
               size={16}
-              onPress={() =>
-                navigation.navigate('ForgotPassword', { email: email })
-              }
+              onPress={() => navigation.navigate('ForgotPassword', { email })}
             />
           ) : null}
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.descriptionText}>
-            A Cooperflora é uma cooperativa que produz
-            e comercializa produtos orgânicos do assentamento
-            Milton Santos em Americana.
+            A Cooperflora é uma cooperativa que produz e comercializa produtos
+            orgânicos do assentamento Milton Santos em Americana.
           </Text>
         </View>
         {state.errorMessage ? (
           <Text style={styles.errorMessage}>{state.errorMessage}</Text>
         ) : null}
       </View>
-    </View >
+    </View>
   );
 };
 
-export const signinScreenOptions = (navData) => {
+export const signinScreenOptions = () => {
   return {
     headerShown: false,
   };
@@ -228,11 +218,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
@@ -275,7 +265,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#8898AA',
     borderBottomWidth: 1,
     width: '80%',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
 
   buttonContainer: {
@@ -288,13 +278,13 @@ const styles = StyleSheet.create({
   },
 
   textContainer: {
-    margin: 20
+    margin: 20,
   },
   descriptionText: {
     fontSize: 20,
     color: '#8898AA',
     textAlign: 'center',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   smallTitle: {
     fontSize: 20,
@@ -312,7 +302,7 @@ const styles = StyleSheet.create({
     fontSize: 58,
     padding: 9,
     marginLeft: 20,
-  }
+  },
 });
 
 export default SigninScreen;

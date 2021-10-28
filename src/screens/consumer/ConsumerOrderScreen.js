@@ -238,6 +238,7 @@ const ConsumerOrderScreen = (props) => {
         <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
           <Button
+            id="confirmOrderButton"
             style={styles.confirmButton}
             textColor="white"
             onPress={onHandleNewOrUpdatedOrder}

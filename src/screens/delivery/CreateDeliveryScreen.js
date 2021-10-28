@@ -21,13 +21,14 @@ import useConsumerGroup from '../../hooks/useConsumerGroup';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import Colors from '../../constants/Colors';
+import { accessibilityLabel } from '../../utils';
 
-const CreateDeliveryScreen = (props) => {
+const CreateDeliveryScreen = ({ route, navigation }) => {
   console.log('[Create Delivery Screen started]');
   const { setDeliveryInfo } = useContext(DeliveryContext);
 
   // const delivery = navigation.getParam('delivery');
-  const delivery = props.route.params ? props.route.params.delivery : null;
+  const { delivery } = route ? route.params.delivery : null;
   // console.log('[Create Delivery Screen]', delivery);
 
   const [deliveryDate, setDeliveryDate] = useState(
@@ -38,11 +39,11 @@ const CreateDeliveryScreen = (props) => {
     delivery
       ? delivery.limitDate
       : new Date(
-        deliveryDate.getFullYear(),
-        deliveryDate.getMonth(),
-        deliveryDate.getDate() - 1,
-        18
-      )
+          deliveryDate.getFullYear(),
+          deliveryDate.getMonth(),
+          deliveryDate.getDate() - 1,
+          18
+        )
   );
   const [ordersLimitTime, setOrdersLimitTime] = useState(
     new Date(
@@ -172,7 +173,11 @@ const CreateDeliveryScreen = (props) => {
                   onPress={() => setShowDeliveryDate(!showDeliveryDate)}
                 >
                   <FormInput
-                    style={{ borderBottomWidth: 2, borderColor: Colors.tertiary }}
+                    id="deliverydate"
+                    style={{
+                      borderBottomWidth: 2,
+                      borderColor: Colors.tertiary,
+                    }}
                     label="Data da entrega"
                     value={format(deliveryDate, GLOBALS.FORMAT.DEFAULT_DATE)}
                     editable={false}
@@ -195,7 +200,11 @@ const CreateDeliveryScreen = (props) => {
                 )}
                 <TouchableOpacity onPress={handleOrdersDateTimeInputPress}>
                   <FormInput
-                    style={{ borderBottomWidth: 2, borderColor: Colors.tertiary }}
+                    id="deliverytime"
+                    style={{
+                      borderBottomWidth: 2,
+                      borderColor: Colors.tertiary,
+                    }}
                     label="Horário limite para pedidos"
                     value={`${format(
                       ordersLimitDate,
@@ -213,7 +222,9 @@ const CreateDeliveryScreen = (props) => {
                 {showOrdersDateTime && (
                   <DateTimePicker
                     value={
-                      dateTimeMode === 'date' ? ordersLimitDate : ordersLimitTime
+                      dateTimeMode === 'date'
+                        ? ordersLimitDate
+                        : ordersLimitTime
                     }
                     mode={dateTimeMode}
                     is24Hour
@@ -226,6 +237,7 @@ const CreateDeliveryScreen = (props) => {
                 <Spacer />
                 <View style={styles.textAreaContainer}>
                   <TextInput
+                    {...accessibilityLabel('basketitens')}
                     style={styles.textArea}
                     value={baseProducts}
                     onChangeText={setBaseProducts}
@@ -262,15 +274,15 @@ export const createDeliveryScreenOptions = () => {
         <HeaderTitle title="Nova Entrega" />
       </View>
     ),
-    headerBackImage: () => (<BackArrow />),
+    headerBackImage: () => <BackArrow />,
     headerBackTitleVisible: false,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
-    }
-  }
+    },
+  };
 };
 
 const styles = StyleSheet.create({
@@ -284,11 +296,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: '#F0F5F9',
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
@@ -318,7 +330,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   header: {
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
 });
 

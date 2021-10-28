@@ -23,9 +23,8 @@ const CreateUserScreen = (props) => {
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [phoneNumber, setPhoneNumber] = useState(user ? user.phoneNumber : '');
-  const { state, createUser, updateUser, findUserByEmail } = useContext(
-    UserContext
-  );
+  const { state, createUser, updateUser, findUserByEmail } =
+    useContext(UserContext);
   const emailTextInput = React.createRef();
   const phoneNumberTextInput = React.createRef();
 
@@ -82,10 +81,13 @@ const CreateUserScreen = (props) => {
         <Spinner size="small" />
       ) : (
         <View style={styles.buttonContainer}>
-          <Button style={styles.button}
-            textColor='white'
-            onPress={createOrUpdateUser}>
-            {user ? 'Atualizar Informações' : 'Adicionar ' + roleText}
+          <Button
+            id="addUpdateUser"
+            style={styles.button}
+            textColor="white"
+            onPress={createOrUpdateUser}
+          >
+            {user ? 'Atualizar Informações' : `Adicionar ${roleText}`}
           </Button>
         </View>
       );
@@ -93,11 +95,15 @@ const CreateUserScreen = (props) => {
   };
 
   return (
-    <View style={styles.screen} >
-      <View style={styles.container} >
+    <View style={styles.screen}>
+      <View style={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <KeyboardAvoidingView
-            style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
+            style={{
+              flex: 1,
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
             behavior={Platform.OS === 'ios' ? 'padding' : null}
             enabled
             keyboardVerticalOffset={100}
@@ -112,6 +118,7 @@ const CreateUserScreen = (props) => {
                 />
               </View>
               <FormInput
+                id="name"
                 label="Nome"
                 value={name}
                 returnKeyType="next"
@@ -122,6 +129,7 @@ const CreateUserScreen = (props) => {
                 maxLength={50}
               />
               <FormInput
+                id="e-mail"
                 label="E-mail"
                 value={email}
                 reference={emailTextInput}
@@ -136,6 +144,7 @@ const CreateUserScreen = (props) => {
                 errorMessage="Endereço de e-mail inválido."
               />
               <FormInput
+                id="mobile"
                 label="Celular"
                 value={phoneNumber}
                 returnKeyType="done"
@@ -161,11 +170,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     // backgroundColor: '#F0F5F9',
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,

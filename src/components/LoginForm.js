@@ -7,6 +7,7 @@ import Button from './Button';
 import Card from './Card';
 import Input from './Input';
 import Header from './Header';
+import { accessibilityLabel } from '../utils';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -51,12 +52,15 @@ const LoginForm = () => {
     return <Button onPress={onButtonPress()}>Login</Button>;
   };
 
+  console.log(accessibilityLabel);
+
   return (
     <View>
       <Header headerText="Authentication" />
       <Card>
         <CardSection>
           <Input
+            id="e-mail"
             placeholder="user@gmail.com"
             label="Email"
             value={email}
@@ -66,6 +70,7 @@ const LoginForm = () => {
 
         <CardSection>
           <Input
+            id="password"
             placeholder="password"
             label="Password"
             secureTextEntry

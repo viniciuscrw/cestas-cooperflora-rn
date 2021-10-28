@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useFocusEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -15,22 +15,18 @@ import { Input, ListItem } from 'react-native-elements';
 import { Context as ProductContext } from '../../context/ProductContext';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import Spinner from '../../components/Spinner';
-import TextLink from '../../components/TextLink';
 import { formatCurrency, showAlert } from '../../helper/HelperFunctions';
-import LoadingButton from '../../components/LoadingButton';
 import useConsumerGroup from '../../hooks/useConsumerGroup';
 import Colors from '../../constants/Colors';
 import Button from '../../components/Button';
-import { navigate } from '../../navigationRef';
 
 const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const {
     state: { loading, products },
     fetchProducts,
   } = useContext(ProductContext);
-  const { state, createDelivery, updateDelivery, deleteDelivery } = useContext(
-    DeliveryContext
-  );
+  const { state, createDelivery, updateDelivery, deleteDelivery } =
+    useContext(DeliveryContext);
 
   const [checkedItems, setCheckedItems] = useState(
     state.nextDelivery && state.nextDelivery.extraProducts
@@ -42,26 +38,33 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const groupInfo = useConsumerGroup();
 
-  useEffect(() => {
-    fetchProducts();
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setKeyboardVisible(true);
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
+  // useEffect(() => {
+  //   fetchProducts();
+  //   const keyboardDidShowListener = Keyboard.addListener(
+  //     'keyboardDidShow',
+  //     () => {
+  //       setKeyboardVisible(true);
+  //     }
+  //   );
+  //   const keyboardDidHideListener = Keyboard.addListener(
+  //     'keyboardDidHide',
+  //     () => {
+  //       setKeyboardVisible(false);
+  //     }
+  //   );
 
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
+  //   return () => {
+  //     keyboardDidHideListener.remove();
+  //     keyboardDidShowListener.remove();
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchProducts();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const searchProductsByFilter = () => {
     setFilteredProducts(
@@ -74,21 +77,21 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-        type: 'ionicons',
-        name: 'search',
-        size: 25,
-        color: 'lightgrey',
-      }
+          type: 'ionicons',
+          name: 'search',
+          size: 25,
+          color: 'lightgrey',
+        }
       : {
-        type: 'material',
-        name: 'clear',
-        size: 25,
-        color: 'lightgrey',
-        onPress: () => {
-          setFilterText('');
-          setFilteredProducts(products);
-        },
-      };
+          type: 'material',
+          name: 'clear',
+          size: 25,
+          color: 'lightgrey',
+          onPress: () => {
+            setFilterText('');
+            setFilteredProducts(products);
+          },
+        };
   };
 
   const handleItemCheck = (item) => {
@@ -136,10 +139,9 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         {
           text: 'Confirmar',
           onPress: () => {
-            deleteDelivery({ deliveryId: state.nextDelivery.id })
-              .then(() => {
-                navigation.navigate('DeliveriesScreen');
-              });
+            deleteDelivery({ deliveryId: state.nextDelivery.id }).then(() => {
+              navigation.navigate('DeliveriesScreen');
+            });
           },
         },
       ]
@@ -186,7 +188,14 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
                   })
                 }
               >
-                <Text style={{ fontFamily: 'Roboto', fontWeight: '700', marginBottom: 5, fontSize: 16 }} >
+                <Text
+                  style={{
+                    fontFamily: 'Roboto',
+                    fontWeight: '700',
+                    marginBottom: 5,
+                    fontSize: 16,
+                  }}
+                >
                   {item.name} - R$ {priceDisplay}
                 </Text>
                 {renderQuantityInfoText(item)}
@@ -202,7 +211,6 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
                 marginRight: 7,
               },
             }}
-          // bottomDivider
           />
         </TouchableWithoutFeedback>
       </View>
@@ -215,9 +223,12 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
       !filteredProducts.length) ||
       isKeyboardVisible ? null : (
       <View style={styles.buttonContainer}>
-        <Button style={styles.button}
-          textColor='white'
-          onPress={validateAndCreateOrUpdateDelivery}>
+        <Button
+          id="createOrUpdateDeliveryButton"
+          style={styles.button}
+          textColor="white"
+          onPress={validateAndCreateOrUpdateDelivery}
+        >
           {state.nextDelivery ? 'Atualizar entrega' : 'Criar entrega'}
         </Button>
         {/* <LoadingButton
@@ -241,9 +252,12 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
 
     return (
       <View style={styles.buttonContainer}>
-        <Button style={styles.button}
-          textColor='white'
-          onPress={deleteCurrentDelivery}>
+        <Button
+          id="deleteDeliveryButton"
+          style={styles.button}
+          textColor="white"
+          onPress={deleteCurrentDelivery}
+        >
           Excluir entrega
         </Button>
       </View>
@@ -274,15 +288,24 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
               /> */}
               <TouchableOpacity
                 style={styles.newProductButton}
-                onPress={() => navigation.navigate('CreateExtraItemScreen', { products })}>
-                <AntDesign name="pluscircle" size={24} color={Colors.tertiary} />
+                onPress={() =>
+                  navigation.navigate('CreateExtraItemScreen', { products })
+                }
+              >
+                <AntDesign
+                  name="pluscircle"
+                  size={24}
+                  color={Colors.tertiary}
+                />
               </TouchableOpacity>
-              {filterText.length && filteredProducts && !filteredProducts.length ? (
+              {filterText.length &&
+              filteredProducts &&
+              !filteredProducts.length ? (
                 <Text style={styles.productNotFoundText}>
                   Nenhum produto encontrado por este nome.
                 </Text>
               ) : (
-                <View style={{ flex: 1.20 }}>
+                <View style={{ flex: 1.2 }}>
                   <FlatList
                     data={
                       filteredProducts && filteredProducts.length
@@ -317,11 +340,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: '#F0F5F9',
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
@@ -350,10 +373,6 @@ const styles = StyleSheet.create({
     margin: 10,
     fontSize: 16,
   },
-  // mainButtonContainer: {
-  //   flex: 0.15,
-  //   justifyContent: 'center',
-  // },
 
   buttonContainer: {
     // position: 'absolute',
@@ -365,7 +384,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.secondary,
     alignSelf: 'center',
   },
-
 });
 
 export default AddDeliveryExtraItemsScreen;

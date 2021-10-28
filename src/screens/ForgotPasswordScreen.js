@@ -24,6 +24,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       <Spinner size="small" />
     ) : (
       <Button
+        id="updatePasswordButton"
         onPress={() => {
           Keyboard.dismiss();
           resetPassword(email);
@@ -48,6 +49,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
           />
           <View style={styles.innerContainer}>
             <FormInput
+              id="e-mail"
               label="Digite seu e-mail:"
               value={email}
               returnKeyType="next"

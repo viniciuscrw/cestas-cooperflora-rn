@@ -35,12 +35,14 @@ const UpdatePasswordScreen = (props) => {
     return state.loading ? (
       <Spinner size="small" />
     ) : (
-      // <Button onPress={updateUserPassword}>Atualizar senha</Button>
       <View style={styles.confirmContainer}>
         <Divider style={{ borderBottomColor: Colors.secondary }} />
-        <Button style={styles.confirmButton}
-          textColor='white'
-          onPress={updateUserPassword}>
+        <Button
+          id="updateUserPasswordButton"
+          style={styles.confirmButton}
+          textColor="white"
+          onPress={updateUserPassword}
+        >
           Atualizar Senha
         </Button>
       </View>
@@ -60,6 +62,7 @@ const UpdatePasswordScreen = (props) => {
             <ScrollView>
               <Spacer />
               <FormInput
+                id="currentpassword"
                 label="Digite sua senha atual:"
                 value={password}
                 returnKeyType="next"
@@ -76,6 +79,7 @@ const UpdatePasswordScreen = (props) => {
               />
               <Spacer />
               <FormInput
+              id="newpassword"
                 label="Nova senha:"
                 value={newPassword}
                 reference={newPasswordTextInput}
