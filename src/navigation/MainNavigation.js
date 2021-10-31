@@ -10,6 +10,7 @@ import DeliveriesScreen, {
 import ConsumerGroupInfoScreen, {
   consumerGroupInfoScreenOptions,
 } from '../screens/ConsumerGroupInfoScreen';
+import PaymentScreen, { paymentScreenOptions } from '../screens/PaymentScreen';
 import PaymentsScreen, {
   paymentsScreenOptions,
 } from '../screens/PaymentsScreen';
@@ -228,7 +229,7 @@ export const DeliveryNavigator = () => {
       <DeliveryStackNavigator.Screen
         name="ConsumerGroupTopTabNavigator"
         component={ConsumerGroupTopTabNavigator}
-        // options={consumerGroupInfoNavigationOptions}
+      // options={consumerGroupInfoNavigationOptions}
       />
       <DeliveryStackNavigator.Screen
         name="ConsumerGroupInfoScreen"
@@ -250,16 +251,16 @@ export const DeliveryNavigator = () => {
         component={ConsumerOrderPlacedScreen}
         options={consumerOrderPlacedScreenOptions}
       />
-      <DeliveryStackNavigator.Screen
+      {/* <DeliveryStackNavigator.Screen
         name="ConsumerAddPaymentScreen"
         component={ConsumerAddPaymentScreen}
         options={consumerAddPaymentScreenOptions}
-      />
-      <DeliveryStackNavigator.Screen
+      /> */}
+      {/* <DeliveryStackNavigator.Screen
         name="ConsumerPaymentsScreen"
         component={ConsumerPaymentsScreen}
-        // options={ordersManagementNavigationOptions}
-      />
+      // options={ordersManagementNavigationOptions}
+      /> */}
     </DeliveryStackNavigator.Navigator>
   );
 };
@@ -269,6 +270,11 @@ export const PaymentsNavigator = () => {
   return (
     <PaymentsStackNavigator.Navigator options={defaultStackNavOptions}>
       <PaymentsStackNavigator.Screen
+        name="PaymentScreen"
+        component={PaymentScreen}
+        options={paymentScreenOptions}
+      />
+      <PaymentsStackNavigator.Screen
         name="PaymentsScreen"
         component={PaymentsScreen}
         options={paymentsScreenOptions}
@@ -277,6 +283,11 @@ export const PaymentsNavigator = () => {
         name="ConsumerPaymentsScreen"
         component={ConsumerPaymentsScreen}
         options={consumerPaymentsScreenOptions}
+      />
+      <PaymentsStackNavigator.Screen
+        name="ConsumerAddPaymentScreen"
+        component={ConsumerAddPaymentScreen}
+        options={consumerAddPaymentScreenOptions}
       />
     </PaymentsStackNavigator.Navigator>
   );

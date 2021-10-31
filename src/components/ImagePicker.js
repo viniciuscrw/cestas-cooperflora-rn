@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   TouchableOpacity,
-  Button,
   Text,
   Image,
   StyleSheet,
@@ -11,7 +10,6 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 
 import CameraIcon from '../../assets/images/icons/cameraicon.png';
-import Colors from '../constants/Colors';
 
 const ImgPicker = (props) => {
   const [pickedImage, setPickedImage] = useState();
@@ -29,13 +27,13 @@ const ImgPicker = (props) => {
 
   const launchGalery = async () => {
     console.log('[ImagePicker] launchGalery');
-    let options = {
+    const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [16, 9],
       quality: 0.5,
     };
-    let image = await ImagePicker.launchImageLibraryAsync(options);
+    const image = await ImagePicker.launchImageLibraryAsync(options);
     setPickedImage(image.uri);
     props.onImagePicker(image.uri);
   };
@@ -62,40 +60,6 @@ const ImgPicker = (props) => {
         },
       ]
     );
-
-    // console.log('[ImagePicker]');
-    // let options = {
-    //     title: 'Select Image',
-    //     customButtons: [
-    //         { name: 'customOptionKey', title: 'Choose Photo from Custom Option' },
-    //     ],
-    //     storageOptions: {
-    //         skipBackup: true,
-    //         path: 'images',
-    //     },
-    // };
-    // ImagePicker.showImagePicker(options, (response) => {
-    //     console.log('Response = ', response);
-
-    //     if (response.didCancel) {
-    //         console.log('User cancelled image picker');
-    //     } else if (response.error) {
-    //         console.log('ImagePicker Error: ', response.error);
-    //     } else if (response.customButton) {
-    //         console.log('User tapped custom button: ', response.customButton);
-    //     } else {
-    //         const source = { uri: response.uri };
-
-    //         // You can also display the image using data:
-    //         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-    //         // this.setState({
-    //         //     filePath: response,
-    //         //     fileData: response.data,
-    //         //     fileUri: response.uri
-    //         // });
-    //     }
-    // });
   };
 
   return (

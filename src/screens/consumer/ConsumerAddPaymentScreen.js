@@ -16,6 +16,8 @@ import {
 } from '../../api/firebase';
 import GLOBALS from '../../Globals';
 import ImagePicker from '../../components/ImagePicker';
+import screen from '../screenstyles/ScreenStyles';
+import { TextLabel, Number } from '../../components/StandardStyles';
 
 const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +31,7 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   // console.log('[Consumer Payments Screen] user', user);
   // console.log('[ConsumerAddPaymentScreen] started');
   // const orderTotalAmount = props.navigation.state.params.orderTotalAmount;
-  const { orderTotalAmount } = route.params;
+  const { orderId, orderTotalAmount } = route.params;
 
   const { getUserById } = useContext(userContext);
 
@@ -40,8 +42,7 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
       getUserById(user.id).then((data) => {
         setUserData(data);
         setIsLoading(false);
-        // setAmountToPay(orderTotalAmount - data.balance);
-        setAmountToPay(0);
+        setAmountToPay(orderTotalAmount);
       });
     }
   }, [user]);
