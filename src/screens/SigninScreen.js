@@ -2,11 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
   Keyboard,
   StyleSheet,
-  TouchableWithoutFeedback,
   Image,
   View,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { Text } from 'react-native-elements';
 import Spinner from '../components/Spinner';
@@ -17,6 +14,7 @@ import TextCardSection from '../components/TextCardSection';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';
 import BasketProductsImage from '../../assets/images/basketproducts3.png';
+import MstFlag from '../../assets/images/bandeiradomst.png'
 import Colors from '../constants/Colors';
 
 const SigninScreen = ({ navigation }) => {
@@ -201,6 +199,9 @@ const SigninScreen = ({ navigation }) => {
         {state.errorMessage ? (
           <Text style={styles.errorMessage}>{state.errorMessage}</Text>
         ) : null}
+        <View style={styles.flagContainer}>
+          <Image style={styles.flagImage} source={MstFlag} />
+        </View>
       </View>
     </View>
   );
@@ -302,6 +303,19 @@ const styles = StyleSheet.create({
     fontSize: 58,
     padding: 9,
     marginLeft: 20,
+  },
+  flagContainer: {
+    flex: 1,
+    alignContent: 'center',
+    justifyContent: 'center',
+    width: '50%',
+    alignSelf: 'center',
+  },
+  flagImage: {
+    flex: 1,
+    width: null,
+    height: null,
+    resizeMode: 'contain',
   },
 });
 

@@ -60,10 +60,6 @@ const PaymentsScreen = (props) => {
   return (
     <View style={styles.screen}>
       <View sytle={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Pagamentos Realizados</Text>
-          <Text style={styles.text}>23/05/2021</Text>
-        </View>
         <View style={styles.internalContainer}>
           <ScrollView>
             {consumers.map((consumer) => {
@@ -89,7 +85,7 @@ const PaymentsScreen = (props) => {
 
 export const paymentsScreenOptions = () => {
   return {
-    headerTitle: () => <HeaderTitle title="Pagamentos" />,
+    headerTitle: () => <HeaderTitle title="Saldo dos Consumidores(as)" />,
     headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'white',

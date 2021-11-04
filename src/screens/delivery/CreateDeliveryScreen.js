@@ -23,17 +23,18 @@ import BackArrow from '../../components/BackArrow';
 import Colors from '../../constants/Colors';
 import { accessibilityLabel } from '../../utils';
 
-const CreateDeliveryScreen = ({ route, navigation }) => {
+const CreateDeliveryScreen = ({ route }) => {
   console.log('[Create Delivery Screen started]');
   const { setDeliveryInfo } = useContext(DeliveryContext);
 
   // const delivery = navigation.getParam('delivery');
-  const { delivery } = route ? route.params.delivery : null;
-  // console.log('[Create Delivery Screen]', delivery);
+  const delivery = route.params ? route.params.delivery : null;
+  console.log('[Create Delivery Screen]', delivery);
 
   const [deliveryDate, setDeliveryDate] = useState(
     delivery ? delivery.deliveryDate : new Date()
   );
+  console.log('xxx');
   const [showDeliveryDate, setShowDeliveryDate] = useState(false);
   const [ordersLimitDate, setOrdersLimitDate] = useState(
     delivery
@@ -289,10 +290,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     marginTop: 4,
-    backgroundColor: 'white',
-    // paddingLeft: 25,
-    // paddingRight: 25,
-    // borderRadius: 25,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: '#F0F5F9',
@@ -306,11 +303,6 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 10,
   },
-  // container: {
-  //   flex: 1,
-  //   backgroundColor: '#ebebeb',
-  //   padding: 10,
-  // },
   text: {
     color: '#101010',
     fontSize: 24,

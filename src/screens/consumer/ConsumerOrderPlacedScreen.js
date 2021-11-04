@@ -27,7 +27,7 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
 
   // TODO Resolver aqui pra quem nao tem pedido
   if (order && !order.id) {
-    navigation.navigate('Deliveries');
+    navigation.navigate('DeliveriesScreen');
   }
 
   const hasAnyProduct = () => {

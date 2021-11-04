@@ -12,58 +12,57 @@ import useUser from '../../hooks/useUser';
 import { Context as userContext } from '../../context/UserContext';
 import {
   insertIntoSubcollection,
+  updateDocInSubcollection,
   updateDocAttribute,
 } from '../../api/firebase';
 import GLOBALS from '../../Globals';
 import ImagePicker from '../../components/ImagePicker';
+import screen from '../screenstyles/ScreenStyles';
+import { TextLabel, Number } from '../../components/StandardStyles';
 
 const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [amountToPay, setAmountToPay] = useState(0.0);
   const [userData, setUserData] = useState();
   const [receiptImage, setReceiptImage] = useState(null);
 
   // console.log('[ConsumerAddPaymentScreen] amount to pay',amountToPay);
 
-  const user = useUser();
-  // console.log('[Consumer Payments Screen] user', user);
-  // console.log('[ConsumerAddPaymentScreen] started');
-  // const orderTotalAmount = props.navigation.state.params.orderTotalAmount;
-  const { orderTotalAmount } = route.params;
+  // const user = useUser();
+  const { userPayment } = route.params;
+
+  const { userId } = userPayment;
+  // console.log('[ConsumerAddPaymentScreen] userId', userIdAux);
+
+  // console.log('[ConsumerAddPaymentScreen] userPayment', userPayment);
 
   const { getUserById } = useContext(userContext);
 
   useEffect(() => {
-    console.log('[ConsumerAddPaymentScreen] amount to pay', amountToPay);
     setIsLoading(true);
-    if (user) {
-      getUserById(user.id).then((data) => {
+    if (userId) {
+      getUserById(userId).then((data) => {
         setUserData(data);
         setIsLoading(false);
-        // setAmountToPay(orderTotalAmount - data.balance);
-        setAmountToPay(0);
       });
     }
-  }, [user]);
+  }, [userId]);
 
   const imageSelectedHandler = (uri) => {
     console.log('[ConsumerAddPayment Screen] imageSelectedHandler');
     setReceiptImage(uri);
   };
 
-  const updateUserBalance = () => {
-    const newBalance = amountToPay - orderTotalAmount + userData.balance;
+  const updateUserBalance = (paidValue) => {
+    const newBalance = paidValue + userData.balance;
     console.log('[ConsumerAddPayment Screen] New balance', newBalance);
-    updateDocAttribute('users', user.id, 'balance', newBalance);
+    updateDocAttribute('users', userId, 'balance', newBalance);
     // return;
   };
 
   const handlePayment = async () => {
     console.log('[Consumer Payment Screen] Handle payment');
-    // console.log('[Consumer Payment Screen] payment', amountToPay);
-    // console.log('[Consumer Payment Screen] receipt', receiptImage);
-    if (amountToPay <= 0) {
-      Alert.alert('Por favor inclua um valor para o pagamento!');
+    if (userPayment.totalToBePaid <= 0) {
+      Alert.alert('O valor para o pagamento está com o valor 0!');
       return;
     }
     if (!receiptImage) {
@@ -71,43 +70,46 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
       return;
     }
     const date = new Date();
-    let imageName = format(date, 'yyyyMMddHHMMSS');
-    let response = await fetch(receiptImage);
+    const imageName = format(date, 'yyyyMMddHHMMSS');
+    const response = await fetch(receiptImage);
     const blob = await response.blob();
-    let ref = firebase
-      .storage()
-      .ref()
-      .child(user.id + '/' + imageName);
+    const receiptRef = firebase.storage().ref().child(`${userId}/${imageName}`);
     setIsLoading(true);
-    ref
+    receiptRef
       .put(blob)
       .then((response) => {
         console.log('Resposta do storage', response);
-        ref
+        receiptRef
           .getDownloadURL()
-          .then(function (url) {
-            const newPayment = {
-              userId: user.id,
-              paymentValue: amountToPay,
-              date: date.toISOString(),
-              receiptImage: url,
+          .then((receiptUrl) => {
+            const formatedDate = new Date(userPayment.date);
+            const payment = {
+              currentBalance: userPayment.currentBalance,
+              date: formatedDate.toISOString(),
+              orderId: userPayment.orderId,
+              orderTotalAmount: userPayment.orderTotalAmount,
+              status: GLOBALS.PAYMENT.STATUS.COMPLETED,
+              totalToBePaid: userPayment.totalToBePaid,
+              userId: userPayment.userId,
+              receiptImage: receiptUrl,
+              paymentDate: new Date().toISOString(),
             };
-            const idPayment = user.id + 'pay';
-            insertIntoSubcollection(
+            updateDocInSubcollection(
               GLOBALS.COLLECTION.USERS,
-              idPayment,
+              userPayment.userId,
               GLOBALS.SUB_COLLECTION.PAYMENTS,
-              newPayment
+              userPayment.paymentId,
+              payment
             )
               .then((data) => {
                 console.log(
                   '[Consumer Payment Screen] addPayment - Payment  included',
                   data
                 );
-                updateUserBalance();
+                updateUserBalance(userPayment.totalToBePaid);
                 setIsLoading(false);
                 navigation.navigate('ConsumerPaymentsScreen', {
-                  userId: user.id,
+                  userId: userId,
                 });
               })
               .catch((error) => {
@@ -147,17 +149,13 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
           <View style={styles.itemContainer}>
             <Text style={styles.itemText}>Valor do Pedido</Text>
             <View style={styles.itemBox}>
-              <Text style={styles.itemValue}>{`R$ ${orderTotalAmount.toFixed(
-                2
-              )}`}</Text>
+              <Number>{`R$ ${userPayment.orderTotalAmount.toFixed(2)}`}</Number>
             </View>
           </View>
           <View style={styles.itemContainer}>
             <Text style={styles.itemText}>Saldo atual</Text>
             <View style={styles.itemBox}>
-              <Text style={styles.itemValue}>{`R$ ${userData.balance.toFixed(
-                2
-              )}`}</Text>
+              <Number>{`R$ ${userData.balance.toFixed(2)}`}</Number>
             </View>
           </View>
         </View>
@@ -165,7 +163,8 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
         <View style={styles.addContainer}>
           <View style={styles.inputContainer}>
             <Text style={styles.itemText}>Saldo a Pagar</Text>
-            <CurrencyInput
+            <Number>{`R$ ${userPayment.totalToBePaid.toFixed(2)}`}</Number>
+            {/* <CurrencyInput
               style={styles.input}
               value={amountToPay}
               onChangeValue={setAmountToPay}
@@ -176,7 +175,7 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
               onChangeText={(formattedValue) => {
                 console.log(formattedValue); // $2,310.46
               }}
-            />
+            /> */}
           </View>
           <ImagePicker onImagePicker={imageSelectedHandler} />
         </View>
@@ -196,7 +195,7 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   );
 };
 
-export const consumerAddPaymentScreenOptions = (navData) => {
+export const consumerAddPaymentScreenOptions = () => {
   return {
     headerTitle: () => <HeaderTitle title="Adicionar Pagamento" />,
     headerBackImage: () => <BackArrow />,
@@ -247,12 +246,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#505050',
   },
-  itemValue: {
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    fontSize: 16,
-    color: '#8898AA',
-  },
+  // itemValue: {
+  //   fontFamily: 'Roboto',
+  //   fontWeight: '700',
+  //   fontSize: 16,
+  //   color: '#8898AA',
+  // },
   addContainer: {
     marginTop: 10,
     // height: '50%',

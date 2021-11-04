@@ -3,10 +3,23 @@ import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { accessibilityLabel } from '../utils';
 
-const Button = ({ id, onPress, children, style, textColor, disabled }) => {
+const Button = ({
+  id,
+  onPress,
+  children,
+  style,
+  textColor,
+  buttonDisabled,
+}) => {
   const { button, text } = styles;
   return (
-    <TouchableOpacity {...accessibilityLabel(id)} onPress={onPress} style={[button, style]} disabled={disabled} accessible>
+    <TouchableOpacity
+      {...accessibilityLabel(id)}
+      onPress={onPress}
+      style={[button, style]}
+      disabled={buttonDisabled}
+      accessible
+    >
       <Text style={[text, { color: textColor }]}>{children}</Text>
     </TouchableOpacity>
   );
