@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useFocusEffect, useState, useContext } from 'react';
 import { format } from 'date-fns';
 import {
   StyleSheet,
@@ -10,6 +10,7 @@ import {
   Image,
   Modal,
   TouchableHighlight,
+  RefreshControl,
   Alert,
 } from 'react-native';
 import HeaderTitle from '../../components/HeaderTitle';
@@ -31,6 +32,8 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState();
   const [userPayments, setUserPayments] = useState([]);
+  const [paymentsOpened, setPaymentsOpened] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   let userId;
   if (route.params.userId) {
@@ -49,6 +52,7 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
     // const doc = userId + 'pay';
     const doc = userId;
     setIsLoading(true);
+    setPaymentsOpened(false);
     await ref
       .doc(doc)
       .collection(subcollection)
@@ -59,22 +63,31 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
         snapshot.forEach((payment) => {
           const date = new Date(payment.data().date);
           newUserPayments.push({
+            paymentId: payment.id,
+            userId: payment.data().userId,
             currentBalance: payment.data().currentBalance,
             date: date,
             orderId: payment.data().orderId,
             orderTotalAmount: payment.data().orderTotalAmount,
             status: payment.data().status,
-            amount: payment.data().totalToBePaid,
+            totalToBePaid: payment.data().totalToBePaid,
             receiptImage: payment.data().receiptImage
               ? payment.data().receiptImage
               : '',
             showReceiptImage: false,
           });
+          // eslint-disable-next-line no-unused-expressions
+          payment.data().status === GLOBALS.PAYMENT.STATUS.OPENED
+            ? setPaymentsOpened(true)
+            : null;
+          // console.log('xxxxx',newUserPayments[0].date);
+          // const paymentDate = new Date(newUserPayments[0].date);
+          // console.log('Payment data', paymentDate);
         });
         newUserPayments.sort((a, b) => {
           return a.date < b.date ? 1 : -1;
         });
-        console.log(newUserPayments);
+        // console.log(newUserPayments);
         setUserPayments(newUserPayments);
         setIsLoading(false);
       })
@@ -83,16 +96,31 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
       });
   };
 
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   if (userId) {
+  //     getUserById(userId).then((data) => {
+  //       setUserData(data);
+  //       fetchPayments();
+  //       setIsLoading(false);
+  //     });
+  //   }
+  // }, [userId]);
+
   useEffect(() => {
-    setIsLoading(true);
-    if (userId) {
-      getUserById(userId).then((data) => {
-        setUserData(data);
-        fetchPayments();
-        setIsLoading(false);
-      });
-    }
-  }, [userId]);
+    const unsubscribe = navigation.addListener('focus', () => {
+      setIsLoading(true);
+      if (userId) {
+        getUserById(userId).then((data) => {
+          setUserData(data);
+          fetchPayments();
+          setIsLoading(false);
+        });
+      }
+    });
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation, userId]);
 
   const showImage = (index) => {
     // console.log('[show Receipt Image]' , receiptImage);
@@ -105,88 +133,118 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
   };
 
   const renderClosedPayments = () => {
-    return userPayments.map((userPayment, index) => (
-      <TouchableOpacity>
-        <TextLabel>Closed Payments</TextLabel>
-        {userPayment.status === 'opened' ? (
+    return (
+      <View style={styles.closedPayments}>
+        <TextLabel style={{ alignSelf: 'center', color: '#BB2525' }}>
+          Pagamentos Concluídos
+        </TextLabel>
+        {userPayments.map((userPayment, index) => (
           <View key={userPayment.date}>
-            <View style={styles.paymentContainer}>
-              <View style={styles.dateContainer}>
-                <Text style={styles.dateText}>
-                  {format(userPayment.date, GLOBALS.FORMAT.DEFAULT_DATE_TIME)}
-                </Text>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => showImage(index)}
-                >
-                  <View style={styles.imageIcon}>
-                    <Image source={ClipIcon} />
+            {userPayment.status === GLOBALS.PAYMENT.STATUS.COMPLETED ? (
+              <View key={userPayment.date}>
+                <View style={styles.paymentContainer}>
+                  <View style={styles.dateContainer}>
+                    <TextLabel style={styles.dateText}>
+                      {format(
+                        userPayment.date,
+                        GLOBALS.FORMAT.DEFAULT_DATE_TIME
+                      )}
+                    </TextLabel>
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => showImage(index)}
+                    >
+                      <View style={styles.imageIcon}>
+                        <Image source={ClipIcon} />
+                      </View>
+                    </TouchableOpacity>
                   </View>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.payLine}>
-                <Text>Pagamento Realizado</Text>
-                <Text style={styles.amountText}>
-                  R$ {userPayment.amount.toFixed(2)}
-                </Text>
-              </View>
-            </View>
-            {userPayment.showReceiptImage ? (
-              <View style={styles.imageContainer}>
-                <Image
-                  style={styles.image}
-                  source={{ uri: userPayment.receiptImage }}
-                />
+                  <View style={styles.payLine}>
+                    <TextContent>Pagamento Realizado</TextContent>
+                    <Text style={styles.amountText}>
+                      R$ {userPayment.totalToBePaid.toFixed(2)}
+                    </Text>
+                  </View>
+                </View>
+                {userPayment.showReceiptImage ? (
+                  <View style={styles.imageContainer}>
+                    <Image
+                      style={styles.image}
+                      source={{ uri: userPayment.receiptImage }}
+                    />
+                  </View>
+                ) : null}
+                <Divider style={{ borderBottomColor: Colors.tertiary }} />
               </View>
             ) : null}
-            <Divider style={{ borderBottomColor: Colors.tertiary }} />
           </View>
-        ) : null}
-      </TouchableOpacity>
-    ));
+        ))}
+      </View>
+    );
   };
 
   const renderOpenedPayments = () => {
-    return userPayments.map((userPayment) => {
-      return (
-        <TouchableOpacity
-          key={userPayment.date}
-          onPress={() => {
-            navigation.navigate('ConsumerAddPaymentScreen', {
-              orderTotalAmount: userPayment.orderTotalAmount,
-              orderId: userPayment.orderId,
-            });
-          }}
-        >
-          {userPayment.status === 'opened' ? (
-            <View key={userPayment.date}>
-              <View style={styles.paymentContainer}>
-                <View style={styles.dateContainer}>
-                  <TextLabel>
-                    {format(userPayment.date, GLOBALS.FORMAT.DEFAULT_DATE_TIME)}
-                  </TextLabel>
-                </View>
-                <View style={styles.payLine}>
-                  <TextContent>Valor a ser pago</TextContent>
-                  <Text style={styles.amountText}>
-                    R$ {userPayment.amount.toFixed(2)}
-                  </Text>
-                </View>
-              </View>
-              {userPayment.showReceiptImage ? (
-                <View style={styles.imageContainer}>
-                  <Image
-                    style={styles.image}
-                    source={{ uri: userPayment.receiptImage }}
-                  />
-                </View>
-              ) : null}
-              <Divider style={{ borderBottomColor: Colors.tertiary }} />
-            </View>
-          ) : null}
-        </TouchableOpacity>
-      );
-    });
+    return (
+      <View style={styles.openedPayments}>
+        {!paymentsOpened ? (
+          <TextLabel style={{ alignSelf: 'center' }}>
+            Não existem pagamentos a serem feitos!
+          </TextLabel>
+        ) : (
+          <View>
+            <TextLabel style={{ alignSelf: 'center', color: '#BB2525' }}>
+              Pagamentos abertos.
+            </TextLabel>
+            <TextLabel style={{ alignSelf: 'center', color: '#BB2525' }}>
+              Clique sobre o item para pagar.
+            </TextLabel>
+            {userPayments.map((userPayment) => {
+              return (
+                <TouchableOpacity
+                  key={userPayment.date}
+                  onPress={() => {
+                    navigation.navigate('ConsumerAddPaymentScreen', {
+                      // eslint-disable-next-line object-shorthand
+                      userPayment: userPayment,
+                    });
+                  }}
+                >
+                  {userPayment.status === GLOBALS.PAYMENT.STATUS.OPENED ? (
+                    <View key={userPayment.date}>
+                      <View style={styles.paymentContainer}>
+                        <View style={styles.dateContainer}>
+                          <TextLabel>
+                            {format(
+                              userPayment.date,
+                              GLOBALS.FORMAT.DEFAULT_DATE_TIME
+                            )}
+                          </TextLabel>
+                        </View>
+                        <View style={styles.payLine}>
+                          <TextContent>Valor a ser pago</TextContent>
+                          <Text style={styles.amountText}>
+                            R$ {userPayment.totalToBePaid.toFixed(2)}
+                          </Text>
+                        </View>
+                      </View>
+                      {userPayment.showReceiptImage ? (
+                        <View style={styles.imageContainer}>
+                          <Image
+                            style={styles.image}
+                            source={{ uri: userPayment.receiptImage }}
+                          />
+                        </View>
+                      ) : null}
+                      <Divider style={{ borderBottomColor: Colors.tertiary }} />
+                    </View>
+                  ) : null}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
+      </View>
+    );
   };
 
   if (isLoading) {
@@ -201,26 +259,32 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>
-            Saldo: {userData.balance.toFixed(2)}{' '}
-          </Text>
-          <Text>{userData.name}</Text>
-        </View>
-        <Divider style={{ borderBottomColor: Colors.secondary }} />
-        <View style={styles.paymentsContainer}>
-          <ScrollView style={styles.paymentsContainer}>
-            <TextLabel>
-              Pagamentos em aberto. Clique sobre o item para fazer o pagamento
-            </TextLabel>
-            {!userPayments.length === 0 ? (
-              <TextLabel>Não existe nenhum pagamento ainda!</TextLabel>
-            ) : (
-              renderOpenedPayments()
-            )}
-          </ScrollView>
-        </View>
-        {/* <View style={styles.buttonContainer}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => {
+                setRefreshing(true);
+                fetchPayments();
+                setRefreshing(false);
+              }}
+            />
+          }
+        >
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>
+              Saldo: {userData.balance.toFixed(2)}{' '}
+            </Text>
+            <Text>{userData.name}</Text>
+          </View>
+          <Divider style={{ borderBottomColor: Colors.secondary }} />
+          <View style={styles.paymentsContainer}>
+            <ScrollView style={styles.paymentsContainer}>
+              {renderOpenedPayments()}
+            </ScrollView>
+            <View>{renderClosedPayments()}</View>
+          </View>
+          {/* <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
           <Button
             id="addPaymentButton"
@@ -236,12 +300,13 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
             Adicionar Pagamento
           </Button>
         </View> */}
+        </ScrollView>
       </View>
     </View>
   );
 };
 
-export const consumerPaymentsScreenOptions = (navData) => {
+export const consumerPaymentsScreenOptions = () => {
   return {
     headerTitle: () => (
       <View style={styles.header}>
@@ -277,10 +342,11 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: -1, height: 3 },
     textShadowRadius: 10,
   },
+  openedPayments: {
+    marginBottom: 10,
+  },
   paymentsContainer: {
     marginTop: 5,
-    height: '75%',
-    // backgroundColor: 'red',
   },
   paymentContainer: {
     marginTop: 15,
