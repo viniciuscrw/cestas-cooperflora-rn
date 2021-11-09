@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 const group = {
   address:
     'STOUT Café Cultura & Bar - R. Gilberto Pattaro, 105 - Barão Geraldo, Campinas - SP',
-  baseProductsPrice: 32,
+  baseProductsPrice: 35,
   deliveryFee: 5,
   deliveryFrequencyInDays: 15,
   deliveryFrequencyText: 'Quinzenalmente às quartas-feiras',
@@ -13,19 +13,25 @@ const group = {
 };
 
 const user = {
-  email: 'admin@admin.com',
+  email: 'cooperflorabarao@gmail.com',
   name: 'Organizador',
   role: 'organizer',
-}
+};
 
-const serviceAccount = require('../../cestas-cooperflora-dev2-firebase-adminsdk-f8nor-6bf231082b.json');
+// Prod DB
+// const serviceAccount = require('../../cestascooperflorabarao-firebase-adminsdk-kg42n-264249460c.json');
+
+//Dev DB
+const serviceAccount = require('../../cestascooperflorabarao-dev-firebase-adminsdk-hopm6-3604f3476c.json');
+
+
 
 console.log('Iniciando banco de dados do app Cestas Cooperflora');
 console.log(group);
 
 const db = admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://cestas-cooperflora-dev2-default-rtdb.firebaseio.com',
+  databaseURL: 'https://cestascooperflorabarao-default-rtdb.firebaseio.com',
 });
 
 console.log('Criação do usuário de inicialização do app.');
