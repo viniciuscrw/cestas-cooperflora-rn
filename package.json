@@ -30,18 +30,17 @@
     "@types/react-native": "~0.63.2",
     "axios": "^0.19.2",
     "date-fns": "^2.16.1",
-    "expo": "^42.0.0",
+    "expo": "^42.0.5",
     "expo-application": "^3.2.0",
-    "expo-constants": "^11.0.1",
+    "expo-constants": "~11.0.1",
     "expo-device": "^3.3.0",
     "expo-document-picker": "^9.2.4",
     "expo-image-picker": "^10.2.3",
-    "expo-updates": "^0.8.5",
+    "expo-updates": "~0.8.2",
     "firebase": "^8.2.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
-    "react-native-animation-library": "^0.0.8",
     "react-native-currency-input": "^1.0.1",
     "react-native-elements": "^2.0.4",
     "react-native-firebase": "^5.6.0",
@@ -63,7 +62,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.15.8",
-    "@testing-library/react-native": "^7.2.0",
     "babel-eslint": "^10.1.0",
     "babel-preset-expo": "8.3.0",
     "eslint": "^6.8.0",
@@ -77,9 +75,7 @@
     "jest": "^26.6.3",
     "jest-expo": "^42.1.0",
     "jest-fetch-mock": "^3.0.3",
-    "prettier": "^2.0.5",
-    "react-native-testing-library": "^6.0.0",
-    "react-test-renderer": "^16.13.0"
+    "prettier": "^2.0.5"
   },
   "private": true
 }
