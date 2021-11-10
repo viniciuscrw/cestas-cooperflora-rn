@@ -85,6 +85,19 @@ const AccountOptionsScreen = ({ navigation }) => {
               <Image source={FrontArrow} />
             </View>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('AboutScreen')
+            }
+          >
+            <View style={styles.listItemContainer}>
+              <View style={styles.listItem}>
+                <Text style={styles.listItemTitle}>Sobre </Text>
+              </View>
+              <Image source={FrontArrow} />
+            </View>
+            <Divider />
+          </TouchableOpacity>
         </View>
       )}
     </View>
