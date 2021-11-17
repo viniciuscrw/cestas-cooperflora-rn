@@ -3,8 +3,6 @@ import getEnvVars from '../../environment';
 
 const { FirebaseConfig } = getEnvVars();
 
-console.log(FirebaseConfig);
-
 export default { FirebaseConfig };
 
 // const FirebaseConfig = {

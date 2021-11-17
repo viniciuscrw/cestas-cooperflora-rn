@@ -46,4 +46,7 @@ export default {
       COMPLETED: 'completed',
     },
   },
+  RECEIPTFILE: {
+    SIZE: 5000,
+  },
 };

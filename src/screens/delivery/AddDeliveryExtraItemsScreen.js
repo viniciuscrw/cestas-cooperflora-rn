@@ -12,6 +12,7 @@ import {
 import { AntDesign } from '@expo/vector-icons';
 import endOfDay from 'date-fns/endOfDay';
 import { Input, ListItem } from 'react-native-elements';
+import { Context as UserContext } from '../../context/UserContext';
 import { Context as ProductContext } from '../../context/ProductContext';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import Spinner from '../../components/Spinner';
@@ -19,6 +20,7 @@ import { formatCurrency, showAlert } from '../../helper/HelperFunctions';
 import useConsumerGroup from '../../hooks/useConsumerGroup';
 import Colors from '../../constants/Colors';
 import Button from '../../components/Button';
+import { sendPushNotification } from '../../utils';
 
 const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const {
@@ -27,6 +29,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   } = useContext(ProductContext);
   const { state, createDelivery, updateDelivery, deleteDelivery } =
     useContext(DeliveryContext);
+  const { fetchConsumers } = useContext(UserContext);
 
   const [checkedItems, setCheckedItems] = useState(
     state.nextDelivery && state.nextDelivery.extraProducts
@@ -62,6 +65,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       fetchProducts();
+      fetchConsumers();
     });
     return unsubscribe;
   }, [navigation]);
@@ -122,6 +126,13 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         updateDelivery({ deliveryId: state.nextDelivery.id, delivery });
       } else {
         createDelivery({ delivery });
+        fetchConsumers()
+          .then((consumers) => {
+            sendPushNotification(consumers);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
         navigation.navigate('DeliveriesScreen');
       }
     }

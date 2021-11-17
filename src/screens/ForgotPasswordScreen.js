@@ -12,41 +12,24 @@ import Spacer from '../components/Spacer';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
 import { Context as AuthContext } from '../context/AuthContext';
-import TextLink from '../components/TextLink';
+import HeaderTitle from '../components/HeaderTitle';
+import BackArrow from '../components/BackArrow';
+import Colors from '../constants/Colors';
 
-const ForgotPasswordScreen = ({ navigation }) => {
+const ForgotPasswordScreen = ({ navigation, route }) => {
   const { state, resetPassword, clearError } = useContext(AuthContext);
-  const signinEmail = navigation.getParam('email');
+  const signinEmail = route.params.email;
   const [email, setEmail] = useState(signinEmail);
 
-  const renderButton = () => {
-    return state.loading ? (
-      <Spinner size="small" />
-    ) : (
-      <Button
-        id="updatePasswordButton"
-        onPress={() => {
-          Keyboard.dismiss();
-          resetPassword(email);
-        }}
-      >
-        Redefinir senha
-      </Button>
-    );
+  const onHandleResetPassword = () => {
+    Keyboard.dismiss();
+    resetPassword(email);
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.backGroundView}>
         <View style={styles.container}>
-          <TextLink
-            text="< Voltar"
-            onPress={() => {
-              clearError();
-              navigation.goBack(null);
-            }}
-            style={styles.backButton}
-          />
           <View style={styles.innerContainer}>
             <FormInput
               id="e-mail"
@@ -62,12 +45,39 @@ const ForgotPasswordScreen = ({ navigation }) => {
               <Text style={styles.errorMessage}>{state.errorMessage}</Text>
             ) : null}
             <Spacer />
-            {renderButton()}
+            <View style={styles.resetButtonContainer}>
+              <Button
+                id="resetPasswordButton"
+                style={styles.resetButton}
+                textColor="white"
+                onPress={onHandleResetPassword}
+              >
+                Redefinir senha
+              </Button>
+            </View>
           </View>
         </View>
       </View>
     </TouchableWithoutFeedback>
   );
+};
+//cooperflorabarao@gmail.com
+
+export const forgotPasswordScreenOptions = (props) => {
+  return {
+    headerTitle: () => (
+      <View style={styles.header}>
+        <HeaderTitle title="Esqueci Minha Senha" />
+      </View>
+    ),
+    headerBackImage: () => <BackArrow />,
+    headerStyle: {
+      backgroundColor: 'transparent',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+    },
+  };
 };
 
 const styles = StyleSheet.create({
@@ -96,6 +106,16 @@ const styles = StyleSheet.create({
     color: 'red',
     marginLeft: 15,
     marginTop: 15,
+  },
+  resetButtonContainer: {
+    // position: 'absolute',
+    width: '100%',
+    bottom: 0,
+  },
+  resetButton: {
+    marginTop: 5,
+    backgroundColor: Colors.primary,
+    alignSelf: 'center',
   },
 });
 
