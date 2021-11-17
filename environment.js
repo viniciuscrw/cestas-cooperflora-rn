@@ -15,13 +15,25 @@ const ENV = {
   },
   prod: {
     FirebaseConfig: {
-      apiKey: "AIzaSyAKufHFIlzA2k26_PO4Yfx03pUqtfLHAKw",
-      authDomain: "cestascooperflorabarao.firebaseapp.com",
+      apiKey: 'AIzaSyAKufHFIlzA2k26_PO4Yfx03pUqtfLHAKw',
+      authDomain: 'cestascooperflorabarao.firebaseapp.com',
       databaseURL: 'https://cestas-cooperflora-barao.firebaseio.com',
-      projectId: "cestascooperflorabarao",
-      storageBucket: "cestascooperflorabarao.appspot.com",
-      messagingSenderId: "1021764633897",
-      appId: "1:1021764633897:web:2ac317b9efd23a3306a338"
+      projectId: 'cestascooperflorabarao',
+      storageBucket: 'cestascooperflorabarao.appspot.com',
+      messagingSenderId: '1021764633897',
+      appId: '1:1021764633897:web:2ac317b9efd23a3306a338',
+    },
+  },
+  bordi: {
+    FirebaseConfig: {
+      apiKey: 'AIzaSyDd6zz4XqA7CIeL4AhcrKlclh8PK2EpzIA',
+      authDomain: 'cestas-cooperflora-dev2.firebaseapp.com',
+      databaseURL:
+        'https://cestas-cooperflora-dev2-default-rtdb.firebaseio.com',
+      projectId: 'cestas-cooperflora-dev2',
+      storageBucket: 'cestas-cooperflora-dev2.appspot.com',
+      messagingSenderId: '109563362615',
+      appId: '1:109563362615:web:25896a03f004d33970aeb2',
     },
   },
 };
@@ -38,8 +50,8 @@ const getEnvVars = (env = Constants.manifest.releaseChannel) => {
     console.log('Prod environment');
     return ENV.prod;
   }
-  console.log('Dev environment');
-  return ENV.dev;
+  console.log('Bordi environment');
+  return ENV.bordi;
 };
 
 export default getEnvVars;

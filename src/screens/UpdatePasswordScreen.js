@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 import Spacer from '../components/Spacer';
 import FormInput from '../components/FormInput';
@@ -19,8 +20,8 @@ import Spinner from '../components/Spinner';
 import Colors from '../constants/Colors';
 import { stardardScreenStyle as screen } from './screenstyles/ScreenStyles';
 
-const UpdatePasswordScreen = (props) => {
-  const email = props.route.params.userEmail;
+const UpdatePasswordScreen = ({ route }) => {
+  const email = route.params.userEmail;
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const { state, updatePassword, clearError } = useContext(AuthContext);
@@ -50,11 +51,15 @@ const UpdatePasswordScreen = (props) => {
   };
 
   return (
-    <View style={styles.screen} >
+    <View style={styles.screen}>
       <View style={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <KeyboardAvoidingView
-            style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
+            style={{
+              flex: 1,
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             enabled
             keyboardVerticalOffset={100}
@@ -79,7 +84,7 @@ const UpdatePasswordScreen = (props) => {
               />
               <Spacer />
               <FormInput
-              id="newpassword"
+                id="newpassword"
                 label="Nova senha:"
                 value={newPassword}
                 reference={newPasswordTextInput}
@@ -107,7 +112,7 @@ const UpdatePasswordScreen = (props) => {
   );
 };
 
-export const updatePasswordScreenOptions = (navData) => {
+export const updatePasswordScreenOptions = () => {
   return {
     headerTitle: () => (
       <View style={styles.header}>

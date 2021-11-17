@@ -5,6 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import useUser from '../hooks/useUser';
 import GLOBALS from '../Globals';
 import HeaderTitle from '../components/HeaderTitle';
+import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
 
 const PaymentScreen = ({ navigation }) => {
@@ -39,6 +40,7 @@ const PaymentScreen = ({ navigation }) => {
 export const paymentScreenOptions = () => {
   return {
     headerTitle: () => <HeaderTitle title="Pagamentos" />,
+    headerBackImage: () => <BackArrow />,
   };
 };
 

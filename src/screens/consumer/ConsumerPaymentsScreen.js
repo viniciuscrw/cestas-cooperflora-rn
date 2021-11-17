@@ -1,4 +1,4 @@
-import React, { useEffect, useFocusEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { format } from 'date-fns';
 import {
   StyleSheet,
@@ -8,27 +8,26 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
-  Modal,
-  TouchableHighlight,
   RefreshControl,
   Alert,
 } from 'react-native';
+import firebase from 'firebase';
+import PDFReader from 'rn-pdf-reader-js';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
-import Button from '../../components/Button';
 import useUser from '../../hooks/useUser';
 
 import { Context as userContext } from '../../context/UserContext';
-import firebase from 'firebase';
 import GLOBALS from '../../Globals';
 import ClipIcon from '../../../assets/images/icons/clipicon.png';
 import { stardardScreenStyle as screen } from '../screenstyles/ScreenStyles';
 import { TextContent, TextLabel } from '../../components/StandardStyles';
+import { accessibilityLabel } from '../../utils';
 
 const ConsumerPaymentsScreen = ({ route, navigation }) => {
-  console.log('[ConsumerPaymentScreen started]');
+  // console.log('[ConsumerPaymentScreen started]');
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState();
   const [userPayments, setUserPayments] = useState([]);
@@ -66,28 +65,21 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
             paymentId: payment.id,
             userId: payment.data().userId,
             currentBalance: payment.data().currentBalance,
-            date: date,
+            date,
             orderId: payment.data().orderId,
             orderTotalAmount: payment.data().orderTotalAmount,
             status: payment.data().status,
             totalToBePaid: payment.data().totalToBePaid,
-            receiptImage: payment.data().receiptImage
-              ? payment.data().receiptImage
-              : '',
+            receipt: payment.data().receipt ? payment.data().receipt : {},
             showReceiptImage: false,
           });
-          // eslint-disable-next-line no-unused-expressions
           payment.data().status === GLOBALS.PAYMENT.STATUS.OPENED
             ? setPaymentsOpened(true)
             : null;
-          // console.log('xxxxx',newUserPayments[0].date);
-          // const paymentDate = new Date(newUserPayments[0].date);
-          // console.log('Payment data', paymentDate);
         });
         newUserPayments.sort((a, b) => {
           return a.date < b.date ? 1 : -1;
         });
-        // console.log(newUserPayments);
         setUserPayments(newUserPayments);
         setIsLoading(false);
       })
@@ -96,16 +88,7 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
       });
   };
 
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   if (userId) {
-  //     getUserById(userId).then((data) => {
-  //       setUserData(data);
-  //       fetchPayments();
-  //       setIsLoading(false);
-  //     });
-  //   }
-  // }, [userId]);
+
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -123,13 +106,38 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
   }, [navigation, userId]);
 
   const showImage = (index) => {
-    // console.log('[show Receipt Image]' , receiptImage);
     const newUserPayments = [...userPayments];
     newUserPayments[index].showReceiptImage =
       !newUserPayments[index].showReceiptImage;
     setUserPayments(newUserPayments);
+  };
 
-    // setUserPayments([...userPayments, userPayments[index].showReceiptImage = true])
+  const renderReceipt = (userPayment) => {
+    if (userPayment.showReceiptImage) {
+      if (userPayment.receipt.type === 'image/jpeg') {
+        return (
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={{ uri: userPayment.receipt.url }}
+            />
+          </View>
+        );
+      }
+      if (userPayment.receipt.type === 'application/pdf') {
+        return (
+          <View style={styles.imageContainer}>
+            <PDFReader
+              style={styles.receipt}
+              source={{
+                uri: userPayment.receipt.url,
+              }}
+            />
+          </View>
+        );
+      }
+    }
+    return null;
   };
 
   const renderClosedPayments = () => {
@@ -153,6 +161,7 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
                     <TouchableOpacity
                       style={styles.button}
                       onPress={() => showImage(index)}
+                      {...accessibilityLabel(`showImageClosedPayment${index}`)}
                     >
                       <View style={styles.imageIcon}>
                         <Image source={ClipIcon} />
@@ -166,14 +175,15 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
                     </Text>
                   </View>
                 </View>
-                {userPayment.showReceiptImage ? (
+                {renderReceipt(userPayment)}
+                {/* {userPayment.showReceiptImage ? (
                   <View style={styles.imageContainer}>
                     <Image
                       style={styles.image}
-                      source={{ uri: userPayment.receiptImage }}
+                      source={{ uri: userPayment.receipt.url }}
                     />
                   </View>
-                ) : null}
+                ) : null} */}
                 <Divider style={{ borderBottomColor: Colors.tertiary }} />
               </View>
             ) : null}
@@ -198,7 +208,7 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
             <TextLabel style={{ alignSelf: 'center', color: '#BB2525' }}>
               Clique sobre o item para pagar.
             </TextLabel>
-            {userPayments.map((userPayment) => {
+            {userPayments.map((userPayment, index) => {
               return (
                 <TouchableOpacity
                   key={userPayment.date}
@@ -208,6 +218,7 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
                       userPayment: userPayment,
                     });
                   }}
+                  {...accessibilityLabel(`showImageOpenedPayment${index}`)}
                 >
                   {userPayment.status === GLOBALS.PAYMENT.STATUS.OPENED ? (
                     <View key={userPayment.date}>
@@ -248,7 +259,6 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
   };
 
   if (isLoading) {
-    // console.log('[Consumer Payments Screen] isLoading', isLoading)
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={Colors.primary} />

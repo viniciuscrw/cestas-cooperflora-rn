@@ -12,13 +12,10 @@ const ConsumerGroupDetails = ({ navigation }) => {
     <TouchableOpacity
       onPress={() => {
         if (user.role === 'organizer') {
-          // console.log('[Consumer Group Details Screen] user role', user.role);
           navigation.navigate('ConsumerGroupManagement', {
             userRole: user.role,
           });
         } else if (user.role === 'consumer') {
-          // console.log('ConsumerGroupInfoScreen', navigation.navigate);
-          // navigation.navigate('ConsumerGroupInfoScreen', { userRole: user.role });
           navigation.navigate('ConsumerGroupInfoScreen', {
             userRole: user.role,
           });
@@ -27,7 +24,7 @@ const ConsumerGroupDetails = ({ navigation }) => {
         }
       }}
     >
-      <Image source={FrontArrow} />
+      <Image style={styles.frontArrow} source={FrontArrow} />
     </TouchableOpacity>
   ) : null;
 };
@@ -44,6 +41,9 @@ export const consumerGroupDetailsScreenOptions = () => {
 
 const styles = StyleSheet.create({
   icon: {
+    marginRight: 10,
+  },
+  frontArrow: {
     marginRight: 10,
   },
 });

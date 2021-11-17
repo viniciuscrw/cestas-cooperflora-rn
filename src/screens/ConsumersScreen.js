@@ -1,10 +1,13 @@
 import React, { useContext, useEffect } from 'react';
-import { Context as UserContext } from '../context/UserContext';
 import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { Context as UserContext } from '../context/UserContext';
 import UsersList from '../components/UsersList';
 import Spinner from '../components/Spinner';
 import Colors from '../constants/Colors';
+
+// import { sendPushNotification } from '../utils';
+// import Button from '../components/Button';
 
 const ConsumersScreen = ({ navigation }) => {
   const { state, fetchConsumers, deleteUser } = useContext(UserContext);
@@ -23,7 +26,6 @@ const ConsumersScreen = ({ navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
@@ -37,28 +39,44 @@ const ConsumersScreen = ({ navigation }) => {
                 <Text style={styles.title}>Consumidores</Text>
               </View>
               <View style={styles.iconsContainer}>
-
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('CreateUserScreen', { role: 'consumer' })}
+                  onPress={() =>
+                    navigation.navigate('CreateUserScreen', {
+                      role: 'consumer',
+                    })
+                  }
                 >
-                  <FontAwesome5 name="user-plus" size={24} color={Colors.secondary} />
+                  <FontAwesome5
+                    name="user-plus"
+                    size={24}
+                    color={Colors.secondary}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
 
-            <UsersList data={state.users} onUserDelete={deleteUser} navigation={navigation} />
+            <UsersList
+              data={state.users}
+              onUserDelete={deleteUser}
+              navigation={navigation}
+            />
           </View>
         )}
       </View>
+      {/* <Button
+        onPress={() => {
+          sendPushNotification(state.users);
+        }}
+      >
+        Enviar Notifição
+      </Button> */}
     </View>
   );
 };
 
 export const ConsumerScreenOptions = (navData) => {
   return {
-    headerTitle: () => (
-      <HeaderTitle title="Consumer Screen" />
-    )
+    headerTitle: () => <HeaderTitle title="Consumer Screen" />,
   };
 };
 
@@ -70,11 +88,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: '#F0F5F9',
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
@@ -84,14 +102,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10
+    marginBottom: 10,
   },
   title: {
     fontFamily: 'Roboto',
     fontWeight: '700',
     fontSize: 16,
     color: '#505050',
-  }
+  },
 });
 
 export default ConsumersScreen;
