@@ -22,14 +22,14 @@ console.log(users);
 // const serviceAccount = require('../../cestascooperflorabarao-firebase-adminsdk-kg42n-264249460c.json');
 
 // Dev DB
-// const serviceAccount = require('../../cestascooperflorabarao-dev-firebase-adminsdk-hopm6-3604f3476c.json');
-// const databaseURL = 'https://cestascooperflorabarao-dev-default-rtdb.asia-southeast1.firebasedatabase.app';
+const serviceAccount = require('../../cestascooperflorabarao-dev-firebase-adminsdk-hopm6-8a8fcf03f3.json');
+const databaseURL = 'https://cestascooperflorabarao-dev-default-rtdb.asia-southeast1.firebasedatabase.app';
 
-// Bordi database ==============
-const serviceAccount = require('../../cestas-cooperflora-dev2-firebase-adminsdk-f8nor-6bf231082b.json');
+// // Bordi database ==============
+// const serviceAccount = require('../../cestas-cooperflora-dev2-firebase-adminsdk-f8nor-6bf231082b.json');
 
-const databaseURL =
-  'https://cestas-cooperflora-dev2-default-rtdb.firebaseio.com';
+// const databaseURL =
+//   'https://cestas-cooperflora-dev2-default-rtdb.firebaseio.com';
 // =============================
 
 console.log('Iniciando a criação do banco de dados do app Cestas Cooperflora');
