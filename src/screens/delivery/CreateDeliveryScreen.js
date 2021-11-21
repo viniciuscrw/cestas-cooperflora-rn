@@ -27,14 +27,11 @@ const CreateDeliveryScreen = ({ route }) => {
   console.log('[Create Delivery Screen started]');
   const { setDeliveryInfo } = useContext(DeliveryContext);
 
-  // const delivery = navigation.getParam('delivery');
-  const delivery = route.params ? route.params.delivery : null;
-  console.log('[Create Delivery Screen]', delivery);
+  const delivery = route && route.params ? route.params.delivery : null;
 
   const [deliveryDate, setDeliveryDate] = useState(
     delivery ? delivery.deliveryDate : new Date()
   );
-  console.log('xxx');
   const [showDeliveryDate, setShowDeliveryDate] = useState(false);
   const [ordersLimitDate, setOrdersLimitDate] = useState(
     delivery
@@ -47,12 +44,20 @@ const CreateDeliveryScreen = ({ route }) => {
         )
   );
   const [ordersLimitTime, setOrdersLimitTime] = useState(
-    new Date(
-      deliveryDate.getFullYear(),
-      deliveryDate.getMonth(),
-      deliveryDate.getDate() - 1,
-      18
-    )
+    delivery
+      ? new Date(
+          ordersLimitDate.getFullYear(),
+          ordersLimitDate.getMonth(),
+          ordersLimitDate.getDate(),
+          ordersLimitDate.getHours(),
+          ordersLimitDate.getMinutes()
+        )
+      : new Date(
+          deliveryDate.getFullYear(),
+          deliveryDate.getMonth(),
+          deliveryDate.getDate() - 1,
+          18
+        )
   );
   const [showOrdersDateTime, setShowOrdersDateTime] = useState(false);
   const [dateTimeMode, setDateTimeMode] = useState('date');

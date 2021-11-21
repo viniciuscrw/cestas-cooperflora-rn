@@ -132,7 +132,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    margin: 25,
+    marginHorizontal: 15,
+    marginVertical: 5,
   },
   text: {
     color: '#101010',
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   searchInput: {
-    width: 250,
+    width: 300,
   },
   productsList: {
     marginTop: -10,
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
   listItemContainer: {
     backgroundColor: 'transparent',
     padding: 10,
-    minHeight: 40,
+    minHeight: 60,
   },
   listItemTitle: {
     fontWeight: 'bold',

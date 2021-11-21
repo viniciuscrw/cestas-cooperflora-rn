@@ -7,28 +7,23 @@ import {
   Text,
   View,
 } from 'react-native';
-import { format } from 'date-fns';
+import { format, isAfter } from 'date-fns';
 import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
 import { Context as OrderContext } from '../../context/OrderContext';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import VegetableImage from '../../../assets/images/vegetable1.png';
-import GLOBALS from '../../Globals';
 import Spinner from '../../components/Spinner';
+import Button from '../../components/Button';
+import GLOBALS from '../../Globals';
 
 const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
   console.log('[ConsumerOrderPlacedScreen]');
   const {
     state: { order, loading },
   } = useContext(OrderContext);
-  // const { delivery } = props.navigation.state.params;
-  const { delivery } = route.params;
-
-  // TODO Resolver aqui pra quem nao tem pedido
-  if (order && !order.id) {
-    navigation.navigate('DeliveriesScreen');
-  }
+  const { user, delivery } = route.params;
 
   const hasAnyProduct = () => {
     return (
@@ -38,11 +33,30 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
     );
   };
 
-  // const handleOnConfirmPayment = () => {
-  //   navigation.navigate('ConsumerAddPaymentScreen', {
-  //     orderTotalAmount: order.totalAmount,
-  //   });
-  // };
+  const handleUpdateOrder = () => {
+    navigation.navigate('ConsumerOrderScreen', { user, delivery });
+  };
+
+  const renderEditOrderButton = () => {
+    const currentDate = new Date();
+
+    const { limitDate } = delivery;
+    const isOrderCompleted =
+      order && order.status && order.status === GLOBALS.ORDER.STATUS.COMPLETED;
+
+    return isAfter(currentDate, limitDate) || isOrderCompleted ? null : (
+      <>
+        <Divider style={{ borderBottomColor: Colors.secondary }} />
+        <Button
+          style={styles.confirmButton}
+          textColor="white"
+          onPress={() => handleUpdateOrder()}
+        >
+          Editar Pedido
+        </Button>
+      </>
+    );
+  };
 
   return loading ? (
     <Spinner />
@@ -69,9 +83,8 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
               data={order.extraProducts}
               keyExtractor={(item) => item.productTitle}
               renderItem={(itemData) => {
-                const total = (
-                  itemData.item.productPrice * itemData.item.quantity
-                ).toFixed(2);
+                const total =
+                  itemData.item.productPrice * itemData.item.quantity;
                 return (
                   <View>
                     {total !== 0 ? (
@@ -85,7 +98,9 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
                           </Text>
                         </View>
                         <View style={styles.box2}>
-                          <Text style={styles.itemValue}>R$ {total}</Text>
+                          <Text style={styles.itemValue}>
+                            R$ {total.toFixed(2)}
+                          </Text>
                         </View>
                       </View>
                     ) : null}
@@ -113,13 +128,13 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
             </Text>
           </View>
         </View>
+        <View style={styles.buttonContainer}>{renderEditOrderButton()}</View>
       </View>
     </View>
   );
 };
 
 export const consumerOrderPlacedScreenOptions = (navData) => {
-  console.log(`navData:`);
   const deliveryDate = format(
     navData.route.params.delivery.deliveryDate,
     GLOBALS.FORMAT.DD_MM

@@ -8,7 +8,7 @@ import HeaderTitle from '../components/HeaderTitle';
 import FrontArrow from '../../assets/images/icons/frontarrow.png';
 import { stardardScreenStyle as screen } from './screenstyles/ScreenStyles';
 import { TextLabel } from '../components/StandardStyles';
-import Colors from '../constants/Colors.js';
+import Colors from '../constants/Colors';
 import { setPushNotificationToken } from '../utils';
 import { updateDocAttribute } from '../api/firebase';
 
@@ -82,7 +82,6 @@ const AccountOptionsScreen = ({ navigation }) => {
         <Spinner />
       ) : (
         <View style={styles.container}>
-          
           {state.loggedUser ? (
             <View>
               <View style={styles.headerContainer}>
@@ -140,7 +139,7 @@ const AccountOptionsScreen = ({ navigation }) => {
           </TouchableOpacity>
           <View style={styles.listItemContainer}>
             <TextLabel style={styles.paragraph}>
-              Permite notificação das entregas.
+              Permitir notificação das entregas
             </TextLabel>
             <Checkbox
               value={isPushToken}
