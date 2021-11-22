@@ -1,6 +1,8 @@
 export default {
   APP: {
     NAME: 'Cestas Cooperflora',
+    INITIALSCREEN_TEXT:
+      'A Cooperflora é uma cooperativa que produz e comercializa produtos orgânicos do assentamento Milton Santos em Americana.',
   },
   CONSUMER_GROUP: {
     ID: 'vhvp5xf4PNESoy0qR2Yx',

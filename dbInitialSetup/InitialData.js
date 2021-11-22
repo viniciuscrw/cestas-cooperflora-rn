@@ -36,7 +36,7 @@ module.exports.users = [
   },
   {
     email: 'gra.monteiro0@gmail.com',
-    name: 'Organizador',
+    name: 'Gra',
     role: 'consumer',
     consumerGroupId: 'vhvp5xf4PNESoy0qR2Yx',
     balance: 0,

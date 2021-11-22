@@ -46,8 +46,6 @@ export const setPushNotificationToken = async () => {
 
 export const sendPushNotification = async (users) => {
   console.log('Enviando notificação para as consumidoras e os consumidores!');
-  console.log(users);
-
   const message = {
     // to: expoPushToken,
     sound: 'default',
@@ -57,16 +55,18 @@ export const sendPushNotification = async (users) => {
   };
 
   users.map(async (user) => {
-    console.log('Enviando notificação para', user.name);
-    message.to = user.pushNotificationToken;
-    await fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Accept-encoding': 'gzip, deflate',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(message),
-    });
+    if (user.pushNotificationToken) {
+      console.log('Enviando notificação para', user.name);
+      message.to = user.pushNotificationToken;
+      await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Accept-encoding': 'gzip, deflate',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
+      });
+    }
   });
 };

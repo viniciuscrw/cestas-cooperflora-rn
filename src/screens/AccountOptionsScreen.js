@@ -15,17 +15,14 @@ import { updateDocAttribute } from '../api/firebase';
 const AccountOptionsScreen = ({ navigation }) => {
   const [isPushToken, setIsPushToken] = useState(false);
   const { state, signout, fetchLoggedUser } = useContext(AuthContext);
-  console.log('AccountOptionScreen');
+  console.log('AccountOptionScreen started');
 
   useEffect(() => {
     fetchLoggedUser();
-    console.log('AccountOptionScreen] fetchLoggedUser');
   }, []);
 
   useEffect(() => {
-    console.log('State alterado');
     if (state) {
-      console.log(state);
       if (state.loggedUser) {
         if (
           state.loggedUser.pushNotificationToken === null ||
@@ -40,8 +37,6 @@ const AccountOptionsScreen = ({ navigation }) => {
       // console.log(userPushNotificationToken);
     }
   }, [state]);
-
-  console.log('IsPushToken', isPushToken);
 
   const handleCheckBox = () => {
     if (!isPushToken) {
@@ -82,7 +77,7 @@ const AccountOptionsScreen = ({ navigation }) => {
         <Spinner />
       ) : (
         <View style={styles.container}>
-          
+
           {state.loggedUser ? (
             <View>
               <View style={styles.headerContainer}>
