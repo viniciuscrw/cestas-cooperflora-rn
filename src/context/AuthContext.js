@@ -142,37 +142,37 @@ const onSigninSuccess = (dispatch) => async (email) => {
 
 const signin =
   (dispatch) =>
-    ({ email, password, passwordConfirmation, userId }) => {
-      dispatch({ type: 'loading' });
+  ({ email, password, passwordConfirmation, userId }) => {
+    dispatch({ type: 'loading' });
 
-      if (passwordConfirmation) {
-        passwordConfirmation !== password
-          ? dispatch({
+    if (passwordConfirmation) {
+      passwordConfirmation !== password
+        ? dispatch({
             type: 'add_error',
             payload: 'As senhas digitadas são divergentes.',
           })
-          : signup(dispatch)(email, password, userId);
-      } else {
-        console.log(`Signing in existing user: ${userId}`);
+        : signup(dispatch)(email, password, userId);
+    } else {
+      console.log(`Signing in existing user: ${userId}`);
 
-        firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then(() => onSigninSuccess(dispatch)(email))
-          .catch((err) => {
-            console.log(err);
-            const errorMessage =
-              err.code === 'auth/wrong-password'
-                ? 'Senha inválida.'
-                : 'Algo deu errado com o login.';
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => onSigninSuccess(dispatch)(email))
+        .catch((err) => {
+          console.log(err);
+          const errorMessage =
+            err.code === 'auth/wrong-password'
+              ? 'Senha inválida.'
+              : 'Algo deu errado com o login.';
 
-            dispatch({
-              type: 'add_error',
-              payload: errorMessage,
-            });
+          dispatch({
+            type: 'add_error',
+            payload: errorMessage,
           });
-      }
-    };
+        });
+    }
+  };
 
 const signup = (dispatch) => (email, password, userId) => {
   console.log(`Creating auth for new user: ${userId}`);
@@ -187,8 +187,6 @@ const signup = (dispatch) => (email, password, userId) => {
       );
     })
     .catch((err) => {
-      if (err.code === 'auth/email-already-in-use') {
-      }
       console.log(`Error creating auth for new user: ${userId}`, err.code);
       const errorMessage =
         err.code === 'auth/weak-password'
@@ -204,41 +202,41 @@ const signup = (dispatch) => (email, password, userId) => {
 
 const checkAuthOrUser =
   (dispatch) =>
-    ({ email }) => {
-      dispatch({ type: 'loading' });
-      console.log(`Checking auth or user for email: ${email}`);
+  ({ email }) => {
+    dispatch({ type: 'loading' });
+    console.log(`Checking auth or user for email: ${email}`);
 
-      firebase
-        .auth()
-        .fetchSignInMethodsForEmail(email)
-        .then(async (signInMethods) => {
-          if (
-            signInMethods.indexOf(
-              firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
-            ) !== -1
-          ) {
-            console.log(`Auth found for email: ${email}`);
-            const user = await getFirstByAttribute('users', 'email', email);
+    firebase
+      .auth()
+      .fetchSignInMethodsForEmail(email)
+      .then(async (signInMethods) => {
+        if (
+          signInMethods.indexOf(
+            firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
+          ) !== -1
+        ) {
+          console.log(`Auth found for email: ${email}`);
+          const user = await getFirstByAttribute('users', 'email', email);
 
-            if (!user) {
-              console.log(`Auth found but user was deleted: ${email}`);
-              dispatch({ type: 'add_error', payload: 'E-mail não autorizado.' });
-            } else {
-              dispatch({ type: 'check_auth' });
-            }
+          if (!user) {
+            console.log(`Auth found but user was deleted: ${email}`);
+            dispatch({ type: 'add_error', payload: 'E-mail não autorizado.' });
           } else {
-            await findUser(dispatch)(email);
+            dispatch({ type: 'check_auth' });
           }
-        })
-        .catch((err) => {
-          const errorMessage =
-            err.code === 'auth/invalid-email'
-              ? 'Endereço de e-mail inválido.'
-              : 'Algo deu errado com a verificação do e-mail';
+        } else {
+          await findUser(dispatch)(email);
+        }
+      })
+      .catch((err) => {
+        const errorMessage =
+          err.code === 'auth/invalid-email'
+            ? 'Endereço de e-mail inválido.'
+            : 'Algo deu errado com a verificação do e-mail';
 
-          dispatch({ type: 'add_error', payload: errorMessage });
-        });
-    };
+        dispatch({ type: 'add_error', payload: errorMessage });
+      });
+  };
 
 const findUser = (dispatch) => async (email) => {
   console.log(`No auth. So finding user for email: ${email}`);
@@ -294,6 +292,7 @@ const signout = (dispatch) => () => {
       await AsyncStorage.removeItem('userId');
       await AsyncStorage.removeItem('userRole');
       await AsyncStorage.removeItem('userName');
+      await AsyncStorage.removeItem('group');
       dispatch({ type: 'signout' });
     });
 };
@@ -301,6 +300,7 @@ const signout = (dispatch) => () => {
 const resetPassword = (dispatch) => (email) => {
   console.log(`Reseting password for user with email: ${email}`);
   dispatch({ type: 'loading' });
+
   firebase
     .auth()
     .sendPasswordResetEmail(email)

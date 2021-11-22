@@ -22,9 +22,7 @@ const OrdersByConsumerScreen = (props) => {
     fetchUsers,
   } = useContext(UserContext);
 
-  // const { delivery } = navigation.state.params;
   const delivery = props.route.params ? props.route.params.delivery : null;
-  // console.log('[OrdersbyConsumer Screen] delivery id', delivery.id);
 
   const [usersOrders, setUsersOrders] = useState([]);
   const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] =
@@ -40,7 +38,9 @@ const OrdersByConsumerScreen = (props) => {
       if (delivery) {
         fetchOrdersByDelivery(delivery.id);
         fetchUsers();
-        props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
+        props.navigation.setParams({
+          deliveryDate: format(delivery.deliveryDate, GLOBALS.FORMAT.DD_MM),
+        });
       } else {
         console.log('delivery ainda não existe');
       }
