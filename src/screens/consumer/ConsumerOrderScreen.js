@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -24,9 +23,9 @@ import Spinner from '../../components/Spinner';
 
 const ConsumerOrderScreen = (props) => {
   console.log('[ConsumerOrderScreen started]');
+  const { user, delivery } = props.route.params;
   const [baseProducts, setBaseProducts] = useState();
   const [orderProducts, setOrderProducts] = useState([]);
-  const [limitDateToOrder, setLimitDateToOrder] = useState();
 
   const {
     state: { loading, order },
@@ -48,17 +47,6 @@ const ConsumerOrderScreen = (props) => {
     state: { loading: paymentLoading },
     createPaymentForUser,
   } = useContext(PaymentContext);
-
-  const { user, delivery } = props.route.params;
-
-  if (props.isFocused) {
-    if (limitDateToOrder < new Date()) {
-      Alert.alert('Aviso', 'Prazo para pedidos já foi encerrado!', [
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ]);
-      props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
-    }
-  }
 
   const transformOrderProducts = () => {
     const deliveryExtraProducts = delivery.extraProducts;
@@ -92,11 +80,15 @@ const ConsumerOrderScreen = (props) => {
       console.log('[Consumer Order Product Screen - useEffect fetch orders');
 
       if (user && delivery) {
-        setLimitDateToOrder(delivery.limitDate);
-        // console.log('[ConsumerOrderProduct] delivery', delivery.limitDate);
-        fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
+        if (!user.role || order == null) {
+          console.log('[Consumer Order Screen] Fetching order...');
+          // Quando não tem role, é porque está vindo da tela de gerenciamento, então é uma pessoa organizadora que está manipulando o pedido
+          fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
+        }
         setBaseProducts(delivery.baseProducts);
-        props.navigation.setParams({ deliveryDate: delivery.deliveryDate });
+        props.navigation.setParams({
+          deliveryDate: format(delivery.deliveryDate, GLOBALS.FORMAT.DD_MM),
+        });
       }
     }, [user, delivery])
   );
@@ -110,8 +102,11 @@ const ConsumerOrderScreen = (props) => {
 
     addOrder(user.id, user.name, delivery.id, delivery.deliveryFee, order).then(
       () => {
-        if (user.role) {
-          props.navigation.navigate('ConsumerOrderPlacedScreen', { delivery });
+        if (user.role && user.role === GLOBALS.USER.ROLE.CONSUMER) {
+          props.navigation.navigate('ConsumerOrderPlacedScreen', {
+            delivery,
+            user,
+          });
         } else {
           props.navigation.goBack(null);
         }
@@ -121,9 +116,16 @@ const ConsumerOrderScreen = (props) => {
 
   const completeDelivery = async () => {
     if (order.id && order.deliveryId && order.userId) {
-      await completeOrderDelivery(order);
+      const completedOrder = await completeOrderDelivery(
+        user.id,
+        user.name,
+        delivery.id,
+        delivery.deliveryFee,
+        order
+      );
       const orderUser = await findUserById(order.userId);
-      createPaymentForUser(orderUser, order);
+      await createPaymentForUser(orderUser, completedOrder);
+      props.navigation.goBack(null);
     }
   };
 
@@ -163,7 +165,7 @@ const ConsumerOrderScreen = (props) => {
     return null;
   };
 
-  return loading || userLoading || paymentLoading ? (
+  return !order || loading || userLoading || paymentLoading ? (
     <Spinner />
   ) : (
     <View style={styles.screen}>
@@ -253,11 +255,7 @@ const ConsumerOrderScreen = (props) => {
 };
 
 export const consumerOrderScreenOptions = (navData) => {
-  // console.log(navData.route.params.delivery.deliveryDate);
-  const deliveryDate = format(
-    navData.route.params.delivery.deliveryDate,
-    GLOBALS.FORMAT.DD_MM
-  );
+  const { deliveryDate } = navData.route.params;
 
   return {
     headerTitle: () => (

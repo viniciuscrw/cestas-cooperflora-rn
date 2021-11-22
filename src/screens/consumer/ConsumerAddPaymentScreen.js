@@ -14,9 +14,7 @@ import {
 } from '../../api/firebase';
 import GLOBALS from '../../Globals';
 import ReceiptPicker from '../../components/ReceiptPicker';
-import screen from '../screenstyles/ScreenStyles';
 import { Number } from '../../components/StandardStyles';
-import { accessibilityLabel } from '../../utils';
 
 const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);

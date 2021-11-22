@@ -5,7 +5,6 @@ import {
   insertIntoSubcollection,
   updateDocInSubcollection,
 } from '../api/firebase';
-import { navigate } from '../navigationRef';
 import GLOBALS from '../Globals';
 
 const deliveryReducer = (state, action) => {
@@ -80,81 +79,87 @@ const fetchDeliveries = (dispatch) => async () => {
   });
 };
 
-const setDeliveryInfo = (dispatch) => async (
-  deliveryDate,
-  ordersDateLimit,
-  ordersTimeLimit,
-  baseProducts,
-  baseProductsPrice,
-  deliveryFee
-) => {
-  const limitDateTime = new Date(
-    ordersDateLimit.getFullYear(),
-    ordersDateLimit.getMonth(),
-    ordersDateLimit.getDate(),
-    ordersTimeLimit.getHours(),
-    ordersTimeLimit.getMinutes()
-  );
+const setDeliveryInfo =
+  (dispatch) =>
+  async (
+    deliveryDate,
+    ordersDateLimit,
+    ordersTimeLimit,
+    baseProducts,
+    baseProductsPrice,
+    deliveryFee
+  ) => {
+    const limitDateTime = new Date(
+      ordersDateLimit.getFullYear(),
+      ordersDateLimit.getMonth(),
+      ordersDateLimit.getDate(),
+      ordersTimeLimit.getHours(),
+      ordersTimeLimit.getMinutes()
+    );
 
-  dispatch({
-    type: 'set_info',
-    payload: {
-      deliveryDate,
-      ordersLimitDate: limitDateTime,
-      baseProducts,
-      baseProductsPrice,
-      deliveryFee,
-    },
-  });
-};
+    dispatch({
+      type: 'set_info',
+      payload: {
+        deliveryDate,
+        ordersLimitDate: limitDateTime,
+        baseProducts,
+        baseProductsPrice,
+        deliveryFee,
+      },
+    });
+  };
 
-const createDelivery = (dispatch) => async ({ delivery }) => {
-  console.log('[createDelivery delivery context]');
-  dispatch({ type: 'loading' });
-  console.log(`Creating new delivery: ${JSON.stringify(delivery)}`);
+const createDelivery =
+  (dispatch) =>
+  async ({ delivery }) => {
+    dispatch({ type: 'loading' });
+    console.log(`Creating new delivery: ${JSON.stringify(delivery)}`);
 
-  insertIntoSubcollection(
-    GLOBALS.COLLECTION.GROUPS,
-    GLOBALS.CONSUMER_GROUP.ID,
-    GLOBALS.COLLECTION.DELIVERIES,
-    delivery
-  ).then(() => {
-    console.log('[createDelivery delivery context] then');
-    dispatch({ type: 'add_delivery' });
-    // navigate('Deliveries');
-  });
-};
+    insertIntoSubcollection(
+      GLOBALS.COLLECTION.GROUPS,
+      GLOBALS.CONSUMER_GROUP.ID,
+      GLOBALS.COLLECTION.DELIVERIES,
+      delivery
+    ).then(() => {
+      console.log('[createDelivery delivery context] then');
+      dispatch({ type: 'add_delivery' });
+      // navigate('Deliveries');
+    });
+  };
 
-const updateDelivery = (dispatch) => async ({ deliveryId, delivery }) => {
-  dispatch({ type: 'loading' });
-  console.log(`Updating delivery: ${JSON.stringify(delivery)}`);
+const updateDelivery =
+  (dispatch) =>
+  async ({ deliveryId, delivery }) => {
+    dispatch({ type: 'loading' });
+    console.log(`Updating delivery: ${JSON.stringify(delivery)}`);
 
-  updateDocInSubcollection(
-    GLOBALS.COLLECTION.GROUPS,
-    GLOBALS.CONSUMER_GROUP.ID,
-    GLOBALS.COLLECTION.DELIVERIES,
-    deliveryId,
-    delivery
-  ).then(() => {
-    dispatch({ type: 'add_delivery' });
-    navigate('Deliveries');
-  });
-};
+    updateDocInSubcollection(
+      GLOBALS.COLLECTION.GROUPS,
+      GLOBALS.CONSUMER_GROUP.ID,
+      GLOBALS.COLLECTION.DELIVERIES,
+      deliveryId,
+      delivery
+    ).then(() => {
+      dispatch({ type: 'add_delivery' });
+    });
+  };
 
-const deleteDelivery = (dispatch) => async ({ deliveryId }) => {
-  dispatch({ type: 'loading' });
-  console.log(`Deleting delivery with id: ${deliveryId}`);
+const deleteDelivery =
+  (dispatch) =>
+  async ({ deliveryId }) => {
+    dispatch({ type: 'loading' });
+    console.log(`Deleting delivery with id: ${deliveryId}`);
 
-  deleteDocInSubcollection(
-    GLOBALS.COLLECTION.GROUPS,
-    GLOBALS.CONSUMER_GROUP.ID,
-    GLOBALS.COLLECTION.DELIVERIES,
-    deliveryId
-  ).then(() => {
-    dispatch({ type: 'delete_delivery' });
-    // navigate('Deliveries');
-  });
-};
+    deleteDocInSubcollection(
+      GLOBALS.COLLECTION.GROUPS,
+      GLOBALS.CONSUMER_GROUP.ID,
+      GLOBALS.COLLECTION.DELIVERIES,
+      deliveryId
+    ).then(() => {
+      dispatch({ type: 'delete_delivery' });
+      // navigate('Deliveries');
+    });
+  };
 
 export const { Provider, Context } = createDataContext(
   deliveryReducer,

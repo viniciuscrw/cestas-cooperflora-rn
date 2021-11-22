@@ -1,4 +1,4 @@
-//https://stackoverflow.com/questions/66665969/expo-app-environments-for-dev-uat-and-production
+// https://stackoverflow.com/questions/66665969/expo-app-environments-for-dev-uat-and-production
 import Constants from 'expo-constants';
 
 const ENV = {
@@ -50,8 +50,8 @@ const getEnvVars = (env = Constants.manifest.releaseChannel) => {
     console.log('Prod environment');
     return ENV.prod;
   }
-  console.log('Bordi environment');
-  return ENV.bordi;
+  console.log('Dev environment');
+  return ENV.dev;
 };
 
 export default getEnvVars;
