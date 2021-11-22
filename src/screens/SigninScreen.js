@@ -1,21 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  Keyboard,
-  StyleSheet,
-  Image,
-  View,
-} from 'react-native';
+import { Keyboard, StyleSheet, Image, View } from 'react-native';
 import { Text } from 'react-native-elements';
+import { Feather } from '@expo/vector-icons';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { Context as AuthContext } from '../context/AuthContext';
-import TextCardSection from '../components/TextCardSection';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';
 import BasketProductsImage from '../../assets/images/basketproducts3.png';
-import MstFlag from '../../assets/images/bandeiradomst.png'
+import MstFlag from '../../assets/images/bandeiradomst.png';
 import Colors from '../constants/Colors';
+import Globals from '../Globals';
 
 const SigninScreen = ({ navigation }) => {
   const { state, signin, checkAuthOrUser, clearUserInfo, clearError } =
@@ -24,6 +20,7 @@ const SigninScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -88,29 +85,41 @@ const SigninScreen = ({ navigation }) => {
 
   const renderPasswordForm = () => {
     if (state.authorized || state.userId) {
-      const styleForMultiplePasswordInput = {
-        label: { flex: 1 },
-        input: { flex: 1 },
-      };
+      // const styleForMultiplePasswordInput = {
+      //   label: { flex: 1 },
+      //   input: { flex: 1 },
+      // };
 
       return (
         <>
           {state.userId ? (
-            <TextCardSection text="Cadastre sua senha:">
-              <PasswordInput
-                id="password"
-                label="Senha"
-                value={password}
-                // eslint-disable-next-line no-shadow
-                onChangeText={(password) => {
-                  setPassword(password);
-                  if (state.errorMessage) {
-                    clearError();
-                  }
-                }}
-                autoFocus
-                style={styleForMultiplePasswordInput}
-              />
+            <View style={styles.passwordsContainer}>
+              {/* <Text>Cadastre sua senha:</Text> */}
+              <View style={styles.newPasswordContainer}>
+                <View style={styles.passwordContainer}>
+                  <PasswordInput
+                    id="password"
+                    label="Senha:"
+                    value={password}
+                    onChangeText={(pass) => {
+                      setPassword(pass);
+                      if (state.errorMessage) {
+                        clearError();
+                      }
+                    }}
+                    autoFocus
+                    secureTextEntry={secureTextEntry}
+                  />
+                  <View style={styles.iconContainer}>
+                    <Feather
+                      name={secureTextEntry ? 'eye-off' : 'eye'}
+                      size={24}
+                      color={Colors.primary}
+                      onPress={() => setSecureTextEntry(!secureTextEntry)}
+                    />
+                  </View>
+                </View>
+              </View>
               <PasswordInput
                 id="confirmpassword"
                 style={{
@@ -119,7 +128,7 @@ const SigninScreen = ({ navigation }) => {
                   width: 305,
                   alignSelf: 'center',
                 }}
-                label="Confimar senha"
+                label="Confimar senha:"
                 value={passwordConfirmation}
                 // eslint-disable-next-line no-shadow
                 onChangeText={(passwordConfirmation) => {
@@ -128,22 +137,31 @@ const SigninScreen = ({ navigation }) => {
                     clearError();
                   }
                 }}
-                style={styleForMultiplePasswordInput}
+                secureTextEntry={secureTextEntry}
               />
-            </TextCardSection>
+            </View>
           ) : (
-            <View style={styles.inputContainer}>
+            <View style={styles.passwordContainer}>
               <PasswordInput
                 label="Senha:"
                 value={password}
-                onChangeText={(password) => {
-                  setPassword(password);
+                secureTextEntry={secureTextEntry}
+                onChangeText={(pass) => {
+                  setPassword(pass);
                   if (state.errorMessage) {
                     clearError();
                   }
                 }}
                 autoFocus
               />
+              <View style={styles.iconContainer}>
+                <Feather
+                  name={secureTextEntry ? 'eye-off' : 'eye'}
+                  size={24}
+                  color={Colors.primary}
+                  onPress={() => setSecureTextEntry(!secureTextEntry)}
+                />
+              </View>
             </View>
           )}
           <View style={styles.divider} />
@@ -160,9 +178,8 @@ const SigninScreen = ({ navigation }) => {
           <Text style={styles.textTitle}>Cestas Cooperflora</Text>
           <Image style={styles.image} source={BasketProductsImage} />
         </View>
-
         <View>
-          <View style={styles.inputContainer}>
+          <View style={styles.emailInputContainer}>
             <Input
               label="E-mail:"
               value={email}
@@ -179,7 +196,6 @@ const SigninScreen = ({ navigation }) => {
             <View style={styles.divider} />
           </View>
           {renderNextButton()}
-
           {renderPasswordForm()}
           {state.authorized ? (
             <TextLink
@@ -190,15 +206,14 @@ const SigninScreen = ({ navigation }) => {
             />
           ) : null}
         </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.descriptionText}>
-            A Cooperflora é uma cooperativa que produz e comercializa produtos
-            orgânicos do assentamento Milton Santos em Americana.
-          </Text>
-        </View>
         {state.errorMessage ? (
           <Text style={styles.errorMessage}>{state.errorMessage}</Text>
         ) : null}
+        <View style={styles.textContainer}>
+          <Text style={styles.descriptionText}>
+            {Globals.APP.INITIALSCREEN_TEXT}
+          </Text>
+        </View>
         <View style={styles.flagContainer}>
           <Image style={styles.flagImage} source={MstFlag} />
         </View>
@@ -229,18 +244,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 30,
   },
-  controlContainer: {
-    flex: 1,
-  },
-  header: {
-    // flex: 1,
-    // left: -33,
-    // alignSelf: 'center',
-    // top: -60,
-    // width: 250,
-    // height: 150,
-    // zIndex: 2
-  },
   textTitle: {
     fontSize: 35,
     color: '#2D6535',
@@ -259,8 +262,19 @@ const styles = StyleSheet.create({
     bottom: 40,
     textAlign: 'center',
   },
-  inputContainer: {
+  emailInputContainer: {
     height: 50,
+  },
+  passwordsContainer: {
+    height: 80,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    marginRight: 40,
+    height: 50,
+  },
+  newPasswordContainer: {
+    margin: 0,
   },
   divider: {
     borderBottomColor: '#8898AA',
@@ -316,6 +330,11 @@ const styles = StyleSheet.create({
     width: null,
     height: null,
     resizeMode: 'contain',
+  },
+  iconContainer: {
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

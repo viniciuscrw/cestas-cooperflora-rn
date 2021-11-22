@@ -8,6 +8,7 @@ const PasswordInput = ({
   onChangeText,
   autoFocus,
   style,
+  secureTextEntry,
 }) => {
   return (
     <Input
@@ -15,7 +16,7 @@ const PasswordInput = ({
       autoFocus={autoFocus}
       placeholder="••••••••"
       label={label}
-      secureTextEntry
+      secureTextEntry={secureTextEntry}
       value={value}
       onChangeText={onChangeText}
       style={style}

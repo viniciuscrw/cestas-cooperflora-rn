@@ -27,7 +27,7 @@ import { TextContent, TextLabel } from '../../components/StandardStyles';
 import { accessibilityLabel } from '../../utils';
 
 const ConsumerPaymentsScreen = ({ route, navigation }) => {
-  // console.log('[ConsumerPaymentScreen started]');
+  console.log('[ConsumerPaymentScreen started]');
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState();
   const [userPayments, setUserPayments] = useState([]);
