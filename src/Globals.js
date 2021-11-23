@@ -40,6 +40,7 @@ export default {
     STATUS: {
       OPENED: 'opened',
       COMPLETED: 'completed',
+      CANCELED: 'canceled',
     },
   },
   PAYMENT: {

@@ -203,6 +203,10 @@ const addOrder =
       deliveryId,
       extraProducts,
       totalAmount,
+      status:
+        totalAmount > 0
+          ? GLOBALS.ORDER.STATUS.OPENED
+          : GLOBALS.ORDER.STATUS.CANCELED,
     };
 
     if (order.id && order.id.length > 0) {

@@ -29,10 +29,6 @@ const CreateExtraItemScreen = ({ route, navigation }) => {
   const { product } = route.params;
   const { selectedProducts } = route.params;
 
-  // const products = navigation.getParam('products');
-  // const product = navigation.getParam('product');
-  // const selectedProducts = navigation.getParam('selectedProducts');
-
   const { state, createProduct, updateProduct, deleteProduct } =
     useContext(ProductContext);
   const [name, setName] = useState(product ? product.name : '');
