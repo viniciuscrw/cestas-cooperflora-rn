@@ -79,10 +79,13 @@ const DeliveriesScreen = ({ navigation }) => {
         navigation.navigate('ConsumerOrderPlacedScreen', { user, delivery });
       } else {
         const currentDate = new Date();
+
         if (isAfter(currentDate, delivery.limitDate)) {
           showAlert('Os pedidos para essa entrega já foram encerrados.');
         } else {
-          startOrder(delivery.extraProducts);
+          if (order == null || order.id == null) {
+            startOrder(delivery.extraProducts);
+          }
           navigation.navigate('ConsumerOrderScreen', { user, delivery });
         }
       }

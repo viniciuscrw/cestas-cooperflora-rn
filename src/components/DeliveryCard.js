@@ -2,9 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Card, Divider } from 'react-native-elements';
 import { format } from 'date-fns';
-import GLOBALS from '../Globals';
 import { Feather } from '@expo/vector-icons';
+import GLOBALS from '../Globals';
 import Colors from '../constants/Colors';
+import { resolveWeekDay } from '../helper/HelperFunctions';
 
 const DeliveryCard = ({
   delivery,
@@ -14,16 +15,21 @@ const DeliveryCard = ({
   showEditButton,
   onEditButtonPress,
 }) => {
-  const formatBaseProducts = (delivery) => {
-    return delivery.baseProducts.toLowerCase().replace(/\n/g, ', ');
+  const weekDayText = resolveWeekDay(delivery.deliveryDate.getDay());
+
+  const formatBaseProducts = (baseProducts) => {
+    return baseProducts.toLowerCase().replace(/\n/g, ', ');
   };
 
-   const formatCardTitle = (deliveryDate) => {
+  const formatCardTitle = (deliveryDate) => {
     return (
       <View style={styles.titleViewContainer}>
         <View style={styles.titleContainer}>
           <Text style={styles.titleText}>
-            Quarta-feira, {format(deliveryDate, GLOBALS.FORMAT.DEFAULT_DATE)}
+            {`${weekDayText}, ${format(
+              deliveryDate,
+              GLOBALS.FORMAT.DEFAULT_DATE
+            )}`}
           </Text>
           {showEditButton ? (
             <Feather
@@ -62,7 +68,7 @@ const DeliveryCard = ({
             <Text numberOfLines={3} style={styles.cardTextContainer}>
               <Text style={styles.titleText}>Composição da cesta: </Text>
               <Text style={styles.cardText}>
-                {formatBaseProducts(delivery)}
+                {formatBaseProducts(delivery.baseProducts)}
               </Text>
             </Text>
           </View>

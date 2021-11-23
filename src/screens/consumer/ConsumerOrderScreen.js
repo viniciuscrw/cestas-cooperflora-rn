@@ -20,6 +20,7 @@ import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import VegetableImage from '../../../assets/images/vegetable2.png';
 import Spinner from '../../components/Spinner';
+import { showAlert } from '../../helper/HelperFunctions';
 
 const ConsumerOrderScreen = (props) => {
   console.log('[ConsumerOrderScreen started]');
@@ -64,6 +65,9 @@ const ConsumerOrderScreen = (props) => {
           productPrice: product.price,
           productTitle: product.name,
           quantity: 0,
+          maxQuantity: product.maxOrderQuantity
+            ? product.maxOrderQuantity
+            : product.availableQuantity,
         });
       });
 
@@ -102,6 +106,11 @@ const ConsumerOrderScreen = (props) => {
 
     addOrder(user.id, user.name, delivery.id, delivery.deliveryFee, order).then(
       () => {
+        if (order.productsPriceSum === 0) {
+          showAlert('Seu pedido para esta entrega foi cancelado.');
+          props.navigation.navigate('DeliveriesScreen');
+          return;
+        }
         if (user.role && user.role === GLOBALS.USER.ROLE.CONSUMER) {
           props.navigation.navigate('ConsumerOrderPlacedScreen', {
             delivery,
@@ -111,6 +120,51 @@ const ConsumerOrderScreen = (props) => {
           props.navigation.goBack(null);
         }
       }
+    );
+  };
+
+  const renderConfirmButton = () => {
+    const buttonDisabled = false;
+    if (order.productsPriceSum === 0) {
+      if (
+        order.deliveryId &&
+        order.userId &&
+        order.status !== GLOBALS.ORDER.STATUS.CANCELED
+      ) {
+        return (
+          <Button
+            id="confirmOrderButton"
+            style={styles.confirmButton}
+            textColor="white"
+            onPress={onHandleNewOrUpdatedOrder}
+          >
+            Cancelar pedido
+          </Button>
+        );
+      }
+      return (
+        <Button
+          id="confirmOrderButton"
+          style={styles.disabledButton}
+          textColor="white"
+          onPress={onHandleNewOrUpdatedOrder}
+          disabled
+        >
+          Confirmar R$ {order.productsPriceSum?.toFixed(2)}
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        id="confirmOrderButton"
+        style={styles.confirmButton}
+        textColor="white"
+        onPress={onHandleNewOrUpdatedOrder}
+        disabled={buttonDisabled}
+      >
+        Confirmar R$ {order.productsPriceSum?.toFixed(2)}
+      </Button>
     );
   };
 
@@ -239,14 +293,7 @@ const ConsumerOrderScreen = (props) => {
         </View>
         <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
-          <Button
-            id="confirmOrderButton"
-            style={styles.confirmButton}
-            textColor="white"
-            onPress={onHandleNewOrUpdatedOrder}
-          >
-            Confirmar R$ {order.productsPriceSum?.toFixed(2)}
-          </Button>
+          {renderConfirmButton()}
           {renderCompleteDeliveryButton()}
         </View>
       </View>
