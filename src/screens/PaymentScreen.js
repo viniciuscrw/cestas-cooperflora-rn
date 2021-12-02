@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 import React, { useCallback } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -17,10 +16,16 @@ const PaymentScreen = ({ navigation }) => {
       if (user) {
         console.log('[PaymentsScreen] consumer');
         if (user.role === GLOBALS.USER.ROLE.CONSUMER) {
-          navigation.navigate('ConsumerPaymentsScreen', { userId: user.id });
+          navigation.navigate('ConsumerPaymentsScreen', {
+            userId: user.id,
+            userRole: user.role,
+          });
         }
         if (user.role === GLOBALS.USER.ROLE.ORGANIZER) {
-          navigation.navigate('PaymentsScreen', { userId: user.id });
+          navigation.navigate('PaymentsScreen', {
+            userId: user.id,
+            userRole: user.role,
+          });
         }
       }
     }, [user])

@@ -1,4 +1,3 @@
-import React from 'react';
 import firebase from 'firebase';
 import 'firebase/firestore';
 import { navigate } from '../navigationRef';
@@ -318,4 +317,41 @@ export const deleteDocInSubcollection = async (
 
 export const resetPassword = (email) => {
   return firebase.auth().sendPasswordResetEmail(email);
+};
+
+export const fetchPayments = async (collection, subcollection, doc) => {
+  const db = firebase.firestore();
+  const ref = db.collection(collection);
+  const userPayments = [];
+  await ref
+    .doc(doc)
+    .collection(subcollection)
+    .orderBy('date')
+    .get()
+    .then((snapshot) => {
+      snapshot.forEach((payment) => {
+        const date = new Date(payment.data().date);
+        userPayments.push({
+          paymentId: payment.id,
+          userId: payment.data().userId,
+          currentBalance: payment.data().currentBalance,
+          date,
+          orderId: payment.data().orderId,
+          orderTotalAmount: payment.data().orderTotalAmount,
+          status: payment.data().status,
+          totalToBePaid: payment.data().totalToBePaid,
+          receipt: payment.data().receipt ? payment.data().receipt : {},
+          showReceiptImage: false,
+        });
+      });
+      userPayments.sort((a, b) => {
+        return a.date < b.date ? 1 : -1;
+      });
+    })
+    .catch((err) => {
+      console.log('Erro ao carregar os pagamentos!', err);
+      return err;
+      // Alert.alert('Erro ao carregar os seus pagamentos!', err);
+    });
+  return userPayments;
 };
