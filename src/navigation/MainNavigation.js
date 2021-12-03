@@ -54,6 +54,7 @@ import ConsumerPaymentsScreen, {
 import ConsumerAddPaymentScreen, {
   consumerAddPaymentScreenOptions,
 } from '../screens/consumer/ConsumerAddPaymentScreen';
+import AboutScreen from '../screens/AboutScreen';
 import OrdersItemsQuantityScreen from '../screens/OrdersItemsQuantityScreen';
 import Colors from '../constants/Colors';
 
@@ -332,6 +333,11 @@ export const AccountNavigator = () => {
         component={UpdatePasswordScreen}
         options={updatePasswordScreenOptions}
       />
+       <AccountStackNavigator.Screen
+        name="AboutScreen"
+        component={AboutScreen}
+        //options={updatePasswordScreenOptions}
+       />
       <AccountStackNavigator.Screen
         name="Payments"
         component={PaymentsNavigator}
