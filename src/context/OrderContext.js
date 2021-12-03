@@ -79,6 +79,7 @@ const orderReducer = (state, action) => {
 };
 
 const startOrder = (dispatch) => (extraProducts) => {
+  console.log('Starting new order...');
   const newExtraProducts = [];
 
   extraProducts.forEach((extraProduct) => {
@@ -162,6 +163,27 @@ const fetchUserOrder =
       });
   };
 
+const getUserOrder = (dispatch) => async (userId, deliveryId) => {
+  console.log('Get user order by delivery...');
+  dispatch({ type: 'loading' });
+
+  const orderData = await getByAttribute(
+    GLOBALS.COLLECTION.ORDERS,
+    'userId',
+    userId
+  );
+  const order = orderData.filter((data) => data.deliveryId === deliveryId);
+
+  if (order.length > 0) {
+    dispatch({ type: 'fetch_order', payload: order[0] });
+    return order[0];
+  }
+
+  dispatch({ type: 'fetch_order', payload: null });
+
+  return null;
+};
+
 const addOrder =
   (dispatch) => async (userId, userName, deliveryId, deliveryFee, order) => {
     dispatch({ type: 'loading' });
@@ -181,48 +203,63 @@ const addOrder =
       deliveryId,
       extraProducts,
       totalAmount,
+      status:
+        totalAmount > 0
+          ? GLOBALS.ORDER.STATUS.OPENED
+          : GLOBALS.ORDER.STATUS.CANCELED,
     };
 
-    await getByAttribute(GLOBALS.COLLECTION.ORDERS, 'userId', userId).then(
-      (data) => {
-        const deliveryOrder = data.filter(
-          (orderData) => orderData.deliveryId === deliveryId
-        );
-        if (deliveryOrder.length > 0) {
-          console.log('[Add order] update order');
-          const orderId = deliveryOrder[0].id;
-          newOrder.updatedAt = new Date().toISOString();
-          updateDoc(GLOBALS.COLLECTION.ORDERS, orderId, newOrder).then(() =>
-            dispatch({ type: 'add_order', payload: newOrder })
-          );
-        } else {
-          console.log('[Add order] new order');
-          newOrder.date = new Date().toISOString();
-          insertDoc(GLOBALS.COLLECTION.ORDERS, newOrder)
-            .then(() => dispatch({ type: 'add_order', payload: newOrder }))
-            .catch((error) => {
-              console.log('[Order Context - Add order] - ERRO', error);
-            });
-        }
-      }
-    );
+    if (order.id && order.id.length > 0) {
+      console.log('[Add order] update order');
+      const orderId = order.id;
+      newOrder.updatedAt = new Date().toISOString();
+      updateDoc(GLOBALS.COLLECTION.ORDERS, orderId, newOrder).then(() =>
+        dispatch({ type: 'add_order', payload: newOrder })
+      );
+    } else {
+      console.log('[Add order] new order');
+      newOrder.date = new Date().toISOString();
+      insertDoc(GLOBALS.COLLECTION.ORDERS, newOrder)
+        .then(() => dispatch({ type: 'add_order', payload: newOrder }))
+        .catch((error) => {
+          console.log('[Order Context - Add order] - ERRO', error);
+        });
+    }
   };
 
-const completeOrderDelivery = (dispatch) => async (order) => {
-  console.log('Completing order delivery...');
-  dispatch({ type: 'loading' });
+const completeOrderDelivery =
+  (dispatch) => (userId, userName, deliveryId, deliveryFee, order) => {
+    console.log('Completing order delivery...');
+    dispatch({ type: 'loading' });
 
-  order.updatedAt = new Date().toISOString();
-  order.status = GLOBALS.ORDER.STATUS.COMPLETED;
+    const extraProducts = order.extraProducts
+      ? order.extraProducts.filter((prod) => prod.quantity > 0)
+      : [];
 
-  updateDoc(GLOBALS.COLLECTION.ORDERS, order.id, order)
-    .then(() => {
-      dispatch({ type: 'add_order', payload: order });
-    })
-    .catch((error) =>
-      console.log('[Order context] - Error completing delivery', error)
-    );
-};
+    const totalAmount =
+      order.productsPriceSum > 0 ? order.productsPriceSum + deliveryFee : 0;
+
+    const newOrder = {
+      ...order,
+      userId,
+      userName,
+      deliveryId,
+      extraProducts,
+      totalAmount,
+      updatedAt: new Date().toISOString(),
+      status: GLOBALS.ORDER.STATUS.COMPLETED,
+    };
+
+    updateDoc(GLOBALS.COLLECTION.ORDERS, order.id, newOrder)
+      .then(() => {
+        dispatch({ type: 'add_order', payload: newOrder });
+      })
+      .catch((error) =>
+        console.log('[Order context] - Error completing delivery', error)
+      );
+
+    return newOrder;
+  };
 
 export const { Provider, Context } = createDataContext(
   orderReducer,
@@ -236,6 +273,7 @@ export const { Provider, Context } = createDataContext(
     fetchUserOrder,
     addOrder,
     completeOrderDelivery,
+    getUserOrder,
   },
   {
     orders: [],

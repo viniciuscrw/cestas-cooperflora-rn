@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useFocusEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -12,13 +12,19 @@ import {
 import { AntDesign } from '@expo/vector-icons';
 import endOfDay from 'date-fns/endOfDay';
 import { Input, ListItem } from 'react-native-elements';
+import { Context as UserContext } from '../../context/UserContext';
 import { Context as ProductContext } from '../../context/ProductContext';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import Spinner from '../../components/Spinner';
-import { formatCurrency, showAlert } from '../../helper/HelperFunctions';
+import {
+  formatCurrency,
+  isBlank,
+  showAlert,
+} from '../../helper/HelperFunctions';
 import useConsumerGroup from '../../hooks/useConsumerGroup';
 import Colors from '../../constants/Colors';
 import Button from '../../components/Button';
+import { sendPushNotification } from '../../utils';
 
 const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const {
@@ -27,6 +33,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   } = useContext(ProductContext);
   const { state, createDelivery, updateDelivery, deleteDelivery } =
     useContext(DeliveryContext);
+  const { fetchConsumers } = useContext(UserContext);
 
   const [checkedItems, setCheckedItems] = useState(
     state.nextDelivery && state.nextDelivery.extraProducts
@@ -62,6 +69,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       fetchProducts();
+      fetchConsumers();
     });
     return unsubscribe;
   }, [navigation]);
@@ -105,25 +113,39 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const validateAndCreateOrUpdateDelivery = () => {
     if (!state.deliveryDate) {
       showAlert('A data da entrega deve ser informada.');
-    } else {
-      const extraProducts = products.filter((product) =>
-        checkedItems.includes(product.id)
-      );
-      const delivery = {
-        date: endOfDay(state.deliveryDate),
-        ordersLimitDate: state.ordersLimitDate,
-        baseProducts: state.baseProducts,
-        extraProducts,
-        baseProductsPrice: groupInfo.baseProductsPrice,
-        deliveryFee: groupInfo.deliveryFee,
-      };
+      return;
+    }
 
-      if (state.nextDelivery) {
-        updateDelivery({ deliveryId: state.nextDelivery.id, delivery });
-      } else {
-        createDelivery({ delivery });
-        navigation.navigate('DeliveriesScreen');
-      }
+    if (isBlank(state.baseProducts)) {
+      showAlert('A composição da cesta deve ser informada.');
+      return;
+    }
+
+    const extraProducts = products.filter((product) =>
+      checkedItems.includes(product.id)
+    );
+    const delivery = {
+      date: endOfDay(state.deliveryDate),
+      ordersLimitDate: state.ordersLimitDate,
+      baseProducts: state.baseProducts,
+      extraProducts,
+      baseProductsPrice: groupInfo.baseProductsPrice,
+      deliveryFee: groupInfo.deliveryFee,
+    };
+
+    if (state.nextDelivery) {
+      updateDelivery({ deliveryId: state.nextDelivery.id, delivery });
+      navigation.navigate('DeliveriesScreen');
+    } else {
+      createDelivery({ delivery });
+      fetchConsumers()
+        .then((consumers) => {
+          sendPushNotification(consumers);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      navigation.navigate('DeliveriesScreen');
     }
   };
 
@@ -333,7 +355,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     marginTop: 4,
-    backgroundColor: 'white',
     // paddingLeft: 25,
     // paddingRight: 25,
     // borderRadius: 25,

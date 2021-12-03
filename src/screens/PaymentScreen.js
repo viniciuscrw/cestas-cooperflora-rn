@@ -1,10 +1,10 @@
-/* eslint-disable no-shadow */
 import React, { useCallback } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import useUser from '../hooks/useUser';
 import GLOBALS from '../Globals';
 import HeaderTitle from '../components/HeaderTitle';
+import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
 
 const PaymentScreen = ({ navigation }) => {
@@ -16,10 +16,16 @@ const PaymentScreen = ({ navigation }) => {
       if (user) {
         console.log('[PaymentsScreen] consumer');
         if (user.role === GLOBALS.USER.ROLE.CONSUMER) {
-          navigation.navigate('ConsumerPaymentsScreen', { userId: user.id });
+          navigation.navigate('ConsumerPaymentsScreen', {
+            userId: user.id,
+            userRole: user.role,
+          });
         }
         if (user.role === GLOBALS.USER.ROLE.ORGANIZER) {
-          navigation.navigate('PaymentsScreen', { userId: user.id });
+          navigation.navigate('PaymentsScreen', {
+            userId: user.id,
+            userRole: user.role,
+          });
         }
       }
     }, [user])
@@ -39,6 +45,7 @@ const PaymentScreen = ({ navigation }) => {
 export const paymentScreenOptions = () => {
   return {
     headerTitle: () => <HeaderTitle title="Pagamentos" />,
+    headerBackImage: () => <BackArrow />,
   };
 };
 

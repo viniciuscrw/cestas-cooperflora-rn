@@ -1,7 +1,8 @@
-import React, { useContext, useEffect } from 'react';
-import { Context as UserContext } from '../context/UserContext';
+import React, { useContext } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import { Context as UserContext } from '../context/UserContext';
 import UsersList from '../components/UsersList';
 import Spinner from '../components/Spinner';
 import Colors from '../constants/Colors';
@@ -9,20 +10,11 @@ import Colors from '../constants/Colors';
 const ConsumersScreen = ({ navigation }) => {
   const { state, fetchConsumers, deleteUser } = useContext(UserContext);
 
-  // useEffect(() => {
-  //   fetchConsumers();
-  // }, [navigation]);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // The screen is focused
-      // Call any action
+  useFocusEffect(
+    React.useCallback(() => {
       fetchConsumers();
-    });
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
-  }, [navigation]);
-
+    }, [])
+  );
 
   return (
     <View style={styles.screen}>
@@ -31,22 +23,34 @@ const ConsumersScreen = ({ navigation }) => {
           <Spinner />
         ) : (
           <View style={styles.container}>
-            {/* <NavigationEvents onWillFocus={fetchConsumers} /> */}
             <View style={styles.titleContainer}>
               <View>
                 <Text style={styles.title}>Consumidores</Text>
               </View>
               <View style={styles.iconsContainer}>
-
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('CreateUserScreen', { role: 'consumer' })}
+                  onPress={() =>
+                    navigation.navigate('CreateUserScreen', {
+                      role: 'consumer',
+                    })
+                  }
                 >
-                  <FontAwesome5 name="user-plus" size={24} color={Colors.secondary} />
+                  <FontAwesome5
+                    name="user-plus"
+                    size={24}
+                    color={Colors.secondary}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
 
-            <UsersList data={state.users} onUserDelete={deleteUser} navigation={navigation} />
+            <UsersList
+              data={state.users.sort((a, b) => {
+                return a.name > b.name ? 1 : -1;
+              })}
+              onUserDelete={deleteUser}
+              navigation={navigation}
+            />
           </View>
         )}
       </View>
@@ -54,27 +58,24 @@ const ConsumersScreen = ({ navigation }) => {
   );
 };
 
-export const ConsumerScreenOptions = (navData) => {
-  return {
-    headerTitle: () => (
-      <HeaderTitle title="Consumer Screen" />
-    )
-  };
-};
+// export const ConsumerScreenOptions = (navData) => {
+//   return {
+//     headerTitle: () => <HeaderTitle title="Consumer Screen" />,
+//   };
+// };
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
     marginTop: 4,
-    backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     backgroundColor: '#F0F5F9',
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
@@ -84,14 +85,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10
+    marginBottom: 10,
   },
   title: {
     fontFamily: 'Roboto',
     fontWeight: '700',
     fontSize: 16,
     color: '#505050',
-  }
+  },
 });
 
 export default ConsumersScreen;

@@ -1,4 +1,4 @@
-import React, { useEffect, useFocusEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { format } from 'date-fns';
 import {
   StyleSheet,
@@ -8,24 +8,25 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
-  Modal,
-  TouchableHighlight,
   RefreshControl,
   Alert,
 } from 'react-native';
+import PDFReader from 'rn-pdf-reader-js';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
-import Button from '../../components/Button';
-import useUser from '../../hooks/useUser';
-
 import { Context as userContext } from '../../context/UserContext';
-import firebase from 'firebase';
 import GLOBALS from '../../Globals';
 import ClipIcon from '../../../assets/images/icons/clipicon.png';
 import { stardardScreenStyle as screen } from '../screenstyles/ScreenStyles';
-import { TextContent, TextLabel } from '../../components/StandardStyles';
+import {
+  TextContent,
+  TextLabel,
+  Number,
+} from '../../components/StandardStyles';
+import { accessibilityLabel } from '../../utils';
+import { fetchPayments } from '../../api/firebase';
 
 const ConsumerPaymentsScreen = ({ route, navigation }) => {
   console.log('[ConsumerPaymentScreen started]');
@@ -35,77 +36,38 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
   const [paymentsOpened, setPaymentsOpened] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  let userId;
-  if (route.params.userId) {
-    userId = route.params.userId;
-  } else {
-    userId = useUser().id;
-  }
+  const { userId } = route.params;
+
+  // let userId;
+  // if (route.params.userId) {
+  //   userId = route.params.userId;
+  // } else {
+  //   userId = useUser().id;
+  // }
   const { getUserById } = useContext(userContext);
 
-  const fetchPayments = async () => {
-    const collection = GLOBALS.COLLECTION.USERS;
-    const subcollection = GLOBALS.SUB_COLLECTION.PAYMENTS;
-    // Mover para api firebase
-    const db = firebase.firestore();
-    const ref = db.collection(collection);
-    // const doc = userId + 'pay';
-    const doc = userId;
-    setIsLoading(true);
+  const handleFetchPayments = () => {
     setPaymentsOpened(false);
-    await ref
-      .doc(doc)
-      .collection(subcollection)
-      .orderBy('date')
-      .get()
-      .then((snapshot) => {
-        const newUserPayments = [];
-        snapshot.forEach((payment) => {
-          const date = new Date(payment.data().date);
-          newUserPayments.push({
-            paymentId: payment.id,
-            userId: payment.data().userId,
-            currentBalance: payment.data().currentBalance,
-            date: date,
-            orderId: payment.data().orderId,
-            orderTotalAmount: payment.data().orderTotalAmount,
-            status: payment.data().status,
-            totalToBePaid: payment.data().totalToBePaid,
-            receiptImage: payment.data().receiptImage
-              ? payment.data().receiptImage
-              : '',
-            showReceiptImage: false,
-          });
-          // eslint-disable-next-line no-unused-expressions
-          payment.data().status === GLOBALS.PAYMENT.STATUS.OPENED
-            ? setPaymentsOpened(true)
-            : null;
-          // console.log('xxxxx',newUserPayments[0].date);
-          // const paymentDate = new Date(newUserPayments[0].date);
-          // console.log('Payment data', paymentDate);
-        });
-        newUserPayments.sort((a, b) => {
-          return a.date < b.date ? 1 : -1;
-        });
-        // console.log(newUserPayments);
-        setUserPayments(newUserPayments);
+    setIsLoading(false);
+    fetchPayments(
+      GLOBALS.COLLECTION.USERS,
+      GLOBALS.SUB_COLLECTION.PAYMENTS,
+      userId
+    )
+      .then((data) => {
+        const openedPayments = data.filter(
+          (payment) => payment.status === GLOBALS.PAYMENT.STATUS.OPENED
+        );
+        // eslint-disable-next-line no-unused-expressions
+        openedPayments.length > 0 ? setPaymentsOpened(true) : null;
+        setUserPayments(data);
         setIsLoading(false);
       })
-      .catch((err) => {
-        Alert.alert('Erro ao carregar os seus pagamentos!', err);
+      .catch((error) => {
+        console.log('Erro dentro do catch do Consumer Payments Screen', error);
+        Alert.alert('Erro ao carregar os seus pagamentos!', error);
       });
   };
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   if (userId) {
-  //     getUserById(userId).then((data) => {
-  //       setUserData(data);
-  //       fetchPayments();
-  //       setIsLoading(false);
-  //     });
-  //   }
-  // }, [userId]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -113,7 +75,8 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
       if (userId) {
         getUserById(userId).then((data) => {
           setUserData(data);
-          fetchPayments();
+          // fetchPayments();
+          handleFetchPayments();
           setIsLoading(false);
         });
       }
@@ -123,13 +86,38 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
   }, [navigation, userId]);
 
   const showImage = (index) => {
-    // console.log('[show Receipt Image]' , receiptImage);
     const newUserPayments = [...userPayments];
     newUserPayments[index].showReceiptImage =
       !newUserPayments[index].showReceiptImage;
     setUserPayments(newUserPayments);
+  };
 
-    // setUserPayments([...userPayments, userPayments[index].showReceiptImage = true])
+  const renderReceipt = (userPayment) => {
+    if (userPayment.showReceiptImage) {
+      if (userPayment.receipt.type === 'image/jpeg') {
+        return (
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={{ uri: userPayment.receipt.url }}
+            />
+          </View>
+        );
+      }
+      if (userPayment.receipt.type === 'application/pdf') {
+        return (
+          <View style={styles.imageContainer}>
+            <PDFReader
+              style={styles.receipt}
+              source={{
+                uri: userPayment.receipt.url,
+              }}
+            />
+          </View>
+        );
+      }
+    }
+    return null;
   };
 
   const renderClosedPayments = () => {
@@ -153,6 +141,7 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
                     <TouchableOpacity
                       style={styles.button}
                       onPress={() => showImage(index)}
+                      {...accessibilityLabel(`showImageClosedPayment${index}`)}
                     >
                       <View style={styles.imageIcon}>
                         <Image source={ClipIcon} />
@@ -161,19 +150,10 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
                   </View>
                   <View style={styles.payLine}>
                     <TextContent>Pagamento Realizado</TextContent>
-                    <Text style={styles.amountText}>
-                      R$ {userPayment.totalToBePaid.toFixed(2)}
-                    </Text>
+                    <Number>R$ {userPayment.totalToBePaid.toFixed(2)}</Number>
                   </View>
                 </View>
-                {userPayment.showReceiptImage ? (
-                  <View style={styles.imageContainer}>
-                    <Image
-                      style={styles.image}
-                      source={{ uri: userPayment.receiptImage }}
-                    />
-                  </View>
-                ) : null}
+                {renderReceipt(userPayment)}
                 <Divider style={{ borderBottomColor: Colors.tertiary }} />
               </View>
             ) : null}
@@ -198,7 +178,7 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
             <TextLabel style={{ alignSelf: 'center', color: '#BB2525' }}>
               Clique sobre o item para pagar.
             </TextLabel>
-            {userPayments.map((userPayment) => {
+            {userPayments.map((userPayment, index) => {
               return (
                 <TouchableOpacity
                   key={userPayment.date}
@@ -208,6 +188,7 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
                       userPayment: userPayment,
                     });
                   }}
+                  {...accessibilityLabel(`showImageOpenedPayment${index}`)}
                 >
                   {userPayment.status === GLOBALS.PAYMENT.STATUS.OPENED ? (
                     <View key={userPayment.date}>
@@ -222,9 +203,9 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
                         </View>
                         <View style={styles.payLine}>
                           <TextContent>Valor a ser pago</TextContent>
-                          <Text style={styles.amountText}>
+                          <Number>
                             R$ {userPayment.totalToBePaid.toFixed(2)}
-                          </Text>
+                          </Number>
                         </View>
                       </View>
                       {userPayment.showReceiptImage ? (
@@ -248,7 +229,6 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
   };
 
   if (isLoading) {
-    // console.log('[Consumer Payments Screen] isLoading', isLoading)
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -265,7 +245,7 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
               refreshing={refreshing}
               onRefresh={() => {
                 setRefreshing(true);
-                fetchPayments();
+                handleFetchPayments();
                 setRefreshing(false);
               }}
             />
@@ -284,36 +264,38 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
             </ScrollView>
             <View>{renderClosedPayments()}</View>
           </View>
-          {/* <View style={styles.buttonContainer}>
-          <Divider style={{ borderBottomColor: Colors.secondary }} />
-          <Button
-            id="addPaymentButton"
-            style={styles.addPaymentButton}
-            textColor="white"
-            onPress={() => {
-              navigation.navigate('ConsumerAddPaymentScreen', {
-                orderTotalAmount: 0,
-                orderId: 0,
-              });
-            }}
-          >
-            Adicionar Pagamento
-          </Button>
-        </View> */}
         </ScrollView>
       </View>
     </View>
   );
 };
 
-export const consumerPaymentsScreenOptions = () => {
+export const consumerPaymentsScreenOptions = ({ navigation, route }) => {
   return {
     headerTitle: () => (
       <View style={styles.header}>
         <HeaderTitle title="Pagamentos" />
       </View>
     ),
-    headerBackImage: () => <BackArrow />,
+    headerLeft: () => {
+      if (route.params.userRole === GLOBALS.USER.ROLE.CONSUMER) {
+        return null;
+      }
+      return (
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.headerLeft}
+        >
+          <Text>
+            <BackArrow />
+          </Text>
+        </TouchableOpacity>
+      );
+    },
+    // headerLeft: () => {
+    //   return true;
+    // },
+    // headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
@@ -360,12 +342,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  amountText: {
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    fontSize: 16,
-    color: '#505050',
-  },
   payLine: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -376,11 +352,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     bottom: 0,
-  },
-  addPaymentButton: {
-    marginTop: 5,
-    backgroundColor: Colors.primary,
-    alignSelf: 'center',
   },
   imageContainer: {
     flexDirection: 'row',
@@ -396,6 +367,9 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'flex-start',
+  },
+  headerLeft: {
+    padding: 10,
   },
 });
 

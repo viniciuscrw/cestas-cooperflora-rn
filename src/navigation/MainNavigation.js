@@ -19,7 +19,9 @@ import ConsumersScreen from '../screens/ConsumersScreen';
 import OrganizersScreen from '../screens/OrganizersScreen';
 import CreateUserScreen from '../screens/CreateUserScreen';
 import UserDetailScreen from '../screens/UserDetailScreen';
-import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import ForgotPasswordScreen, {
+  forgotPasswordScreenOptions,
+} from '../screens/ForgotPasswordScreen';
 import EditConsumerGroupInfoScreen, {
   editConsumerGroupScreenOptions,
 } from '../screens/EditConsumerGroupScreen';
@@ -306,6 +308,7 @@ export const AuthNavigator = () => {
       <AuthStackNavigator.Screen
         name="ForgotPassword"
         component={ForgotPasswordScreen}
+        options={forgotPasswordScreenOptions}
       />
     </AuthStackNavigator.Navigator>
   );
@@ -334,6 +337,11 @@ export const AccountNavigator = () => {
         name="AboutScreen"
         component={AboutScreen}
         //options={updatePasswordScreenOptions}
+       />
+      <AccountStackNavigator.Screen
+        name="Payments"
+        component={PaymentsNavigator}
+        options={paymentScreenOptions}
       />
     </AccountStackNavigator.Navigator>
   );

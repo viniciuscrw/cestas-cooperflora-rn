@@ -1,32 +1,40 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { FlatList, StyleSheet, Text, View, Image } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { Divider } from 'react-native-elements';
+import { useFocusEffect } from '@react-navigation/native';
+import { isAfter } from 'date-fns';
 import Spinner from '../../components/Spinner';
 import ConsumerGroupDetails from '../../components/ConsumerGroupDetails';
 import MainHeader from '../../components/MainHeader';
 import Button from '../../components/Button';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
+import { Context as OrderContext } from '../../context/OrderContext';
 import useUser from '../../hooks/useUser';
 import DeliveryCard from '../../components/DeliveryCard';
 import GLOBALS from '../../Globals';
 import BasketProductsImage from '../../../assets/images/basketproducts.png';
 import Colors from '../../constants/Colors';
 import { stardardScreenStyle as screen } from '../screenstyles/ScreenStyles';
+import { showAlert } from '../../helper/HelperFunctions';
 
 const DeliveriesScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const user = useUser();
-  const { state, fetchDeliveries } = useContext(DeliveryContext);
+  const {
+    state: { nextDelivery, lastDeliveries, loading },
+    fetchDeliveries,
+  } = useContext(DeliveryContext);
+  const {
+    state: { loading: orderLoading },
+    getUserOrder,
+    startOrder,
+  } = useContext(OrderContext);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // The screen is focused
-      // Call any action
+  useFocusEffect(
+    React.useCallback(() => {
       fetchDeliveries();
-    });
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
-  }, [navigation]);
+    }, [])
+  );
 
   const renderButtonOrMessage = () => {
     if (user && user.role === GLOBALS.USER.ROLE.ORGANIZER) {
@@ -61,17 +69,44 @@ const DeliveriesScreen = ({ navigation }) => {
     });
   };
 
-  const onCardClick = (delivery) => {
+  const onNextDeliveryCardClick = async (delivery) => {
     if (user.role === GLOBALS.USER.ROLE.ORGANIZER) {
       navigation.navigate('OrdersManagement', { delivery });
     } else {
-      navigation.navigate('ConsumerOrderScreen', { user, delivery });
+      const order = await getUserOrder(user.id, delivery.id);
+
+      if (order != null && order.id != null && order.totalAmount > 0) {
+        navigation.navigate('ConsumerOrderPlacedScreen', { user, delivery });
+      } else {
+        const currentDate = new Date();
+
+        if (isAfter(currentDate, delivery.limitDate)) {
+          showAlert('Os pedidos para essa entrega já foram encerrados.');
+        } else {
+          if (order == null || order.id == null) {
+            startOrder(delivery.extraProducts);
+          }
+          navigation.navigate('ConsumerOrderScreen', { user, delivery });
+        }
+      }
+    }
+  };
+
+  const onPastDeliveryCardClick = async (delivery) => {
+    if (user.role === GLOBALS.USER.ROLE.ORGANIZER) {
+      navigation.navigate('OrdersManagement', { delivery });
+    } else {
+      const order = await getUserOrder(user.id, delivery.id);
+
+      if (order != null && order.id != null && order.totalAmount > 0) {
+        navigation.navigate('ConsumerOrderPlacedScreen', { user, delivery });
+      } else {
+        showAlert('Pedido não realizado para esta entrega.');
+      }
     }
   };
 
   const renderNextDelivery = () => {
-    const { nextDelivery, lastDeliveries } = state;
-
     return (
       <View style={styles.deliveriesListHeader}>
         <Text style={styles.text}>Próxima entrega</Text>
@@ -80,7 +115,7 @@ const DeliveriesScreen = ({ navigation }) => {
             <DeliveryCard
               delivery={nextDelivery}
               ordersDateText="Pedidos até:"
-              onPress={() => onCardClick(nextDelivery)}
+              onPress={() => onNextDeliveryCardClick(nextDelivery)}
               showEditButton={user.role === GLOBALS.USER.ROLE.ORGANIZER}
               onEditButtonPress={() => editDelivery(nextDelivery)}
             />
@@ -105,7 +140,7 @@ const DeliveriesScreen = ({ navigation }) => {
           delivery={item}
           ordersDateText="Pedidos encerrados em:"
           borderColor="darkorange"
-          onPress={() => onCardClick(item)}
+          onPress={() => onPastDeliveryCardClick(item)}
         />
       </View>
     );
@@ -114,9 +149,9 @@ const DeliveriesScreen = ({ navigation }) => {
   return (
     <View style={styles.screen}>
       <View style={styles.container}>
-        {!state.loading && user ? (
+        {!loading && !orderLoading && user ? (
           <FlatList
-            data={state.lastDeliveries}
+            data={lastDeliveries}
             ListHeaderComponent={renderNextDelivery}
             renderItem={renderLastDeliveriesItem}
             keyExtractor={(item) => item.id}

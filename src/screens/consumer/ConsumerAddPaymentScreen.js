@@ -1,40 +1,28 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { format } from 'date-fns';
 import { StyleSheet, Text, View, ActivityIndicator, Alert } from 'react-native';
-import CurrencyInput from 'react-native-currency-input';
 import firebase from 'firebase';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
 import Button from '../../components/Button';
-import useUser from '../../hooks/useUser';
 import { Context as userContext } from '../../context/UserContext';
 import {
-  insertIntoSubcollection,
   updateDocInSubcollection,
   updateDocAttribute,
 } from '../../api/firebase';
 import GLOBALS from '../../Globals';
-import ImagePicker from '../../components/ImagePicker';
-import screen from '../screenstyles/ScreenStyles';
-import { TextLabel, Number } from '../../components/StandardStyles';
+import ReceiptPicker from '../../components/ReceiptPicker';
+import { Number } from '../../components/StandardStyles';
 
 const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState();
-  const [receiptImage, setReceiptImage] = useState(null);
+  const [receiptDocument, setReceiptDocument] = useState(null);
 
-  // console.log('[ConsumerAddPaymentScreen] amount to pay',amountToPay);
-
-  // const user = useUser();
   const { userPayment } = route.params;
-
   const { userId } = userPayment;
-  // console.log('[ConsumerAddPaymentScreen] userId', userIdAux);
-
-  // console.log('[ConsumerAddPaymentScreen] userPayment', userPayment);
-
   const { getUserById } = useContext(userContext);
 
   useEffect(() => {
@@ -47,83 +35,103 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
     }
   }, [userId]);
 
-  const imageSelectedHandler = (uri) => {
+  const receiptSelectedHandler = async (receipt) => {
     console.log('[ConsumerAddPayment Screen] imageSelectedHandler');
-    setReceiptImage(uri);
+    setReceiptDocument(receipt);
   };
 
   const updateUserBalance = (paidValue) => {
     const newBalance = paidValue + userData.balance;
-    console.log('[ConsumerAddPayment Screen] New balance', newBalance);
     updateDocAttribute('users', userId, 'balance', newBalance);
-    // return;
+  };
+
+  const updatePayment = (receiptUrl, receiptMetadata) => {
+    const formatedDate = new Date(userPayment.date);
+    const payment = {
+      currentBalance: userPayment.currentBalance,
+      date: formatedDate.toISOString(),
+      orderId: userPayment.orderId,
+      orderTotalAmount: userPayment.orderTotalAmount,
+      status: GLOBALS.PAYMENT.STATUS.COMPLETED,
+      totalToBePaid: userPayment.totalToBePaid,
+      userId: userPayment.userId,
+      receipt: {
+        url: receiptUrl,
+        type: receiptMetadata.contentType,
+      },
+      paymentDate: new Date().toISOString(),
+    };
+    updateDocInSubcollection(
+      GLOBALS.COLLECTION.USERS,
+      userPayment.userId,
+      GLOBALS.SUB_COLLECTION.PAYMENTS,
+      userPayment.paymentId,
+      payment
+    )
+      .then((data) => {
+        console.log(
+          '[Consumer Payment Screen] addPayment - Payment  included',
+          data
+        );
+        updateUserBalance(userPayment.totalToBePaid);
+        setIsLoading(false);
+        navigation.navigate('ConsumerPaymentsScreen', {
+          userId,
+        });
+      })
+      .catch((error) => {
+        // console.log('[Consumer Add payment Screen - Add payment] - ERRO', error);
+        Alert.alert('Erro ao armazenar o pagamento no banco de dados!', error);
+      });
   };
 
   const handlePayment = async () => {
-    console.log('[Consumer Payment Screen] Handle payment');
+    // console.log('[Consumer Payment Screen] Handle payment', receiptDocument);
     if (userPayment.totalToBePaid <= 0) {
       Alert.alert('O valor para o pagamento está com o valor 0!');
       return;
     }
-    if (!receiptImage) {
+    if (!receiptDocument) {
       Alert.alert('Por favor inclua o comprovante!');
       return;
     }
+    if (receiptDocument.size > GLOBALS.RECEIPTFILE.SIZE) {
+      Alert.alert(
+        `Arquivo muito grande! Tamanho do arquivo deve ser menor que ${GLOBALS.RECEIPTFILE.SIZE} Bytes`
+      );
+      return;
+    }
     const date = new Date();
-    const imageName = format(date, 'yyyyMMddHHMMSS');
-    const response = await fetch(receiptImage);
+    const documentName = format(date, 'yyyyMMddHHMMSS');
+    const response = await fetch(receiptDocument.uri);
     const blob = await response.blob();
-    const receiptRef = firebase.storage().ref().child(`${userId}/${imageName}`);
+    const receiptRef = firebase
+      .storage()
+      .ref()
+      .child(`${userId}/${documentName}`);
     setIsLoading(true);
     receiptRef
       .put(blob)
       .then((response) => {
-        console.log('Resposta do storage', response);
         receiptRef
-          .getDownloadURL()
-          .then((receiptUrl) => {
-            const formatedDate = new Date(userPayment.date);
-            const payment = {
-              currentBalance: userPayment.currentBalance,
-              date: formatedDate.toISOString(),
-              orderId: userPayment.orderId,
-              orderTotalAmount: userPayment.orderTotalAmount,
-              status: GLOBALS.PAYMENT.STATUS.COMPLETED,
-              totalToBePaid: userPayment.totalToBePaid,
-              userId: userPayment.userId,
-              receiptImage: receiptUrl,
-              paymentDate: new Date().toISOString(),
-            };
-            updateDocInSubcollection(
-              GLOBALS.COLLECTION.USERS,
-              userPayment.userId,
-              GLOBALS.SUB_COLLECTION.PAYMENTS,
-              userPayment.paymentId,
-              payment
-            )
-              .then((data) => {
-                console.log(
-                  '[Consumer Payment Screen] addPayment - Payment  included',
-                  data
-                );
-                updateUserBalance(userPayment.totalToBePaid);
-                setIsLoading(false);
-                navigation.navigate('ConsumerPaymentsScreen', {
-                  userId: userId,
-                });
+          .getMetadata()
+          .then((receiptMetadata) => {
+            receiptRef
+              .getDownloadURL()
+              .then((receiptUrl) => {
+                updatePayment(receiptUrl, receiptMetadata);
               })
               .catch((error) => {
-                // console.log('[Consumer Add payment Screen - Add payment] - ERRO', error);
+                console.log('Erro =>', error);
                 Alert.alert(
-                  'Erro ao armazenar o pagamento no banco de dados!',
+                  'Erro ao recuperar o endereço da imagem do comprovante do banco de dados!',
                   error
                 );
               });
           })
-          .catch((error) => {
-            console.log('Erro =>', error);
+          .catch(() => {
             Alert.alert(
-              'Erro ao recuperar o endereço da imagem do comprovante do banco de dados!',
+              'Erro ao recuperar os metadados do comprovante de pagamento!',
               error
             );
           });
@@ -164,21 +172,16 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
           <View style={styles.inputContainer}>
             <Text style={styles.itemText}>Saldo a Pagar</Text>
             <Number>{`R$ ${userPayment.totalToBePaid.toFixed(2)}`}</Number>
-            {/* <CurrencyInput
-              style={styles.input}
-              value={amountToPay}
-              onChangeValue={setAmountToPay}
-              prefix="R$ "
-              delimiter=","
-              separator="."
-              precision={2}
-              onChangeText={(formattedValue) => {
-                console.log(formattedValue); // $2,310.46
-              }}
-            /> */}
           </View>
-          <ImagePicker onImagePicker={imageSelectedHandler} />
+          <View>
+            <ReceiptPicker onReceiptPicker={receiptSelectedHandler} />
+          </View>
         </View>
+        {/* <PDFReader
+          source={{
+            uri: "content://com.android.providers.downloads.documents/document/msf%3A24",
+          }}
+        /> */}
         <View style={styles.confirmContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
           <Button

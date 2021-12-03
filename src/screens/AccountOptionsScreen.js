@@ -1,20 +1,75 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import Checkbox from 'expo-checkbox';
 import { Divider } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import HeaderTitle from '../components/HeaderTitle';
 import FrontArrow from '../../assets/images/icons/frontarrow.png';
 import { stardardScreenStyle as screen } from './screenstyles/ScreenStyles';
+import { TextLabel } from '../components/StandardStyles';
+import Colors from '../constants/Colors';
+import { setPushNotificationToken } from '../utils';
+import { updateDocAttribute } from '../api/firebase';
 
 const AccountOptionsScreen = ({ navigation }) => {
+  const [isPushToken, setIsPushToken] = useState(false);
   const { state, signout, fetchLoggedUser } = useContext(AuthContext);
-  console.log('AccountOptionScreen');
+  console.log('AccountOptionScreen started');
 
   useEffect(() => {
     fetchLoggedUser();
-    console.log('AccountOptionScreen] fetchLoggedUser');
   }, []);
+
+  useEffect(() => {
+    if (state) {
+      if (state.loggedUser) {
+        if (
+          state.loggedUser.pushNotificationToken === null ||
+          !state.loggedUser.pushNotificationToken
+        ) {
+          setIsPushToken(false);
+        } else {
+          setIsPushToken(true);
+        }
+      }
+      // const { userPushNotificationToken } = state.loggedUser;
+      // console.log(userPushNotificationToken);
+    }
+  }, [state]);
+
+  const handleCheckBox = () => {
+    if (!isPushToken) {
+      setPushNotificationToken().then((pushNotificationToken) => {
+        console.log('Token', pushNotificationToken);
+        if (!pushNotificationToken) {
+          setIsPushToken(false);
+          updateDocAttribute(
+            'users',
+            state.loggedUser.id,
+            'pushNotificationToken',
+            null
+          );
+        } else {
+          setIsPushToken(true);
+          updateDocAttribute(
+            'users',
+            state.loggedUser.id,
+            'pushNotificationToken',
+            pushNotificationToken
+          );
+        }
+      });
+    } else {
+      setIsPushToken(false);
+      updateDocAttribute(
+        'users',
+        state.loggedUser.id,
+        'pushNotificationToken',
+        null
+      );
+    }
+  };
 
   return (
     <View style={styles.screen}>
@@ -77,6 +132,17 @@ const AccountOptionsScreen = ({ navigation }) => {
             </View>
             <Divider />
           </TouchableOpacity>
+          <View style={styles.listItemContainer}>
+            <TextLabel style={styles.paragraph}>
+              Permitir notificação das entregas
+            </TextLabel>
+            <Checkbox
+              value={isPushToken}
+              onValueChange={handleCheckBox}
+              color={isPushToken ? Colors.primary : 'undefined'}
+            />
+          </View>
+
           <TouchableOpacity onPress={signout}>
             <View style={styles.listItemContainer}>
               <View style={styles.listItem}>
