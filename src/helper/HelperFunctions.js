@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import GLOBALS from '../Globals';
 
 export const isBlank = (val) => !val || /^\s*$/.test(val);
 
@@ -45,4 +46,8 @@ export const resolveWeekDay = (weekDay) => {
     default:
       return '';
   }
+};
+
+export const isConsumer = (user) => {
+  return user && user.role && user.role === GLOBALS.USER.ROLE.CONSUMER;
 };

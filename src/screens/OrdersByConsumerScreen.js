@@ -10,6 +10,7 @@ import Spinner from '../components/Spinner';
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
+import { Context as DeliveryContext } from '../context/DeliveryContext';
 
 const OrdersByConsumerScreen = (props) => {
   const {
@@ -22,11 +23,15 @@ const OrdersByConsumerScreen = (props) => {
     fetchUsers,
   } = useContext(UserContext);
 
+  const {
+    state: { delivery: stateDelivery, loading: deliveryLoading },
+    fetchDelivery,
+  } = useContext(DeliveryContext);
+
   const delivery = props.route.params ? props.route.params.delivery : null;
 
   const [usersOrders, setUsersOrders] = useState([]);
-  const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] =
-    useState(null);
+  const [filteredOrdersByConsumer, setFilteredOrdersByConsumer] = useState([]);
   const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
@@ -36,10 +41,12 @@ const OrdersByConsumerScreen = (props) => {
   useFocusEffect(
     React.useCallback(() => {
       if (delivery) {
-        fetchOrdersByDelivery(delivery.id);
-        fetchUsers();
-        props.navigation.setParams({
-          deliveryDate: format(delivery.deliveryDate, GLOBALS.FORMAT.DD_MM),
+        fetchDelivery(delivery.id).then((deliveryFound) => {
+          fetchOrdersByDelivery(deliveryFound.id);
+          fetchUsers();
+          props.navigation.setParams({
+            deliveryDate: format(delivery.deliveryDate, GLOBALS.FORMAT.DD_MM),
+          });
         });
       } else {
         console.log('delivery ainda não existe');
@@ -119,7 +126,7 @@ const OrdersByConsumerScreen = (props) => {
           color: 'lightgrey',
           onPress: () => {
             setFilterText('');
-            setFilteredOrdersByConsumer(null);
+            setFilteredOrdersByConsumer([]);
           },
         };
   };
@@ -138,7 +145,7 @@ const OrdersByConsumerScreen = (props) => {
         onPress={() =>
           props.navigation.navigate('ConsumerOrderScreen', {
             user: { id: userOrderItem.userId, name: userOrderItem.userName },
-            delivery,
+            delivery: stateDelivery,
           })
         }
       >
@@ -175,10 +182,11 @@ const OrdersByConsumerScreen = (props) => {
           autoCorrect={false}
           rightIcon={renderSearchIcon()}
         />
-        {!orderLoading && !userLoading ? (
+        {!orderLoading && !userLoading && !deliveryLoading ? (
           <FlatList
             data={
-              filteredOrdersByConsumer && filteredOrdersByConsumer.length
+              filteredOrdersByConsumer != null &&
+              filteredOrdersByConsumer.length > 0
                 ? filteredOrdersByConsumer
                 : usersOrders
             }
