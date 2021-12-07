@@ -17,12 +17,18 @@ import VegetableImage from '../../../assets/images/vegetable1.png';
 import Spinner from '../../components/Spinner';
 import Button from '../../components/Button';
 import GLOBALS from '../../Globals';
+import { Context as DeliveryContext } from '../../context/DeliveryContext';
 
 const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
-  console.log('[ConsumerOrderPlacedScreen]');
   const {
     state: { order, loading },
   } = useContext(OrderContext);
+
+  const {
+    state: { loading: deliveryLoading },
+    fetchDelivery,
+  } = useContext(DeliveryContext);
+
   const { user, delivery } = route.params;
 
   const hasAnyProduct = () => {
@@ -34,7 +40,17 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
   };
 
   const handleUpdateOrder = () => {
-    navigation.navigate('ConsumerOrderScreen', { user, delivery });
+    fetchDelivery(delivery.id).then((deliveryFound) => {
+      console.log(
+        `[ConsumerOrderPlaced] Updating order for delivery: ${JSON.stringify(
+          deliveryFound.id
+        )} and user ${user?.id}`
+      );
+      navigation.navigate('ConsumerOrderScreen', {
+        user,
+        delivery: deliveryFound,
+      });
+    });
   };
 
   const renderEditOrderButton = () => {
@@ -58,7 +74,7 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
     );
   };
 
-  return loading ? (
+  return loading || deliveryLoading ? (
     <Spinner />
   ) : (
     <View style={styles.screen}>
@@ -142,11 +158,11 @@ export const consumerOrderPlacedScreenOptions = (navData) => {
   return {
     headerTitle: () => (
       <View style={styles.header}>
-        <HeaderTitle title="Entrega da Cesta" />
+        <HeaderTitle title="Seu pedido" />
         <View style={styles.imageContainer}>
           <Image style={styles.image} source={VegetableImage} />
         </View>
-        <Text>{deliveryDate}</Text>
+        <Text>Entrega da cesta - {deliveryDate}</Text>
       </View>
     ),
     headerBackImage: () => <BackArrow />,

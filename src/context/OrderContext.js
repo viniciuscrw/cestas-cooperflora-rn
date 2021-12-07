@@ -1,6 +1,9 @@
+import firebase from 'firebase';
+import 'firebase/firestore';
 import createDataContext from './createDataContext';
 import { getByAttribute, insertDoc, updateDoc } from '../api/firebase';
 import GLOBALS from '../Globals';
+import { showAlert } from '../helper/HelperFunctions';
 
 const orderReducer = (state, action) => {
   switch (action.type) {
@@ -8,9 +11,10 @@ const orderReducer = (state, action) => {
       return {
         ...state,
         loading: false,
+        initialProducts: JSON.parse(JSON.stringify(action.payload)),
         order: {
           baseProducts: 0,
-          extraProducts: action.payload.extraProducts,
+          extraProducts: action.payload,
           productsPriceSum: 0,
           totalAmount: 0,
           status: GLOBALS.ORDER.STATUS.OPENED,
@@ -64,15 +68,27 @@ const orderReducer = (state, action) => {
     case 'fetch_orders':
       return { ...state, loading: false, orders: action.payload };
     case 'fetch_order':
-      return { ...state, loading: false, order: action.payload };
+      return {
+        ...state,
+        loading: false,
+        order: action.payload,
+        initialProducts: JSON.parse(
+          JSON.stringify(action.payload.extraProducts)
+        ),
+      };
     case 'add_order':
       return {
         ...state,
         order: action.payload,
+        initialProducts: JSON.parse(
+          JSON.stringify(action.payload.extraProducts)
+        ),
         loading: false,
       };
     case 'loading':
       return { ...state, loading: true };
+    case 'stop_loading':
+      return { ...state, loading: false };
     default:
       return state;
   }
@@ -84,6 +100,7 @@ const startOrder = (dispatch) => (extraProducts) => {
 
   extraProducts.forEach((extraProduct) => {
     newExtraProducts.push({
+      productId: extraProduct.id,
       productTitle: extraProduct.name,
       productPrice: extraProduct.price,
       quantity: 0,
@@ -101,15 +118,31 @@ const removeBaseProducts = (dispatch) => (baseProductsPrice) => {
   dispatch({ type: 'remove_base_products', payload: baseProductsPrice });
 };
 
-const addProduct = (dispatch) => (extraProducts, product) => {
+const addProduct = (dispatch) => (extraProducts, product, initialProducts) => {
   const productIndex = extraProducts.findIndex(
-    (prod) => prod.productTitle === product.productTitle
+    (prod) => prod.productId === product.productId
   );
-  extraProducts[productIndex].quantity += 1;
-  dispatch({
-    type: 'add_product',
-    payload: { extraProducts, productPrice: product.productPrice },
-  });
+
+  const initialIndex = initialProducts.findIndex(
+    (prod) => prod.productId === product.productId
+  );
+
+  if (
+    extraProducts[productIndex].maxQuantity == null ||
+    product.quantity < extraProducts[productIndex].maxQuantity ||
+    product.quantity < initialProducts[initialIndex]?.quantity
+  ) {
+    extraProducts[productIndex].quantity += 1;
+    dispatch({
+      type: 'add_product',
+      payload: { extraProducts, productPrice: product.productPrice },
+    });
+    return;
+  }
+
+  showAlert(
+    `Quantidade indisponível de ${extraProducts[productIndex].productTitle}.`
+  );
 };
 
 const removeProduct = (dispatch) => (extraProducts, product) => {
@@ -184,10 +217,119 @@ const getUserOrder = (dispatch) => async (userId, deliveryId) => {
   return null;
 };
 
+const findExtraProductsToUpdate = (
+  updatedOrderProducts,
+  initialOrderProducts
+) => {
+  const extraProductsToUpdate = [];
+
+  updatedOrderProducts.forEach((orderProduct) => {
+    initialOrderProducts.forEach((initialProduct) => {
+      if (
+        orderProduct.productId === initialProduct.productId &&
+        orderProduct.quantity !== initialProduct.quantity
+      ) {
+        extraProductsToUpdate.push({
+          productId: orderProduct.productId,
+          productTitle: orderProduct.productTitle,
+          quantity: orderProduct.quantity,
+          quantityDiff: orderProduct.quantity - initialProduct.quantity,
+        });
+      }
+    });
+  });
+
+  updatedOrderProducts
+    .filter((updatedProduct) => {
+      const ids = initialOrderProducts.map((prod) => prod.productId);
+      return (
+        !ids.includes(updatedProduct.productId) && updatedProduct.quantity > 0
+      );
+    })
+    .forEach((updatedProduct) => {
+      const extraToUpdateIds = extraProductsToUpdate.map(
+        (extra) => extra.productId
+      );
+      if (!extraToUpdateIds.includes(updatedProduct.productId)) {
+        extraProductsToUpdate.push({
+          productId: updatedProduct.productId,
+          productTitle: updatedProduct.productTitle,
+          quantity: updatedProduct.quantity,
+          quantityDiff: updatedProduct.quantity,
+        });
+      }
+    });
+
+  return extraProductsToUpdate;
+};
+
+const updateDeliveryExtraProductsQuantities =
+  (dispatch) => async (deliveryId, extraProductsToUpdate) => {
+    const db = firebase.firestore();
+    const deliveryRef = await db
+      .collection(GLOBALS.COLLECTION.GROUPS)
+      .doc(GLOBALS.CONSUMER_GROUP.ID)
+      .collection(GLOBALS.COLLECTION.DELIVERIES)
+      .doc(deliveryId);
+
+    await db.runTransaction((transaction) => {
+      console.log('Update delivery extra products - Init transaction');
+      return transaction.get(deliveryRef).then((deliveryDoc) => {
+        if (!deliveryDoc.exists) {
+          console.log(
+            `Delivery ${deliveryId} not found to update its products.`
+          );
+        } else {
+          const delivery = deliveryDoc.data();
+          delivery.extraProducts.forEach((product, index) => {
+            const extraToUpdateArr = extraProductsToUpdate.filter(
+              (extra) => extra.productId === product.id
+            );
+            const extraToUpdate = extraToUpdateArr ? extraToUpdateArr[0] : null;
+
+            if (!extraToUpdate) {
+              return;
+            }
+
+            if (product.availableQuantity != null) {
+              const currentAvailableQuantity =
+                product.availableQuantity - product.orderedQuantity;
+
+              console.log(`Current available: ${currentAvailableQuantity}`);
+              console.log(`To update: ${JSON.stringify(extraToUpdate)}`);
+
+              if (
+                extraToUpdate.quantityDiff > 0 &&
+                extraToUpdate.quantityDiff > currentAvailableQuantity
+              ) {
+                dispatch({ type: 'stop_loading' });
+                throw `Não há quantidade suficiente disponível de ${extraToUpdate.productTitle}. Por favor, tente refazer o pedido com uma quantidade menor.`;
+              }
+            }
+
+            // TODO: Considerar alteraçao da quantidade maxima permitida por pessoa durante o pedido
+
+            product.orderedQuantity += extraToUpdate.quantityDiff;
+            delivery.extraProducts[index] = product;
+          });
+          console.log(
+            `Atualizando extras: ${JSON.stringify(delivery.extraProducts)}`
+          );
+          transaction.update(deliveryRef, {
+            extraProducts: delivery.extraProducts,
+          });
+        }
+      });
+    });
+  };
+
 const addOrder =
-  (dispatch) => async (userId, userName, deliveryId, deliveryFee, order) => {
+  (dispatch) =>
+  async (userId, userName, deliveryId, deliveryFee, order, initialProducts) => {
     dispatch({ type: 'loading' });
     console.log('[Order Context] adding Order ---------');
+    console.log(`Initial products: ${JSON.stringify(initialProducts)}`);
+    console.log(`Updated products: ${JSON.stringify(order.extraProducts)}`);
 
     const extraProducts = order.extraProducts
       ? order.extraProducts.filter((prod) => prod.quantity > 0)
@@ -208,6 +350,23 @@ const addOrder =
           ? GLOBALS.ORDER.STATUS.OPENED
           : GLOBALS.ORDER.STATUS.CANCELED,
     };
+
+    const extraProductsToUpdate = findExtraProductsToUpdate(
+      order.extraProducts,
+      initialProducts
+    );
+
+    if (extraProductsToUpdate.length > 0) {
+      console.log(
+        `Updating delivery extra products for delivery=${deliveryId} and user=${userId}; products to update: ${JSON.stringify(
+          extraProductsToUpdate
+        )}`
+      );
+      await updateDeliveryExtraProductsQuantities(dispatch)(
+        deliveryId,
+        extraProductsToUpdate
+      );
+    }
 
     if (order.id && order.id.length > 0) {
       console.log('[Add order] update order');

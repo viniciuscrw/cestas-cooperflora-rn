@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -12,6 +12,7 @@ import {
 import { AntDesign } from '@expo/vector-icons';
 import endOfDay from 'date-fns/endOfDay';
 import { Input, ListItem } from 'react-native-elements';
+import { useFocusEffect } from '@react-navigation/native';
 import { Context as UserContext } from '../../context/UserContext';
 import { Context as ProductContext } from '../../context/ProductContext';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
@@ -45,34 +46,29 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const groupInfo = useConsumerGroup();
 
-  // useEffect(() => {
-  //   fetchProducts();
-  //   const keyboardDidShowListener = Keyboard.addListener(
-  //     'keyboardDidShow',
-  //     () => {
-  //       setKeyboardVisible(true);
-  //     }
-  //   );
-  //   const keyboardDidHideListener = Keyboard.addListener(
-  //     'keyboardDidHide',
-  //     () => {
-  //       setKeyboardVisible(false);
-  //     }
-  //   );
-
-  //   return () => {
-  //     keyboardDidHideListener.remove();
-  //     keyboardDidShowListener.remove();
-  //   };
-  // }, []);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+  useFocusEffect(
+    React.useCallback(() => {
       fetchProducts();
-      fetchConsumers();
-    });
-    return unsubscribe;
-  }, [navigation]);
+
+      const keyboardDidShowListener = Keyboard.addListener(
+        'keyboardDidShow',
+        () => {
+          setKeyboardVisible(true);
+        }
+      );
+      const keyboardDidHideListener = Keyboard.addListener(
+        'keyboardDidHide',
+        () => {
+          setKeyboardVisible(false);
+        }
+      );
+
+      return () => {
+        keyboardDidHideListener.remove();
+        keyboardDidShowListener.remove();
+      };
+    }, [])
+  );
 
   const searchProductsByFilter = () => {
     setFilteredProducts(
@@ -124,6 +120,23 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
     const extraProducts = products.filter((product) =>
       checkedItems.includes(product.id)
     );
+
+    extraProducts.forEach((product) => {
+      if (state.nextDelivery) {
+        const deliveryProducts = state.nextDelivery.extraProducts;
+        const deliveryProductIndex = deliveryProducts.findIndex(
+          (deliveryProduct) => deliveryProduct.id === product.id
+        );
+
+        product.orderedQuantity =
+          deliveryProductIndex >= 0
+            ? deliveryProducts[deliveryProductIndex].orderedQuantity
+            : 0;
+      } else {
+        product.orderedQuantity = 0;
+      }
+    });
+
     const delivery = {
       date: endOfDay(state.deliveryDate),
       ordersLimitDate: state.ordersLimitDate,
@@ -253,12 +266,6 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         >
           {state.nextDelivery ? 'Atualizar entrega' : 'Criar entrega'}
         </Button>
-        {/* <LoadingButton
-          loading={state.loading}
-          onPress={validateAndCreateOrUpdateDelivery}
-        >
-          {state.nextDelivery ? 'Atualizar entrega' : 'Criar entrega'}
-        </LoadingButton> */}
       </View>
     );
   };

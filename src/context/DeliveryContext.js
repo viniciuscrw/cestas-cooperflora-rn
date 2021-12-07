@@ -1,6 +1,7 @@
 import createDataContext from './createDataContext';
 import {
   deleteDocInSubcollection,
+  getByIdFromSubcollection,
   getGroupDeliveries,
   insertIntoSubcollection,
   updateDocInSubcollection,
@@ -14,6 +15,12 @@ const deliveryReducer = (state, action) => {
         loading: false,
         nextDelivery: action.payload.nextDelivery,
         lastDeliveries: action.payload.lastDeliveries,
+      };
+    case 'fetch_delivery':
+      return {
+        ...state,
+        loading: false,
+        delivery: action.payload.delivery,
       };
     case 'set_info':
       return {
@@ -58,6 +65,21 @@ const getLastDeliveries = (deliveries) => {
   }
 
   return lastDeliveries;
+};
+
+const fetchDelivery = (dispatch) => async (deliveryId) => {
+  dispatch({ type: 'loading' });
+  console.log(`Fetching delivery by id: ${deliveryId}...`);
+
+  const delivery = await getByIdFromSubcollection(
+    GLOBALS.COLLECTION.GROUPS,
+    GLOBALS.CONSUMER_GROUP.ID,
+    GLOBALS.COLLECTION.DELIVERIES,
+    deliveryId
+  );
+
+  dispatch({ type: 'fetch_delivery', payload: { delivery } });
+  return delivery;
 };
 
 const fetchDeliveries = (dispatch) => async () => {
@@ -165,10 +187,11 @@ export const { Provider, Context } = createDataContext(
   deliveryReducer,
   {
     fetchDeliveries,
+    fetchDelivery,
     setDeliveryInfo,
     createDelivery,
     updateDelivery,
     deleteDelivery,
   },
-  { deliveries: null, loading: false }
+  { deliveries: null, loading: false, delivery: null }
 );

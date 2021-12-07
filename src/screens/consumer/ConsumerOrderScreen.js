@@ -20,16 +20,16 @@ import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import VegetableImage from '../../../assets/images/vegetable2.png';
 import Spinner from '../../components/Spinner';
-import { showAlert } from '../../helper/HelperFunctions';
+import { isConsumer, showAlert } from '../../helper/HelperFunctions';
+import { Context as DeliveryContext } from '../../context/DeliveryContext';
 
 const ConsumerOrderScreen = (props) => {
-  console.log('[ConsumerOrderScreen started]');
   const { user, delivery } = props.route.params;
   const [baseProducts, setBaseProducts] = useState();
   const [orderProducts, setOrderProducts] = useState([]);
 
   const {
-    state: { loading, order },
+    state: { loading, order, initialProducts },
     addBaseProducts,
     removeBaseProducts,
     addProduct,
@@ -49,25 +49,71 @@ const ConsumerOrderScreen = (props) => {
     createPaymentForUser,
   } = useContext(PaymentContext);
 
+  const {
+    state: { loading: deliveryLoading },
+  } = useContext(DeliveryContext);
+
+  const resolveProductAvailableQuantity = (product, initialQuantity) => {
+    initialQuantity = initialQuantity != null ? initialQuantity : 0;
+
+    if (product.maxOrderQuantity != null && product.availableQuantity != null) {
+      const availableQuantity =
+        product.availableQuantity - product.orderedQuantity;
+      return Math.min(
+        product.maxOrderQuantity,
+        availableQuantity + initialQuantity
+      );
+    }
+
+    if (product.maxOrderQuantity != null && product.availableQuantity == null) {
+      return product.maxOrderQuantity;
+    }
+
+    if (product.availableQuantity != null) {
+      return (
+        product.availableQuantity - product.orderedQuantity + initialQuantity
+      );
+    }
+
+    return null;
+  };
+
   const transformOrderProducts = () => {
     const deliveryExtraProducts = delivery.extraProducts;
     const orderExtraProducts = order.extraProducts ? order.extraProducts : [];
 
+    orderExtraProducts.forEach((orderProduct) => {
+      deliveryExtraProducts.forEach((deliveryProduct) => {
+        const initialIndex = initialProducts.findIndex(
+          (prod) => prod.productId === orderProduct.productId
+        );
+
+        if (orderProduct.productId === deliveryProduct.id) {
+          orderProduct.maxQuantity =
+            initialProducts.length > 0 && initialProducts[initialIndex] != null
+              ? resolveProductAvailableQuantity(
+                  deliveryProduct,
+                  initialProducts[initialIndex].quantity
+                )
+              : resolveProductAvailableQuantity(deliveryProduct, 0);
+        }
+      });
+    });
+
     deliveryExtraProducts
       .filter((deliveryProduct) => {
-        const titles = orderExtraProducts.map(
-          (orderProduct) => orderProduct.productTitle
+        const ids = orderExtraProducts.map(
+          (orderProduct) => orderProduct.productId
         );
-        return !titles.includes(deliveryProduct.name);
+        return !ids.includes(deliveryProduct.id);
       })
       .forEach((product) => {
         orderExtraProducts.push({
+          productId: product.id,
           productPrice: product.price,
           productTitle: product.name,
           quantity: 0,
-          maxQuantity: product.maxOrderQuantity
-            ? product.maxOrderQuantity
-            : product.availableQuantity,
+          maxQuantity: resolveProductAvailableQuantity(product),
         });
       });
 
@@ -82,13 +128,13 @@ const ConsumerOrderScreen = (props) => {
   useFocusEffect(
     React.useCallback(() => {
       console.log('[Consumer Order Product Screen - useEffect fetch orders');
-
       if (user && delivery) {
         if (!user.role || order == null) {
-          console.log('[Consumer Order Screen] Fetching order...');
+          console.log(`[Consumer Order Screen] Fetching order...`);
           // Quando não tem role, é porque está vindo da tela de gerenciamento, então é uma pessoa organizadora que está manipulando o pedido
           fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
         }
+
         setBaseProducts(delivery.baseProducts);
         props.navigation.setParams({
           deliveryDate: format(delivery.deliveryDate, GLOBALS.FORMAT.DD_MM),
@@ -104,23 +150,34 @@ const ConsumerOrderScreen = (props) => {
   const onHandleNewOrUpdatedOrder = () => {
     console.log('[Consumer Order Screen] Handle new or update order');
 
-    addOrder(user.id, user.name, delivery.id, delivery.deliveryFee, order).then(
-      () => {
+    addOrder(
+      user.id,
+      user.name,
+      delivery.id,
+      delivery.deliveryFee,
+      order,
+      initialProducts
+    )
+      .then(() => {
         if (order.productsPriceSum === 0) {
           showAlert('Seu pedido para esta entrega foi cancelado.');
           props.navigation.navigate('DeliveriesScreen');
           return;
         }
+
         if (user.role && user.role === GLOBALS.USER.ROLE.CONSUMER) {
           props.navigation.navigate('ConsumerOrderPlacedScreen', {
             delivery,
             user,
           });
         } else {
-          props.navigation.goBack(null);
+          props.navigation.goBack();
         }
-      }
-    );
+      })
+      .catch((error) => {
+        showAlert(error);
+        fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
+      });
   };
 
   const renderConfirmButton = () => {
@@ -219,7 +276,18 @@ const ConsumerOrderScreen = (props) => {
     return null;
   };
 
-  return !order || loading || userLoading || paymentLoading ? (
+  const isLoading = () => {
+    return (
+      !order ||
+      !delivery ||
+      loading ||
+      deliveryLoading ||
+      userLoading ||
+      paymentLoading
+    );
+  };
+
+  return isLoading() ? (
     <Spinner />
   ) : (
     <View style={styles.screen}>
@@ -280,7 +348,9 @@ const ConsumerOrderScreen = (props) => {
                     <Text style={styles.quantity}>{item.quantity}</Text>
                     <View style={styles.incDecButton}>
                       <TouchableOpacity
-                        onPress={() => addProduct(orderProducts, item)}
+                        onPress={() =>
+                          addProduct(orderProducts, item, initialProducts)
+                        }
                       >
                         <Text style={styles.textControls}>{`  +`}</Text>
                       </TouchableOpacity>
@@ -302,18 +372,22 @@ const ConsumerOrderScreen = (props) => {
 };
 
 export const consumerOrderScreenOptions = (navData) => {
-  const { deliveryDate } = navData.route.params;
+  const { deliveryDate, user } = navData.route.params;
+  const headerTitle = isConsumer(user)
+    ? 'Fazer pedido'
+    : `Fazer pedido - ${user?.name}`;
+  // console.log(`navDataa${JSON.stringify(navData.route.params)}`);
 
   return {
     headerTitle: () => (
       <View>
         <View style={styles.header}>
-          <HeaderTitle title="Entrega da Cesta" />
+          <HeaderTitle title={headerTitle} />
           <View style={styles.imageContainer}>
             <Image style={styles.image} source={VegetableImage} />
           </View>
         </View>
-        <Text>{deliveryDate}</Text>
+        <Text>Entrega da cesta - {deliveryDate}</Text>
       </View>
     ),
     headerBackImage: () => <BackArrow />,

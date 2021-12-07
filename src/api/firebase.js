@@ -167,6 +167,40 @@ export const getGroupDeliveries = async (collection, doc, subcollection) => {
   return data;
 };
 
+export const getByIdFromSubcollection = async (
+  collection,
+  collectionId,
+  subcollection,
+  subcollectionId
+) => {
+  console.log(
+    `[Firebase - getByIdFromSubcollection] collection: ${collection}; doc: ${collectionId}; subcollection: ${subcollection}; subDoc: ${subcollectionId}`
+  );
+
+  let data = null;
+
+  const db = firebase.firestore();
+  const ref = db.collection(collection);
+  await ref
+    .doc(collectionId)
+    .collection(subcollection)
+    .doc(subcollectionId)
+    .get()
+    .then((doc) => {
+      data = {
+        id: doc.id,
+        deliveryDate: doc.data().date.toDate(),
+        limitDate: doc.data().ordersLimitDate.toDate(),
+        ...doc.data(),
+      };
+    })
+    .catch((err) =>
+      console.log('Error while getting by id from subcollection', err)
+    );
+
+  return data;
+};
+
 export const insertDoc = async (collection, data) => {
   console.log(
     `[Firebase - insertDoc] collection: ${collection}; data: ${JSON.stringify(
