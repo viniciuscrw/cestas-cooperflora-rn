@@ -72,9 +72,10 @@ const orderReducer = (state, action) => {
         ...state,
         loading: false,
         order: action.payload,
-        initialProducts: JSON.parse(
-          JSON.stringify(action.payload.extraProducts)
-        ),
+        initialProducts:
+          action.payload && action.payload.extraProducts
+            ? JSON.parse(JSON.stringify(action.payload.extraProducts))
+            : [],
       };
     case 'add_order':
       return {
