@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "cestascooperflora",
+    "description": "Aplicativo para gerenciamento de vendas das cestas de produtos orgânicos da cooperativa Cooperflora",
     "slug": "cestascooperflora",
     "platforms": [
       "ios",
@@ -21,11 +22,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "br.pro.bordignon",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "package": "br.pro.bordignon",
-      "versionCode": 1
+      "versionCode": 3,
+      "permissions":["CAMERA", "WRITE_EXTERNAL_STORAGE"]
     },
     "hooks": {
       "postPublish": [
@@ -39,7 +43,6 @@
         }
       ]
     },
-    "plugins": ["sentry-expo"],
-    "description": ""
+    "plugins": ["sentry-expo"]
   }
 }

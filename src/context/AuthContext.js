@@ -232,8 +232,7 @@ const checkAuthOrUser =
         const errorMessage =
           err.code === 'auth/invalid-email'
             ? 'Endereço de e-mail inválido.'
-            : 'Algo deu errado com a verificação do e-mail';
-
+            : 'Algo deu errado com a verificação do e-mail. Verifique sua conexão com a Internet.';
         dispatch({ type: 'add_error', payload: errorMessage });
       });
   };
