@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  RefreshControl,
+  ScrollView,
+} from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { Divider } from 'react-native-elements';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -15,6 +23,7 @@ import { updateDocAttribute } from '../api/firebase';
 const AccountOptionsScreen = ({ navigation }) => {
   const [isPushToken, setIsPushToken] = useState(false);
   const { state, signout, fetchLoggedUser } = useContext(AuthContext);
+  const [refreshing, setRefreshing] = useState(false);
   console.log('AccountOptionScreen started');
 
   useEffect(() => {
@@ -33,8 +42,6 @@ const AccountOptionsScreen = ({ navigation }) => {
           setIsPushToken(true);
         }
       }
-      // const { userPushNotificationToken } = state.loggedUser;
-      // console.log(userPushNotificationToken);
     }
   }, [state]);
 
@@ -78,7 +85,18 @@ const AccountOptionsScreen = ({ navigation }) => {
       ) : (
         <View style={styles.container}>
           {state.loggedUser ? (
-            <View>
+            <ScrollView
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={() => {
+                    setRefreshing(true);
+                    fetchLoggedUser();
+                    setRefreshing(false);
+                  }}
+                />
+              }
+            >
               <View style={styles.headerContainer}>
                 <Text style={styles.listItemTitle}>
                   {state.loggedUser.name}
@@ -99,7 +117,7 @@ const AccountOptionsScreen = ({ navigation }) => {
                 </View>
                 <Divider />
               </TouchableOpacity>
-            </View>
+            </ScrollView>
           ) : null}
           <TouchableOpacity
             onPress={() =>
@@ -142,20 +160,7 @@ const AccountOptionsScreen = ({ navigation }) => {
               color={isPushToken ? Colors.primary : 'undefined'}
             />
           </View>
-
-          <TouchableOpacity onPress={signout}>
-            <View style={styles.listItemContainer}>
-              <View style={styles.listItem}>
-                <Text style={styles.listItemTitle}>Sair</Text>
-              </View>
-              <Image source={FrontArrow} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('AboutScreen')
-            }
-          >
+          <TouchableOpacity onPress={() => navigation.navigate('AboutScreen')}>
             <View style={styles.listItemContainer}>
               <View style={styles.listItem}>
                 <Text style={styles.listItemTitle}>Sobre </Text>
@@ -163,6 +168,14 @@ const AccountOptionsScreen = ({ navigation }) => {
               <Image source={FrontArrow} />
             </View>
             <Divider />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={signout}>
+            <View style={styles.listItemContainer}>
+              <View style={styles.listItem}>
+                <Text style={styles.listItemTitle}>Sair</Text>
+              </View>
+              <Image source={FrontArrow} />
+            </View>
           </TouchableOpacity>
         </View>
       )}
