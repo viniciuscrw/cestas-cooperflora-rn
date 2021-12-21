@@ -25,7 +25,7 @@ import { Context as DeliveryContext } from '../../context/DeliveryContext';
 
 const ConsumerOrderScreen = (props) => {
   const { user, delivery } = props.route.params;
-  const [baseProducts, setBaseProducts] = useState();
+  // const [baseProducts, setBaseProducts] = useState();
   const [orderProducts, setOrderProducts] = useState([]);
 
   const {
@@ -52,6 +52,10 @@ const ConsumerOrderScreen = (props) => {
   const {
     state: { loading: deliveryLoading },
   } = useContext(DeliveryContext);
+
+  const formatBaseProducts = (baseProducts) => {
+    return baseProducts.toLowerCase().replace(/\n/g, ', ');
+  };
 
   const resolveProductAvailableQuantity = (product, initialQuantity) => {
     initialQuantity = initialQuantity != null ? initialQuantity : 0;
@@ -92,9 +96,9 @@ const ConsumerOrderScreen = (props) => {
           orderProduct.maxQuantity =
             initialProducts.length > 0 && initialProducts[initialIndex] != null
               ? resolveProductAvailableQuantity(
-                  deliveryProduct,
-                  initialProducts[initialIndex].quantity
-                )
+                deliveryProduct,
+                initialProducts[initialIndex].quantity
+              )
               : resolveProductAvailableQuantity(deliveryProduct, 0);
         }
       });
@@ -135,7 +139,7 @@ const ConsumerOrderScreen = (props) => {
           fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
         }
 
-        setBaseProducts(delivery.baseProducts);
+        // setBaseProducts(delivery.baseProducts);
         props.navigation.setParams({
           deliveryDate: format(delivery.deliveryDate, GLOBALS.FORMAT.DD_MM),
         });
@@ -318,7 +322,9 @@ const ConsumerOrderScreen = (props) => {
             </View>
           </View>
           <View style={styles.baseProductsItems}>
-            <Text style={styles.textItens}>{baseProducts}</Text>
+            <Text style={styles.textItens}>
+              {formatBaseProducts(delivery.baseProducts)}
+            </Text>
           </View>
         </View>
         <Divider style={{ borderBottomColor: Colors.secondary }} />
