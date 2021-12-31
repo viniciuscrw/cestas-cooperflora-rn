@@ -16,7 +16,7 @@ const userReducer = (state, action) => {
     case 'fetch_users':
       return { loading: false, users: action.payload };
     case 'fetch_user':
-      return { loading: false };
+      return { ...state, loading: false };
     case 'create_user':
       return { ...state, loading: false };
     case 'update_user':
