@@ -28,7 +28,7 @@
     },
     "android": {
       "package": "br.pro.bordignon",
-      "versionCode": 7,
+      "versionCode": 8,
       "permissions":["CAMERA", "WRITE_EXTERNAL_STORAGE"]
     },
     "hooks": {
