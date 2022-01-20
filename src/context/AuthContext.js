@@ -63,7 +63,12 @@ const authReducer = (state, action) => {
     case 'reset_password':
       return { ...state, errorMessage: '', loading: false };
     case 'update_account':
-      return { ...state, errorMessage: '', loading: false };
+      return {
+        ...state,
+        errorMessage: '',
+        loading: false,
+        loggedUser: action.payload,
+      };
     default:
       return state;
   }
@@ -337,10 +342,19 @@ const updateAccount = (dispatch) => (currentEmail, password, user) => {
   if (currentEmail !== user.email) {
     updateWithEmail(dispatch)(currentEmail, password, user);
   } else {
-    updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
-      dispatch({ type: 'update_account' });
-      navigate('AccountOptions');
-    });
+    updateDoc(GLOBALS.COLLECTION.USERS, user.id, user)
+      .then(() => {
+        dispatch({ type: 'update_account', payload: user });
+        Alert.alert('Dados Atualizados com sucesso !', ' ', [
+          {
+            text: 'OK',
+            onPress: () => navigate('AccountOptionsScreen'),
+          },
+        ]);
+      })
+      .catch((err) => {
+        console.log('Ocorreu um erro ao atualizar os dados!', err);
+      });
   }
 };
 
@@ -358,7 +372,7 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
         .then(() => {
           updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
             dispatch({ type: 'update_account' });
-            navigate('AccountOptions');
+            navigate('AccountOptionsScreen');
           });
         })
         .catch((err) => {
@@ -369,7 +383,7 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
           user.email = currentEmail;
           updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
             dispatch({ type: 'update_account' });
-            navigate('AccountOptions');
+            navigate('AccountOptionsScreen');
           });
         });
     })

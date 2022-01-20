@@ -6,30 +6,33 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableWithoutFeedback,
   View,
+  Platform,
 } from 'react-native';
+import { Dialog } from 'react-native-simple-dialogs';
 import Spacer from '../components/Spacer';
 import FormInput from '../components/FormInput';
 import Button from '../components/Button';
 import Divider from '../components/Divider';
 import { Context as UserContext } from '../context/UserContext';
 import { Context as AuthContext } from '../context/AuthContext';
-import Spinner from '../components/Spinner';
-import { Dialog } from 'react-native-simple-dialogs';
 import TextLink from '../components/TextLink';
-import LoadingButton from '../components/LoadingButton';
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
+import Spinner from '../components/Spinner';
 
-const UpdateAccountInfoScreen = (props) => {
-  const user = props.route.params.user;
+const UpdateAccountInfoScreen = ({ navigation, route }) => {
+  console.log('[UpdateAccountInfoScreen started]');
+
+  const { user } = route.params;
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState(user ? user.phoneNumber : '');
+  const [phoneNumber, setPhoneNumber] = useState(
+    user.phoneNumber ? user.phoneNumber : ''
+  );
   const [dialogVisible, setDialogVisible] = useState(false);
   const {
     state: { loading },
@@ -39,16 +42,22 @@ const UpdateAccountInfoScreen = (props) => {
 
   const emailTextInput = React.createRef();
   const phoneNumberTextInput = React.createRef();
+  const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+  console.log('[UpdateAccountInfoScreen started] user', user);
 
   const isInvalidEmail = () => {
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return email.length > 0 && !reg.test(email);
+    return email.length < 3 || !reg.test(email);
+  };
+
+  const isInvalidName = () => {
+    return name.length < 1;
   };
 
   const alertExistingEmail = (email) => {
     Alert.alert(
       'Aviso',
-      'Já existe uma pessoa cadastrada com e-mail ' + email,
+      `Já existe uma pessoa cadastrada com e-mail ${email}`,
       [
         {
           text: 'OK',
@@ -58,21 +67,59 @@ const UpdateAccountInfoScreen = (props) => {
   };
 
   const updateUserInfo = () => {
+    if (
+      user.name === name &&
+      user.email === email &&
+      user.phoneNumber === phoneNumber
+    ) {
+      console.log('Não foram identificadas alterações nos dados!');
+      Alert.alert('Não foram identificadas alterações nos dados!', ' ', [
+        {
+          text: 'Permanecer na mesma tela',
+        },
+        {
+          text: 'Voltar',
+          onPress: () => navigation.navigate('AccountOptionsScreen'),
+        },
+      ]);
+      return;
+    }
+
+    if (email.length < 3 || !reg.test(email) || name.length < 1) {
+      console.log('Foram identificados erros no preenchimento dos dados!');
+      Alert.alert(
+        'Foram identificados erros no preenchimento dos dados!',
+        'Por favor corrija antes de continuar ',
+        [
+          {
+            text: 'OK',
+          },
+        ]
+      );
+      return;
+    }
+
     if (user) {
       findUserByEmail(email).then((existingUser) => {
         if (existingUser && existingUser.id !== user.id) {
           alertExistingEmail(email);
+        } else if (email !== user.email) {
+          setDialogVisible(true);
         } else {
-          if (email !== user.email) {
-            setDialogVisible(true);
-          } else {
-            updateAccount(user.email, password, {
-              id: user.id,
-              name,
-              email,
-              phoneNumber,
-            });
-          }
+          console.log(
+            '[UpdateUserScreen] start update ',
+            name,
+            email,
+            phoneNumber
+          );
+          const userAux = { ...user, name, email, phoneNumber };
+          updateAccount(user.email, password, userAux);
+          // updateAccount(user.email, password, {
+          //   id: user.id,
+          //   name,
+          //   email,
+          //   phoneNumber,
+          // });
         }
       });
     }
@@ -132,81 +179,94 @@ const UpdateAccountInfoScreen = (props) => {
   };
 
   return (
-    <View style={styles.screen} >
-      <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <KeyboardAvoidingView
-            style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}
-            enabled
-            keyboardVerticalOffset={100}
+    <View style={styles.screen}>
+      <ScrollView style={styles.container}>
+        {state.loading ? (
+          <Spinner size="large" />
+        ) : (
+          <TouchableWithoutFeedback
+            onPress={Keyboard.dismiss}
+            accessible={false}
           >
-            <ScrollView>
-              {/* <Spacer /> */}
-              <FormInput
-                id="name"
-                label="Nome"
-                value={name}
-                returnKeyType="next"
-                onChangeText={setName}
-                onSubmitEditing={() => emailTextInput.current.focus()}
-                autoCapitalize="words"
-                autoCorrect={false}
-                maxLength={50}
-              />
-              <Spacer />
-              <FormInput
-                id="e-mail"
-                label="E-mail"
-                value={email}
-                reference={emailTextInput}
-                returnKeyType="next"
-                onChangeText={setEmail}
-                onSubmitEditing={() => phoneNumberTextInput.current.focus()}
-                autoCapitalize="none"
-                autoCorrect={false}
-                maxLength={50}
-                hasError={isInvalidEmail()}
-                errorMessage="Endereço de e-mail inválido."
-              />
-              <Spacer />
-              <FormInput
-                id="mobile"
-                label="Celular"
-                value={phoneNumber}
-                returnKeyType="done"
-                reference={phoneNumberTextInput}
-                maxLength={18}
-                onChangeText={setPhoneNumber}
-                keyboardType="phone-pad"
-              />
-              <Spacer />
-              {renderPasswordDialog()}
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
-        <View style={styles.buttonContainer}>
-          <Divider style={{ borderBottomColor: Colors.secondary }} />
-          <Button
-            id="updateUserInfoButton"
-            style={styles.confirmButton}
-            textColor="white"
-            onPress={updateUserInfo}
-          >
-            Atualizar informações
-          </Button>
-        </View>
-      </View>
+            <KeyboardAvoidingView
+              style={{
+                flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'center',
+              }}
+              behavior={Platform.OS === 'ios' ? 'padding' : null}
+            // enabled
+            // keyboardVerticalOffset={100}
+            >
+              <View style={styles.formContainer}>
+                <FormInput
+                  id="name"
+                  label="Nome"
+                  value={name}
+                  returnKeyType="next"
+                  onChangeText={setName}
+                  onSubmitEditing={() => emailTextInput.current.focus()}
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  maxLength={50}
+                  hasError={isInvalidName()}
+                  errorMessage="Por favor preencha o campo nome."
+                />
+                <FormInput
+                  id="e-mail"
+                  label="E-mail"
+                  value={email}
+                  reference={emailTextInput}
+                  returnKeyType="next"
+                  onChangeText={setEmail}
+                  onSubmitEditing={() => phoneNumberTextInput.current.focus()}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  maxLength={50}
+                  hasError={isInvalidEmail()}
+                  errorMessage="Endereço de e-mail inválido."
+                />
+                <FormInput
+                  id="mobile"
+                  label="Celular"
+                  value={phoneNumber}
+                  returnKeyType="done"
+                  reference={phoneNumberTextInput}
+                  maxLength={18}
+                  onChangeText={setPhoneNumber}
+                  keyboardType="phone-pad"
+                />
+                <Spacer />
+                <Spacer />
+                {renderPasswordDialog()}
+              </View>
+              <View style={styles.buttonContainer}>
+                <Divider style={{ borderBottomColor: Colors.secondary }} />
+                <Button
+                  id="updateUserInfoButton"
+                  style={styles.confirmButton}
+                  textColor="white"
+                  onPress={updateUserInfo}
+                >
+                  Atualizar informações
+                </Button>
+              </View>
+            </KeyboardAvoidingView>
+          </TouchableWithoutFeedback>
+        )}
+      </ScrollView>
     </View>
   );
 };
 
-export const updateAccountInfoScreenOptions = (navData) => {
+export const updateAccountInfoScreenOptions = () => {
   return {
     headerTitle: () => (
-      <HeaderTitle title="Meus Dados" />
+      <View style={styles.header}>
+        <HeaderTitle title="Meus Dados" />
+      </View>
     ),
-    headerBackImage: () => (<BackArrow />),
+    headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
@@ -228,27 +288,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 4, height: -3 },
     shadowRadius: 8,
     elevation: 25,
-    // backgroundColor: 'red',
   },
   container: {
     flex: 1,
     margin: 25,
-    // backgroundColor: 'grey'
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  title: {
-    color: '#101010',
-    fontSize: 22,
-    fontWeight: 'bold',
-    flex: 1,
-    marginLeft: 5,
-  },
-  cancelButton: {
-    marginRight: 15,
-    marginTop: 10,
   },
   dialogText: {
     marginBottom: 7,
@@ -278,6 +321,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     justifyContent: 'space-between',
     alignSelf: 'center',
+  },
+  header: {
+    alignItems: 'flex-start',
   },
 });
 
