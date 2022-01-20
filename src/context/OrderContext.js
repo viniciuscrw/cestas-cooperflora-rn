@@ -1,7 +1,11 @@
 import firebase from 'firebase';
 import 'firebase/firestore';
 import createDataContext from './createDataContext';
-import { getByAttribute, insertDoc, updateDoc } from '../api/firebase';
+import {
+  getByAttribute,
+  insertDocAndRetrieveId,
+  updateDoc,
+} from '../api/firebase';
 import GLOBALS from '../Globals';
 import { showAlert } from '../helper/HelperFunctions';
 
@@ -379,8 +383,11 @@ const addOrder =
     } else {
       console.log('[Add order] new order');
       newOrder.date = new Date().toISOString();
-      insertDoc(GLOBALS.COLLECTION.ORDERS, newOrder)
-        .then(() => dispatch({ type: 'add_order', payload: newOrder }))
+      insertDocAndRetrieveId(GLOBALS.COLLECTION.ORDERS, newOrder)
+        .then((orderId) => {
+          newOrder.id = orderId;
+          dispatch({ type: 'add_order', payload: newOrder });
+        })
         .catch((error) => {
           console.log('[Order Context - Add order] - ERRO', error);
         });
