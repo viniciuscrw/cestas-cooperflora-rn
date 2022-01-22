@@ -23,8 +23,8 @@ import Spinner from '../../components/Spinner';
 import { isConsumer, showAlert } from '../../helper/HelperFunctions';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
 
-const ConsumerOrderScreen = (props) => {
-  const { user, delivery } = props.route.params;
+const ConsumerOrderScreen = ({ route, navigation }) => {
+  const { user, delivery } = route.params;
   // const [baseProducts, setBaseProducts] = useState();
   const [orderProducts, setOrderProducts] = useState([]);
 
@@ -96,9 +96,9 @@ const ConsumerOrderScreen = (props) => {
           orderProduct.maxQuantity =
             initialProducts.length > 0 && initialProducts[initialIndex] != null
               ? resolveProductAvailableQuantity(
-                deliveryProduct,
-                initialProducts[initialIndex].quantity
-              )
+                  deliveryProduct,
+                  initialProducts[initialIndex].quantity
+                )
               : resolveProductAvailableQuantity(deliveryProduct, 0);
         }
       });
@@ -140,7 +140,7 @@ const ConsumerOrderScreen = (props) => {
         }
 
         // setBaseProducts(delivery.baseProducts);
-        props.navigation.setParams({
+        navigation.setParams({
           deliveryDate: format(delivery.deliveryDate, GLOBALS.FORMAT.DD_MM),
         });
       }
@@ -165,17 +165,17 @@ const ConsumerOrderScreen = (props) => {
       .then(() => {
         if (order.productsPriceSum === 0) {
           showAlert('Seu pedido para esta entrega foi cancelado.');
-          props.navigation.navigate('DeliveriesScreen');
+          navigation.navigate('DeliveriesScreen');
           return;
         }
 
         if (user.role && user.role === GLOBALS.USER.ROLE.CONSUMER) {
-          props.navigation.navigate('ConsumerOrderPlacedScreen', {
+          navigation.navigate('ConsumerOrderPlacedScreen', {
             delivery,
             user,
           });
         } else {
-          props.navigation.goBack();
+          navigation.goBack();
         }
       })
       .catch((error) => {
@@ -240,7 +240,7 @@ const ConsumerOrderScreen = (props) => {
       );
       const orderUser = await findUserById(order.userId);
       await createPaymentForUser(orderUser, completedOrder);
-      props.navigation.goBack(null);
+      navigation.goBack(null);
     }
   };
 
@@ -321,11 +321,11 @@ const ConsumerOrderScreen = (props) => {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.baseProductsItems}>
+          <ScrollView style={styles.baseProductsItems}>
             <Text style={styles.textItens}>
               {formatBaseProducts(delivery.baseProducts)}
             </Text>
-          </View>
+          </ScrollView>
         </View>
         <Divider style={{ borderBottomColor: Colors.secondary }} />
         <View style={styles.extraProductsContainer}>
@@ -418,14 +418,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 4, height: -3 },
     shadowRadius: 8,
     elevation: 25,
-    // backgroundColor: 'red',
   },
   container: {
     flex: 1,
-    margin: 25,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 10,
+    marginBottom: 10,
   },
   baseProductsContainer: {
-    height: '18%',
+    marginBottom: 10,
+    height: '20%',
   },
   baseProducts: {
     flexDirection: 'row',
@@ -433,8 +436,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   baseProductsItems: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    // flexDirection: 'row',
+    // justifyContent: 'space-between',
   },
   title: {
     flex: 1,
@@ -473,9 +476,9 @@ const styles = StyleSheet.create({
     color: '#8898AA',
   },
   extraProductsContainer: {
-    marginTop: 20,
-    marginBottom: 20,
-    height: '60%',
+    marginTop: 10,
+    marginBottom: 10,
+    height: '63%',
   },
   line: {
     flex: 1,
