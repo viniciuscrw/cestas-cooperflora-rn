@@ -1,6 +1,16 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { format } from 'date-fns';
-import { StyleSheet, Text, View, ActivityIndicator, Alert } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 import firebase from 'firebase';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
@@ -14,12 +24,14 @@ import {
 } from '../../api/firebase';
 import GLOBALS from '../../Globals';
 import ReceiptPicker from '../../components/ReceiptPicker';
-import { Number } from '../../components/StandardStyles';
+import { Number, TextLabel } from '../../components/StandardStyles';
+import FormInput from '../../components/FormInput';
 
 const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState();
   const [receiptDocument, setReceiptDocument] = useState(null);
+  const [paymentNote, setPaymentNote] = useState('');
 
   const { userPayment } = route.params;
   const { userId } = userPayment;
@@ -55,6 +67,7 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
       status: GLOBALS.PAYMENT.STATUS.COMPLETED,
       totalToBePaid: userPayment.totalToBePaid,
       userId: userPayment.userId,
+      paymentNote,
       receipt: {
         url: receiptUrl,
         type: receiptMetadata.contentType,
@@ -155,33 +168,63 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
       <View style={styles.container}>
         <View style={styles.valuesContainer}>
           <View style={styles.itemContainer}>
-            <Text style={styles.itemText}>Valor do Pedido</Text>
+            <TextLabel>Valor do Pedido</TextLabel>
             <View style={styles.itemBox}>
               <Number>{`R$ ${userPayment.orderTotalAmount.toFixed(2)}`}</Number>
             </View>
           </View>
           <View style={styles.itemContainer}>
-            <Text style={styles.itemText}>Saldo atual</Text>
+            <TextLabel>Saldo atual</TextLabel>
             <View style={styles.itemBox}>
               <Number>{`R$ ${userData.balance.toFixed(2)}`}</Number>
             </View>
           </View>
         </View>
         <Divider style={{ borderBottomColor: Colors.tertiary }} />
-        <View style={styles.addContainer}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.itemText}>Saldo a Pagar</Text>
-            <Number>{`R$ ${userPayment.totalToBePaid.toFixed(2)}`}</Number>
-          </View>
-          <View>
-            <ReceiptPicker onReceiptPicker={receiptSelectedHandler} />
-          </View>
+        <View style={styles.receiptContainer}>
+          <TouchableWithoutFeedback
+            onPress={Keyboard.dismiss}
+            accessible={false}
+          >
+            <KeyboardAvoidingView
+              style={{
+                flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                marginBottom: 30,
+              }}
+              behavior={Platform.OS === 'ios' ? 'padding' : null}
+              enabled
+              keyboardVerticalOffset={200}
+            >
+              <ScrollView>
+                <View style={styles.addContainer}>
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.itemText}>Saldo a Pagar</Text>
+                    <Number>{`R$ ${userPayment.totalToBePaid.toFixed(
+                      2
+                    )}`}</Number>
+                  </View>
+                  <View>
+                    <ReceiptPicker onReceiptPicker={receiptSelectedHandler} />
+                  </View>
+                </View>
+                <View>
+                  <FormInput
+                    id="paymentNote"
+                    style={styles.paymentNote}
+                    label="Observação (Opcional máx. 250 caracteres)"
+                    value={paymentNote}
+                    onChangeText={setPaymentNote}
+                    editable
+                    multiline
+                    maxLength={250}
+                  />
+                </View>
+              </ScrollView>
+            </KeyboardAvoidingView>
+          </TouchableWithoutFeedback>
         </View>
-        {/* <PDFReader
-          source={{
-            uri: "content://com.android.providers.downloads.documents/document/msf%3A24",
-          }}
-        /> */}
         <View style={styles.confirmContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
           <Button
@@ -200,7 +243,11 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
 
 export const consumerAddPaymentScreenOptions = () => {
   return {
-    headerTitle: () => <HeaderTitle title="Adicionar Pagamento" />,
+    headerTitle: () => (
+      <View style={styles.header}>
+        <HeaderTitle title="Adicionar Pagamento" />
+      </View>
+    ),
     headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'transparent',
@@ -226,12 +273,15 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    margin: 25,
+    marginLeft: 25,
+    marginRight: 25,
+    marginTop: 10,
+    marginBottom: 10,
   },
   valuesContainer: {
     alignItems: 'flex-start',
     justifyContent: 'center',
-    height: '15%',
+    height: '10%',
   },
   itemContainer: {
     flex: 1,
@@ -249,16 +299,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#505050',
   },
-  // itemValue: {
-  //   fontFamily: 'Roboto',
-  //   fontWeight: '700',
-  //   fontSize: 16,
-  //   color: '#8898AA',
-  // },
+  receiptContainer: {
+    height: '80%',
+  },
   addContainer: {
-    marginTop: 10,
-    // height: '50%',
-    paddingTop: 10,
+    marginTop: 5,
+    paddingTop: 5,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -289,6 +335,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  paymentNote: {
+    borderBottomWidth: 2,
+    borderColor: Colors.tertiary,
+  },
   confirmContainer: {
     position: 'absolute',
     width: '100%',
@@ -298,6 +348,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
     backgroundColor: Colors.primary,
     alignSelf: 'center',
+  },
+  header: {
+    alignItems: 'flex-start',
   },
 });
 
