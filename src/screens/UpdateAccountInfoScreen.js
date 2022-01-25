@@ -3,13 +3,14 @@ import {
   Alert,
   Keyboard,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { Dialog } from 'react-native-simple-dialogs';
 import Spacer from '../components/Spacer';
 import FormInput from '../components/FormInput';
 import Button from '../components/Button';
@@ -17,15 +18,13 @@ import Divider from '../components/Divider';
 import { Context as UserContext } from '../context/UserContext';
 import { Context as AuthContext } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
-import { Dialog } from 'react-native-simple-dialogs';
 import TextLink from '../components/TextLink';
-import LoadingButton from '../components/LoadingButton';
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
 
 const UpdateAccountInfoScreen = (props) => {
-  const user = props.route.params.user;
+  const { user } = props.route.params;
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [password, setPassword] = useState('');
@@ -41,14 +40,14 @@ const UpdateAccountInfoScreen = (props) => {
   const phoneNumberTextInput = React.createRef();
 
   const isInvalidEmail = () => {
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const reg = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     return email.length > 0 && !reg.test(email);
   };
 
   const alertExistingEmail = (email) => {
     Alert.alert(
       'Aviso',
-      'Já existe uma pessoa cadastrada com e-mail ' + email,
+      `Já existe uma pessoa cadastrada com e-mail ${email}`,
       [
         {
           text: 'OK',
@@ -62,17 +61,16 @@ const UpdateAccountInfoScreen = (props) => {
       findUserByEmail(email).then((existingUser) => {
         if (existingUser && existingUser.id !== user.id) {
           alertExistingEmail(email);
+        } else if (email !== user.email) {
+          setDialogVisible(true);
         } else {
-          if (email !== user.email) {
-            setDialogVisible(true);
-          } else {
-            updateAccount(user.email, password, {
-              id: user.id,
-              name,
-              email,
-              phoneNumber,
-            });
-          }
+          updateAccount(user.email, password, {
+            id: user.id,
+            balance: user.balance,
+            name,
+            email,
+            phoneNumber,
+          }).then(() => props.navigation.navigate('AccountOptionsScreen'));
         }
       });
     }
@@ -131,18 +129,23 @@ const UpdateAccountInfoScreen = (props) => {
     );
   };
 
-  return (
-    <View style={styles.screen} >
+  return loading || state.loading ? (
+    <Spinner />
+  ) : (
+    <View style={styles.screen}>
       <View style={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <KeyboardAvoidingView
-            style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}
+            style={{
+              flex: 1,
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
             behavior={Platform.OS === 'ios' ? 'padding' : null}
             enabled
             keyboardVerticalOffset={100}
           >
             <ScrollView>
-              {/* <Spacer /> */}
               <FormInput
                 id="name"
                 label="Nome"
@@ -203,10 +206,8 @@ const UpdateAccountInfoScreen = (props) => {
 
 export const updateAccountInfoScreenOptions = (navData) => {
   return {
-    headerTitle: () => (
-      <HeaderTitle title="Meus Dados" />
-    ),
-    headerBackImage: () => (<BackArrow />),
+    headerTitle: () => <HeaderTitle title="Meus Dados" />,
+    headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
