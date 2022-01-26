@@ -63,7 +63,12 @@ const authReducer = (state, action) => {
     case 'reset_password':
       return { ...state, errorMessage: '', loading: false };
     case 'update_account':
-      return { ...state, errorMessage: '', loading: false };
+      return {
+        ...state,
+        errorMessage: '',
+        loading: false,
+        loggedUser: action.payload,
+      };
     default:
       return state;
   }
@@ -330,17 +335,15 @@ const resetPassword = (dispatch) => (email) => {
     });
 };
 
-const updateAccount = (dispatch) => (currentEmail, password, user) => {
+const updateAccount = (dispatch) => async (currentEmail, password, user) => {
   dispatch({ type: 'loading' });
   console.log(`Updating account for user: ${user.id}`);
 
   if (currentEmail !== user.email) {
-    updateWithEmail(dispatch)(currentEmail, password, user);
+    await updateWithEmail(dispatch)(currentEmail, password, user);
   } else {
-    updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
-      dispatch({ type: 'update_account' });
-      navigate('AccountOptions');
-    });
+    await updateDoc(GLOBALS.COLLECTION.USERS, user.id, user);
+    dispatch({ type: 'update_account', payload: user });
   }
 };
 
@@ -357,8 +360,7 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
         .updateEmail(user.email)
         .then(() => {
           updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
-            dispatch({ type: 'update_account' });
-            navigate('AccountOptions');
+            dispatch({ type: 'update_account', payload: user });
           });
         })
         .catch((err) => {
@@ -368,8 +370,7 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
           );
           user.email = currentEmail;
           updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
-            dispatch({ type: 'update_account' });
-            navigate('AccountOptions');
+            dispatch({ type: 'update_account', payload: user });
           });
         });
     })

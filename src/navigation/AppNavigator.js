@@ -22,9 +22,7 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       {!authId ? <AuthNavigator /> : <MainNavigator />}
-      {/* <AccountNavigator /> */}
       {/* <MainNavigator /> */}
-      {/* <ConsumerGroupNavigator /> */}
     </NavigationContainer>
   );
 };

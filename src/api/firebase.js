@@ -222,6 +222,32 @@ export const insertDoc = async (collection, data) => {
     });
 };
 
+export const insertDocAndRetrieveId = async (collection, data) => {
+  console.log(
+    `[Firebase - insertDocAndRetrieveId] collection: ${collection}; data: ${JSON.stringify(
+      data
+    )}`
+  );
+
+  let id = null;
+  const db = firebase.firestore();
+
+  await db
+    .collection(collection)
+    .add(data)
+    .then((docRef) => {
+      id = docRef.id;
+    })
+    .catch((err) => {
+      console.log('Error while adding data.', err);
+      if (err.code === 'permission-denied') {
+        navigate('Signin');
+      }
+    });
+
+  return id;
+};
+
 export const insertIntoSubcollection = async (
   collection,
   doc,
