@@ -65,9 +65,9 @@ const authReducer = (state, action) => {
     case 'update_account':
       return {
         ...state,
-        loggedUser: action.payload,
         errorMessage: '',
         loading: false,
+        loggedUser: action.payload,
       };
     default:
       return state;

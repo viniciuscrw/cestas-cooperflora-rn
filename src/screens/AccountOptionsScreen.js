@@ -24,7 +24,7 @@ const AccountOptionsScreen = ({ navigation }) => {
   const [isPushToken, setIsPushToken] = useState(false);
   const { state, signout, fetchLoggedUser } = useContext(AuthContext);
   const [refreshing, setRefreshing] = useState(false);
-  console.log('AccountOptionScreen started');
+  console.log('[AccountOptionScreen started]');
 
   useEffect(() => {
     fetchLoggedUser();
