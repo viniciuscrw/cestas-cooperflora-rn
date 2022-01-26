@@ -1,10 +1,11 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthNavigator, MainNavigator } from './MainNavigation';
 import { Context as AuthContext } from '../context/AuthContext';
-import { navigationRef } from '../navigationRef';
+import IntroSlider from '../screens/IntroSlider';
 
 const AppNavigator = () => {
+  const [showIntroSlider, setShowIntroSlider] = useState(true);
   const { state } = useContext(AuthContext);
   const { authId } = state;
 
@@ -14,8 +15,12 @@ const AppNavigator = () => {
     console.log('user logged off');
   }
 
+  if (showIntroSlider) {
+    return <IntroSlider setIntroSlider={setShowIntroSlider} />;
+  }
+
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer>
       {!authId ? <AuthNavigator /> : <MainNavigator />}
       {/* <MainNavigator /> */}
     </NavigationContainer>
