@@ -402,6 +402,7 @@ export const fetchPayments = async (collection, subcollection, doc) => {
           totalToBePaid: payment.data().totalToBePaid,
           receipt: payment.data().receipt ? payment.data().receipt : {},
           showReceiptImage: false,
+          paymentNote: payment.data().paymentNote,
         });
       });
       userPayments.sort((a, b) => {

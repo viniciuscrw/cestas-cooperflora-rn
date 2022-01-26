@@ -38,12 +38,6 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
 
   const { userId } = route.params;
 
-  // let userId;
-  // if (route.params.userId) {
-  //   userId = route.params.userId;
-  // } else {
-  //   userId = useUser().id;
-  // }
   const { getUserById } = useContext(userContext);
 
   const handleFetchPayments = () => {
@@ -151,6 +145,13 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
                   <View style={styles.payLine}>
                     <TextContent>Pagamento Realizado</TextContent>
                     <Number>R$ {userPayment.totalToBePaid.toFixed(2)}</Number>
+                  </View>
+                  <View>
+                    {userPayment.paymentNote ? (
+                      <Text style={styles.paymentNote}>
+                        Obs: {userPayment.paymentNote}
+                      </Text>
+                    ) : null}
                   </View>
                 </View>
                 {renderReceipt(userPayment)}
@@ -292,10 +293,6 @@ export const consumerPaymentsScreenOptions = ({ navigation, route }) => {
         </TouchableOpacity>
       );
     },
-    // headerLeft: () => {
-    //   return true;
-    // },
-    // headerBackImage: () => <BackArrow />,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
@@ -347,6 +344,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginLeft: 10,
     marginRight: 10,
+  },
+  paymentNote: {
+    color: Colors.tertiary,
+    marginLeft: 10,
   },
   buttonContainer: {
     position: 'absolute',
