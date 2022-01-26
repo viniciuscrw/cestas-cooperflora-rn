@@ -3,12 +3,12 @@ import {
   Alert,
   Keyboard,
   KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
-  Platform,
 } from 'react-native';
 import { Dialog } from 'react-native-simple-dialogs';
 import Spacer from '../components/Spacer';
@@ -17,15 +17,13 @@ import Button from '../components/Button';
 import Divider from '../components/Divider';
 import { Context as UserContext } from '../context/UserContext';
 import { Context as AuthContext } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
 import TextLink from '../components/TextLink';
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
-import Spinner from '../components/Spinner';
 
 const UpdateAccountInfoScreen = ({ navigation, route }) => {
-  console.log('[UpdateAccountInfoScreen started]');
-
   const { user } = route.params;
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
@@ -42,11 +40,9 @@ const UpdateAccountInfoScreen = ({ navigation, route }) => {
 
   const emailTextInput = React.createRef();
   const phoneNumberTextInput = React.createRef();
-  const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
-  console.log('[UpdateAccountInfoScreen started] user', user);
 
   const isInvalidEmail = () => {
+    const reg = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     return email.length < 3 || !reg.test(email);
   };
 
@@ -85,8 +81,7 @@ const UpdateAccountInfoScreen = ({ navigation, route }) => {
       return;
     }
 
-    if (email.length < 3 || !reg.test(email) || name.length < 1) {
-      console.log('Foram identificados erros no preenchimento dos dados!');
+    if (isInvalidEmail() || isInvalidName()) {
       Alert.alert(
         'Foram identificados erros no preenchimento dos dados!',
         'Por favor corrija antes de continuar ',
@@ -106,20 +101,16 @@ const UpdateAccountInfoScreen = ({ navigation, route }) => {
         } else if (email !== user.email) {
           setDialogVisible(true);
         } else {
-          console.log(
-            '[UpdateUserScreen] start update ',
+          updateAccount(user.email, password, {
+            id: user.id,
+            balance: user.balance,
             name,
             email,
-            phoneNumber
-          );
-          const userAux = { ...user, name, email, phoneNumber };
-          updateAccount(user.email, password, userAux);
-          // updateAccount(user.email, password, {
-          //   id: user.id,
-          //   name,
-          //   email,
-          //   phoneNumber,
-          // });
+            phoneNumber,
+          }).then(() => {
+            setDialogVisible(false);
+            navigation.navigate('AccountOptionsScreen');
+          });
         }
       });
     }
@@ -162,14 +153,18 @@ const UpdateAccountInfoScreen = ({ navigation, route }) => {
               />
               <TextLink
                 text="OK"
-                onPress={() =>
+                onPress={() => {
                   updateAccount(user.email, password, {
                     id: user.id,
+                    balance: user.balance,
                     name,
                     email,
                     phoneNumber,
-                  })
-                }
+                  }).then(() => {
+                    setDialogVisible(false);
+                    navigation.navigate('AccountOptionsScreen');
+                  });
+                }}
               />
             </View>
           )}
@@ -181,8 +176,8 @@ const UpdateAccountInfoScreen = ({ navigation, route }) => {
   return (
     <View style={styles.screen}>
       <ScrollView style={styles.container}>
-        {state.loading ? (
-          <Spinner size="large" />
+        {state.loading || loading ? (
+          <Spinner />
         ) : (
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
@@ -195,8 +190,8 @@ const UpdateAccountInfoScreen = ({ navigation, route }) => {
                 justifyContent: 'center',
               }}
               behavior={Platform.OS === 'ios' ? 'padding' : null}
-            // enabled
-            // keyboardVerticalOffset={100}
+              // enabled
+              // keyboardVerticalOffset={100}
             >
               <View style={styles.formContainer}>
                 <FormInput

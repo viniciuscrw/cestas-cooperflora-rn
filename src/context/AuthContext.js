@@ -335,26 +335,15 @@ const resetPassword = (dispatch) => (email) => {
     });
 };
 
-const updateAccount = (dispatch) => (currentEmail, password, user) => {
+const updateAccount = (dispatch) => async (currentEmail, password, user) => {
   dispatch({ type: 'loading' });
   console.log(`Updating account for user: ${user.id}`);
 
   if (currentEmail !== user.email) {
-    updateWithEmail(dispatch)(currentEmail, password, user);
+    await updateWithEmail(dispatch)(currentEmail, password, user);
   } else {
-    updateDoc(GLOBALS.COLLECTION.USERS, user.id, user)
-      .then(() => {
-        dispatch({ type: 'update_account', payload: user });
-        Alert.alert('Dados Atualizados com sucesso !', ' ', [
-          {
-            text: 'OK',
-            onPress: () => navigate('AccountOptionsScreen'),
-          },
-        ]);
-      })
-      .catch((err) => {
-        console.log('Ocorreu um erro ao atualizar os dados!', err);
-      });
+    await updateDoc(GLOBALS.COLLECTION.USERS, user.id, user);
+    dispatch({ type: 'update_account', payload: user });
   }
 };
 
@@ -371,8 +360,7 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
         .updateEmail(user.email)
         .then(() => {
           updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
-            dispatch({ type: 'update_account' });
-            navigate('AccountOptionsScreen');
+            dispatch({ type: 'update_account', payload: user });
           });
         })
         .catch((err) => {
@@ -382,8 +370,7 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
           );
           user.email = currentEmail;
           updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
-            dispatch({ type: 'update_account' });
-            navigate('AccountOptionsScreen');
+            dispatch({ type: 'update_account', payload: user });
           });
         });
     })
