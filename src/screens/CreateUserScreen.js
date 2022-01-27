@@ -17,9 +17,8 @@ import GLOBALS from '../Globals';
 import TextLink from '../components/TextLink';
 import Colors from '../constants/Colors';
 
-const CreateUserScreen = (props) => {
-  // const user = props.navigation.getParam('user');
-  const user = props.route.params.user;
+const CreateUserScreen = ({ navigation, route }) => {
+  const { user } = route.params;
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [phoneNumber, setPhoneNumber] = useState(user ? user.phoneNumber : '');
@@ -29,13 +28,13 @@ const CreateUserScreen = (props) => {
   const phoneNumberTextInput = React.createRef();
 
   // const userRole = user ? user.role : navigation.getParam('role');
-  const userRole = user ? user.role : props.route.params.role;
+  const userRole = user ? user.role : route.params.role;
   const authenticatedUser = !!(user && user.authId);
   const roleText =
     userRole === GLOBALS.USER.ROLE.CONSUMER
       ? 'pessoa consumidora'
       : 'pessoa organizadora';
-  let title = user ? 'Editar ' + roleText : 'Nova ' + roleText;
+  const title = user ? `Editar ${roleText}` : `Nova ${roleText}`;
 
   const isInvalidEmail = () => {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -45,7 +44,7 @@ const CreateUserScreen = (props) => {
   const alertExistingEmail = (email) => {
     Alert.alert(
       'Aviso',
-      'Já existe uma pessoa cadastrada com e-mail ' + email,
+      `Já existe uma pessoa cadastrada com e-mail ${email}`,
       [
         {
           text: 'OK',
@@ -72,7 +71,7 @@ const CreateUserScreen = (props) => {
         }
       });
     }
-    props.navigation.goBack(null);
+    navigation.goBack(null);
   };
 
   const renderButton = () => {
@@ -113,7 +112,7 @@ const CreateUserScreen = (props) => {
                 <Text style={styles.title}>{title}</Text>
                 <TextLink
                   text="Cancelar"
-                  onPress={() => props.navigation.goBack(null)}
+                  onPress={() => navigation.goBack(null)}
                   style={styles.cancelButton}
                 />
               </View>

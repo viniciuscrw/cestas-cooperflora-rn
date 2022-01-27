@@ -20,7 +20,7 @@ const slides = [
     title: 'Cooperflora',
     subtitle: 'Barão Geraldo',
     text2:
-      'A Cooperflora é uma cooperativa de produtoras e produtores rurais sediada no assentamento Milton Santos fundada em 2015. A  cooperativa tem trabalhado para construir um mercado de consumo consciente da sua produção fornecendo, em bases semanais, a venda de cestas  agroecológicas de seus produtos para grupos de consumo. Os produtores da Cooperflora são certificados pela OCS - Organização de Controle Social. Um grupo de consumo é um conjunto de pessoas que se juntam para comprar os produtos orgânicos da cooperativa em uma relação que não é apenas comercial, mas é de valorização da produção familiar orgânica.',
+      'A Cooperflora é uma cooperativa de produtoras e produtores rurais sediada no assentamento Milton Santos fundada em 2015. A  cooperativa tem trabalhado para construir um mercado de consumo consciente da sua produção fornecendo, em bases semanais, a venda de cestas  agroecológicas de seus produtos para grupos de consumo. Os produtores da Cooperflora são certificados pela OCS - Organização de Controle Social.\n\nUm grupo de consumo é um conjunto de pessoas que se juntam para comprar os produtos orgânicos da cooperativa em uma relação que não é apenas comercial, mas é de valorização da produção familiar orgânica.',
   },
   {
     key: '3',
@@ -41,7 +41,7 @@ const slides = [
     title: 'Cooperflora',
     subtitle: 'Barão Geraldo',
     text2:
-      'Organizadores e organizadoras do grupo de consumo de Barão Geraldo.\n\n Equipe de Desenvolvimento\n\nCoordenação: André Luís Bordignon \n\nDesenvolvimento: Vinicius Costa Regaço\n\nBolsistas: Luana Matallo Ruggiero, Rafael Almeida, Yasmin Souza Lima',
+      'Organização do grupo de consumo de Barão Geraldo.\n\n Contato: cooperflorabarao@gmail.com\n\nEquipe de Desenvolvimento\n\nCoordenação: André Luís Bordignon \n\nDesenvolvimento: Vinicius Costa Regaço\n\nDesign: Mateus Santos Magalhães\n\nBolsistas: Luana Matallo Ruggiero, Rafael Almeida, Yasmin Souza Lima',
   },
 ];
 
@@ -56,7 +56,7 @@ const IntroSlider = ({ setIntroSlider }) => {
       <View style={styles.screenContainer}>
         {item.title ? <Text style={styles.title}>{item.title}</Text> : null}
         <Text style={styles.subtitle}>{item.subtitle}</Text>
-        <Text style={styles.text1}>{item.text1}</Text>
+        {item.text1 ? <Text style={styles.text1}>{item.text1}</Text> : null}
         <Text style={styles.text2}>{item.text2}</Text>
         <View style={styles.imageContainer}>
           <Image style={styles.logoStyle} source={item.image} />
@@ -108,6 +108,7 @@ const IntroSlider = ({ setIntroSlider }) => {
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
+    margin: 10,
   },
   textContainer: {
     margin: 20,
@@ -119,6 +120,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     width: '100%',
+    // backgroundColor: 'red',
   },
   subtitle: {
     textAlign: 'center',
@@ -140,13 +142,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   text2: {
-    fontSize: 20,
-    marginRight: 5,
-    marginLeft: 15,
+    // backgroundColor: 'red',
+    marginTop: 20,
+    fontSize: 19,
     color: '#505050',
     fontWeight: 'bold',
-    textAlign: 'justify',
-    width: '95%',
+    textAlign: 'center',
+    // width: '95%',
   },
   descriptionText: {
     fontSize: 20,

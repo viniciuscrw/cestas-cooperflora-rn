@@ -11,14 +11,13 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
-import PDFReader from 'rn-pdf-reader-js';
+import { Entypo } from '@expo/vector-icons';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import Divider from '../../components/Divider';
 import Colors from '../../constants/Colors';
 import { Context as userContext } from '../../context/UserContext';
 import GLOBALS from '../../Globals';
-import ClipIcon from '../../../assets/images/icons/clipicon.png';
 import { stardardScreenStyle as screen } from '../screenstyles/ScreenStyles';
 import {
   TextContent,
@@ -27,9 +26,11 @@ import {
 } from '../../components/StandardStyles';
 import { accessibilityLabel } from '../../utils';
 import { fetchPayments } from '../../api/firebase';
+import RenderImageReceipt from '../../components/RenderImageReceipt';
+import RenderPdfReceipt from '../../components/RenderPdfReceipt';
 
 const ConsumerPaymentsScreen = ({ route, navigation }) => {
-  console.log('[ConsumerPaymentScreen started]');
+  // console.log('[ConsumerPaymentsScreen started]');
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState();
   const [userPayments, setUserPayments] = useState([]);
@@ -88,27 +89,19 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
 
   const renderReceipt = (userPayment) => {
     if (userPayment.showReceiptImage) {
-      if (userPayment.receipt.type === 'image/jpeg') {
+      if (
+        userPayment.receipt.type === 'image/jpeg' ||
+        userPayment.receipt.type === 'image/png'
+      ) {
+        console.log(userPayment.receipt.url);
         return (
           <View style={styles.imageContainer}>
-            <Image
-              style={styles.image}
-              source={{ uri: userPayment.receipt.url }}
-            />
+            <RenderImageReceipt imageUrl={userPayment.receipt.url} />
           </View>
         );
       }
       if (userPayment.receipt.type === 'application/pdf') {
-        return (
-          <View style={styles.imageContainer}>
-            <PDFReader
-              style={styles.receipt}
-              source={{
-                uri: userPayment.receipt.url,
-              }}
-            />
-          </View>
-        );
+        return <RenderPdfReceipt documentUrl={userPayment.receipt.url} />;
       }
     }
     return null;
@@ -138,7 +131,11 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
                       {...accessibilityLabel(`showImageClosedPayment${index}`)}
                     >
                       <View style={styles.imageIcon}>
-                        <Image source={ClipIcon} />
+                        <Entypo
+                          name="attachment"
+                          size={24}
+                          color={Colors.primary}
+                        />
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -358,13 +355,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     margin: 10,
     alignItems: 'center',
-    height: 200,
+    // height: 200,
   },
   image: {
     flex: 1,
     width: 200,
     height: 200,
     resizeMode: 'contain',
+  },
+  documentContainer: {
+    flexDirection: 'row',
+    margin: 10,
+    alignItems: 'center',
+    height: 200,
   },
   header: {
     alignItems: 'flex-start',

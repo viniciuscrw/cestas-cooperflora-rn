@@ -9,10 +9,10 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
-import PDFReader from 'rn-pdf-reader-js';
 import { accessibilityLabel } from '../utils';
-
 import CameraIcon from '../../assets/images/icons/cameraicon.png';
+import RenderImageReceipt from './RenderImageReceipt';
+import RenderPdfReceipt from './RenderPdfReceipt';
 
 const ReceiptPicker = (props) => {
   const [pickedReceipt, setPickedReceipt] = useState({});
@@ -20,8 +20,8 @@ const ReceiptPicker = (props) => {
   const launchCamera = async () => {
     console.log('[ImagePicker] launchCamera');
     const image = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [16, 9],
+      // allowsEditing: true,
+      // aspect: [16, 9],
       quality: 0.5,
     });
     image.type = 'image';
@@ -33,8 +33,8 @@ const ReceiptPicker = (props) => {
     console.log('[ImagePicker] launchGalery');
     const options = {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [16, 9],
+      // allowsEditing: true,
+      // aspect: [16, 9],
       quality: 0.5,
     };
     const image = await ImagePicker.launchImageLibraryAsync(options);
@@ -105,19 +105,10 @@ const ReceiptPicker = (props) => {
       return <Text>Nenhuma Imagem Selecionada.</Text>;
     }
     if (pickedReceipt.type === 'image') {
-      return (
-        <Image style={styles.receipt} source={{ uri: pickedReceipt.uri }} />
-      );
+      return <RenderImageReceipt imageUrl={pickedReceipt.uri} />;
     }
     if (pickedReceipt.type === 'pdf') {
-      return (
-        <PDFReader
-          style={styles.receipt}
-          source={{
-            uri: pickedReceipt.uri,
-          }}
-        />
-      );
+      return <RenderPdfReceipt documentUrl={pickedReceipt.uri} />;
     }
     return null;
   };
@@ -137,6 +128,7 @@ const ReceiptPicker = (props) => {
         </TouchableOpacity>
       </View>
       <View style={styles.receiptPreview}>{renderReceipt()}</View>
+
     </View>
   );
 };
@@ -185,10 +177,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: '#ccc',
     borderWidth: 1,
-  },
-  receipt: {
-    width: '100%',
-    height: '100%',
   },
 });
 

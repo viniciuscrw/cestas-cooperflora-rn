@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthNavigator, MainNavigator } from './MainNavigation';
 import { Context as AuthContext } from '../context/AuthContext';
+import { navigationRef } from '../navigationRef';
 import IntroSlider from '../screens/IntroSlider';
 
 const AppNavigator = () => {
@@ -20,7 +21,7 @@ const AppNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       {!authId ? <AuthNavigator /> : <MainNavigator />}
       {/* <MainNavigator /> */}
     </NavigationContainer>
