@@ -61,7 +61,10 @@ const AboutScreen = () => {
             <TextLabel style={{ paddingTop: 10 }}>Coordenação</TextLabel>
             <TextContent>André Luís Bordignon</TextContent>
             <TextLabel style={{ paddingTop: 10 }}>Desenvolvimento</TextLabel>
+            <TextContent>André Luís Bordignon</TextContent>
             <TextContent>Vinícius Costa Regaço</TextContent>
+            <TextLabel style={{ paddingTop: 10 }}>Design</TextLabel>
+            <TextContent>Mateus Santos Magalhães</TextContent>
             <TextLabel style={{ paddingTop: 10 }}>Bolsistas</TextLabel>
             <TextContent>Luana Matallo Ruggiero</TextContent>
             <TextContent>Rafal Almeida</TextContent>

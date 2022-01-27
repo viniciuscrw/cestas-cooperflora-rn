@@ -101,8 +101,9 @@ const createUser = (dispatch) => async (name, email, phoneNumber, role) => {
   };
 
   console.log(`Creating user: ${JSON.stringify(user)}`);
+  // const routeName = role === GLOBALS.USER.ROLE.CONSUMER ? 'Consumers' : 'Organizers';
   const routeName =
-    role === GLOBALS.USER.ROLE.CONSUMER ? 'Consumers' : 'Organizers';
+    role === GLOBALS.USER.ROLE.CONSUMER ? 'ConsumersScreen' : 'ConsumersScreen';
   insertDoc(GLOBALS.COLLECTION.USERS, user).then(() => {
     dispatch({ type: 'create_user' });
     navigate(routeName);

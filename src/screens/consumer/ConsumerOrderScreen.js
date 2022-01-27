@@ -22,6 +22,7 @@ import VegetableImage from '../../../assets/images/vegetable2.png';
 import Spinner from '../../components/Spinner';
 import { isConsumer, showAlert } from '../../helper/HelperFunctions';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
+import { Entypo } from '@expo/vector-icons';
 
 const ConsumerOrderScreen = ({ route, navigation }) => {
   const { user, delivery } = route.params;
@@ -96,9 +97,9 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
           orderProduct.maxQuantity =
             initialProducts.length > 0 && initialProducts[initialIndex] != null
               ? resolveProductAvailableQuantity(
-                  deliveryProduct,
-                  initialProducts[initialIndex].quantity
-                )
+                deliveryProduct,
+                initialProducts[initialIndex].quantity
+              )
               : resolveProductAvailableQuantity(deliveryProduct, 0);
         }
       });
@@ -308,7 +309,8 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
                 style={styles.incDecButton}
                 onPress={() => removeBaseProducts(delivery.baseProductsPrice)}
               >
-                <Text style={styles.textControls}>{`-  `}</Text>
+                {/* <Text style={styles.textControls}>{`-  `}</Text> */}
+                <Entypo name="minus" size={24} color="#8898AA" />
               </TouchableOpacity>
               <View style={styles.quantityContainer}>
                 <Text style={styles.quantity}>{order.baseProducts}</Text>
@@ -317,7 +319,8 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
                 style={styles.incDecButton}
                 onPress={() => addBaseProducts(delivery.baseProductsPrice)}
               >
-                <Text style={styles.textControls}>{`  +`}</Text>
+                {/* <Text style={styles.textControls}>{`  +`}</Text> */}
+                <Entypo name="plus" size={24} color="#8898AA" />
               </TouchableOpacity>
             </View>
           </View>
@@ -348,7 +351,7 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
                       <TouchableOpacity
                         onPress={() => removeProduct(orderProducts, item)}
                       >
-                        <Text style={styles.textControls}>-</Text>
+                        <Entypo name="minus" size={24} color="#8898AA" />
                       </TouchableOpacity>
                     </View>
                     <Text style={styles.quantity}>{item.quantity}</Text>
@@ -358,7 +361,7 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
                           addProduct(orderProducts, item, initialProducts)
                         }
                       >
-                        <Text style={styles.textControls}>{`  +`}</Text>
+                        <Entypo name="plus" size={24} color="#8898AA" />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -457,6 +460,7 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   textControls: {
     fontFamily: 'Roboto',

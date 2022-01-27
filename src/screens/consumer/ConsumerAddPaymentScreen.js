@@ -48,7 +48,6 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   }, [userId]);
 
   const receiptSelectedHandler = async (receipt) => {
-    console.log('[ConsumerAddPayment Screen] imageSelectedHandler');
     setReceiptDocument(receipt);
   };
 
@@ -93,13 +92,11 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
         });
       })
       .catch((error) => {
-        // console.log('[Consumer Add payment Screen - Add payment] - ERRO', error);
         Alert.alert('Erro ao armazenar o pagamento no banco de dados!', error);
       });
   };
 
   const handlePayment = async () => {
-    // console.log('[Consumer Payment Screen] Handle payment', receiptDocument);
     if (userPayment.totalToBePaid <= 0) {
       Alert.alert('O valor para o pagamento está com o valor 0!');
       return;
