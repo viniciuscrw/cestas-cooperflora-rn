@@ -50,6 +50,6 @@ export default {
     },
   },
   RECEIPTFILE: {
-    SIZE: 5000,
+    SIZE: 2000000,
   },
 };
