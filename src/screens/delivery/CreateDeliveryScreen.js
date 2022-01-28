@@ -24,7 +24,7 @@ import Colors from '../../constants/Colors';
 import { accessibilityLabel } from '../../utils';
 
 const CreateDeliveryScreen = ({ route }) => {
-  console.log('[Create Delivery Screen started]');
+  // console.log('[Create Delivery Screen started]');
   const { setDeliveryInfo } = useContext(DeliveryContext);
 
   const delivery = route && route.params ? route.params.delivery : null;
