@@ -77,20 +77,22 @@ const authReducer = (state, action) => {
 const tryLocalSignin = (dispatch) => async () => {
   const authId = await AsyncStorage.getItem('authId');
 
-  firebase.auth().onAuthStateChanged((user) => {
-    if (!user) {
-      console.log('User has been logged out. Redirecting to login...');
-      navigate('LoginFlow');
-    }
-  });
+  // firebase.auth().onAuthStateChanged((user) => {
+  //   if (!user) {
+  //     console.log('User has been logged out. Redirecting to login...');
+  //     navigate('SigninScreen');
+  //   }
+  // });
 
   const user = await getFirstByAttribute('users', 'authId', authId);
   if (authId && user) {
     console.log(`Local sign in for auth: ${authId}`);
     dispatch({ type: 'signin', payload: authId });
+    console.log('[AuthContext] Navegando para Deliveries');
     navigate('Deliveries');
   } else {
-    navigate('LoginFlow');
+    console.log('[AuthContext], Se não existir authId e user.');
+    navigate('SigninScreen');
   }
 };
 
