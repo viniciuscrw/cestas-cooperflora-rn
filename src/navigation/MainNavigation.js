@@ -56,6 +56,7 @@ import ConsumerAddPaymentScreen, {
 } from '../screens/consumer/ConsumerAddPaymentScreen';
 import AboutScreen, { aboutScreenOptions } from '../screens/AboutScreen';
 import OrdersItemsQuantityScreen from '../screens/OrdersItemsQuantityScreen';
+import InitialScreen, { initialScreenOptions } from '../screens/InitialScreen';
 import Colors from '../constants/Colors';
 
 const defaultStackNavOptions = {
@@ -300,6 +301,11 @@ const AuthStackNavigator = createStackNavigator();
 export const AuthNavigator = () => {
   return (
     <AuthStackNavigator.Navigator>
+      <AuthStackNavigator.Screen
+        name="InitialScreen"
+        component={InitialScreen}
+        options={initialScreenOptions}
+      />
       <AuthStackNavigator.Screen
         name="SigninScreen"
         component={SigninScreen}
