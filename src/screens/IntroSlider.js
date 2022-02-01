@@ -4,7 +4,6 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Button from '../components/Button';
 import logo from '../../assets/images/logo.png';
-import Colors from '../constants/Colors';
 
 const slides = [
   {
@@ -47,7 +46,6 @@ const slides = [
 
 const IntroSlider = ({ setIntroSlider }) => {
   const setSlider = () => {
-    console.log('Slider set');
     setIntroSlider(false);
   };
 

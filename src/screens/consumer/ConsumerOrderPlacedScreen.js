@@ -95,7 +95,33 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
                 {(order.baseProducts * delivery.baseProductsPrice).toFixed(2)}
               </Text>
             </View>
-            <FlatList
+            <View>
+              {order.extraProducts.map((extraProduct) => {
+                const total = extraProduct.productPrice * extraProduct.quantity;
+                return (
+                  <View>
+                    {total !== 0 ? (
+                      <View style={styles.orderItemContainer}>
+                        <View style={styles.textContainer}>
+                          <Text style={styles.itemText}>
+                            {extraProduct.quantity}
+                          </Text>
+                          <Text style={styles.itemText}>
+                            {extraProduct.productTitle}
+                          </Text>
+                        </View>
+                        <View style={styles.box2}>
+                          <Text style={styles.itemValue}>
+                            R$ {total.toFixed(2)}
+                          </Text>
+                        </View>
+                      </View>
+                    ) : null}
+                  </View>
+                );
+              })}
+            </View>
+            {/* <FlatList
               data={order.extraProducts}
               keyExtractor={(item) => item.productTitle}
               renderItem={(itemData) => {
@@ -123,7 +149,7 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
                   </View>
                 );
               }}
-            />
+            /> */}
           </View>
         </ScrollView>
         <Divider style={{ borderBottomColor: Colors.tertiary }} />

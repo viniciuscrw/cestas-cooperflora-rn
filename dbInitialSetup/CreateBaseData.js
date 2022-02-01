@@ -7,7 +7,7 @@ const admin = require('firebase-admin');
 const group = {
   address:
     'STOUT Café Cultura & Bar - R. Gilberto Pattaro, 105 - Barão Geraldo, Campinas - SP',
-  baseProductsPrice: 35,
+  baseProductsPrice: 40,
   deliveryFee: 5,
   deliveryFrequencyInDays: 15,
   deliveryFrequencyText: 'Quinzenalmente às quartas-feiras',
