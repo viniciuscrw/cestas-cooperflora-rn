@@ -4,13 +4,13 @@ import Constants from 'expo-constants';
 const ENV = {
   dev: {
     FirebaseConfig: {
-      apiKey: 'AIzaSyCAn6bViRobzNBEvfANu8eFEqBji3_KE7E',
-      authDomain: 'cestascooperflorabarao-dev.firebaseapp.com',
-      databaseURL: 'https://cestas-cooperflora-dev.firebaseio.com',
-      projectId: 'cestascooperflorabarao-dev',
-      storageBucket: 'cestascooperflorabarao-dev.appspot.com',
-      messagingSenderId: '384118273017',
-      appId: '1:384118273017:web:046a319cf0b479f7d2c328',
+      apiKey: "AIzaSyDd6zz4XqA7CIeL4AhcrKlclh8PK2EpzIA",
+      authDomain: "cestas-cooperflora-dev2.firebaseapp.com",
+      databaseURL: "https://cestas-cooperflora-dev2-default-rtdb.firebaseio.com",
+      projectId: "cestas-cooperflora-dev2",
+      storageBucket: "cestas-cooperflora-dev2.appspot.com",
+      messagingSenderId: "109563362615",
+      appId: "1:109563362615:web:25896a03f004d33970aeb2"
     },
   },
   prod: {

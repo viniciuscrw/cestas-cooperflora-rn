@@ -99,7 +99,7 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
               {order.extraProducts.map((extraProduct) => {
                 const total = extraProduct.productPrice * extraProduct.quantity;
                 return (
-                  <View>
+                  <View key={extraProduct.productId}>
                     {total !== 0 ? (
                       <View style={styles.orderItemContainer}>
                         <View style={styles.textContainer}>

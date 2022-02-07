@@ -257,11 +257,11 @@ const styles = StyleSheet.create({
     marginTop: -30,
     width: 250,
   },
-  title: {
-    fontSize: 30,
-    bottom: 40,
-    textAlign: 'center',
-  },
+  // title: {
+  //   fontSize: 30,
+  //   bottom: 40,
+  //   textAlign: 'center',
+  // },
   emailInputContainer: {
     height: 50,
   },
@@ -282,7 +282,6 @@ const styles = StyleSheet.create({
     width: '80%',
     alignSelf: 'center',
   },
-
   buttonContainer: {
     width: '100%',
   },
@@ -291,7 +290,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     alignSelf: 'center',
   },
-
   textContainer: {
     margin: 20,
   },
@@ -301,11 +299,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  smallTitle: {
-    fontSize: 20,
-    bottom: 20,
-    textAlign: 'center',
-  },
+  // smallTitle: {
+  //   fontSize: 20,
+  //   bottom: 20,
+  //   textAlign: 'center',
+  // },
   errorMessage: {
     fontSize: 16,
     color: 'red',

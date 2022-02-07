@@ -201,6 +201,38 @@ export const getByIdFromSubcollection = async (
   return data;
 };
 
+// This function should be merged with the above function in the future
+export const getByIdFromSubcollectionPayments = async (
+  collection,
+  collectionId,
+  subcollection,
+  subcollectionId
+) => {
+  console.log(
+    `[Firebase - getByIdFromSubcollection] collection: ${collection}; doc: ${collectionId}; subcollection: ${subcollection}; subDoc: ${subcollectionId}`
+  );
+
+  let data = null;
+
+  const db = firebase.firestore();
+  const ref = db.collection(collection);
+  await ref
+    .doc(collectionId)
+    .collection(subcollection)
+    .doc(subcollectionId)
+    .get()
+    .then((doc) => {
+      data = {
+        ...doc.data(),
+      };
+    })
+    .catch((err) =>
+      console.log('Error while getting by id from subcollection', err)
+    );
+
+  return data;
+};
+
 export const insertDoc = async (collection, data) => {
   console.log(
     `[Firebase - insertDoc] collection: ${collection}; data: ${JSON.stringify(
@@ -217,7 +249,7 @@ export const insertDoc = async (collection, data) => {
     .catch((err) => {
       console.log('Error while adding data.', err);
       if (err.code === 'permission-denied') {
-        navigate('Signin');
+        navigate('SigninScreen');
       }
     });
 };
@@ -241,7 +273,7 @@ export const insertDocAndRetrieveId = async (collection, data) => {
     .catch((err) => {
       console.log('Error while adding data.', err);
       if (err.code === 'permission-denied') {
-        navigate('Signin');
+        navigate('SigninScreen');
       }
     });
 
@@ -260,15 +292,20 @@ export const insertIntoSubcollection = async (
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
+  let docRefId = null;
   await ref
     .doc(doc)
     .collection(subcollection)
     .add(data)
+    .then((docRef) => {
+      console.log('[Firebase api] inserIntoSubcollection return', docRef.id);
+      docRefId = docRef.id;
+    })
     .catch((err) =>
       console.log('Error while inserting doc into subcollection', err)
     );
-
-  return data;
+  // return data;
+  return docRefId;
 };
 
 export const updateDocInSubcollection = async (
@@ -310,7 +347,7 @@ export const updateDocAttribute = async (collection, doc, attribute, value) => {
     .catch((err) => {
       console.log(`Error updating document: ${doc}`, err);
       if (err.code === 'permission-denied') {
-        navigate('Signin');
+        navigate('SigninScreen');
       }
     });
 };
@@ -331,7 +368,7 @@ export const updateDoc = async (collection, doc, data) => {
     .catch((err) => {
       console.log(`Error updating document: ${doc}`, err);
       if (err.code === 'permission-denied') {
-        navigate('Signin');
+        navigate('SigninScreen');
       }
     });
 };
@@ -347,7 +384,7 @@ export const deleteDoc = async (collection, doc) => {
     .delete()
     .catch((err) => {
       console.log(`Error deleting document: ${doc}`, err);
-      navigate('Signin');
+      navigate('SigninScreen');
     });
 };
 
@@ -371,7 +408,7 @@ export const deleteDocInSubcollection = async (
     .delete()
     .catch((err) => {
       console.log(`Error deleting document in subcollection: ${doc}`, err);
-      navigate('Signin');
+      navigate('SigninScreen');
     });
 };
 

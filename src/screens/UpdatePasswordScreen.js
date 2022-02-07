@@ -9,8 +9,8 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
-import Spacer from '../components/Spacer';
-import FormInput from '../components/FormInput';
+import { Feather } from '@expo/vector-icons';
+import PasswordInput from '../components/PasswordInput';
 import Button from '../components/Button';
 import Divider from '../components/Divider';
 import { Context as AuthContext } from '../context/AuthContext';
@@ -24,6 +24,11 @@ const UpdatePasswordScreen = ({ route }) => {
   const email = route.params.userEmail;
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [secureTextEntryCurrentPassword, setSecureTextEntryCurrentPassword] =
+    useState(true);
+  const [secureTextEntryNewPassword, setSecureTextEntryNewPassword] =
+    useState(true);
+
   const { state, updatePassword, clearError } = useContext(AuthContext);
 
   const newPasswordTextInput = React.createRef();
@@ -65,44 +70,97 @@ const UpdatePasswordScreen = ({ route }) => {
             keyboardVerticalOffset={100}
           >
             <ScrollView>
-              <Spacer />
-              <FormInput
-                id="currentpassword"
-                label="Digite sua senha atual:"
-                value={password}
-                returnKeyType="next"
-                onChangeText={(password) => {
-                  setPassword(password);
-                  if (state.errorMessage) {
-                    clearError();
-                  }
-                }}
-                onSubmitEditing={() => newPasswordTextInput.current.focus()}
-                autoCapitalize="words"
-                autoCorrect={false}
-                secureTextEntry
-              />
-              <Spacer />
-              <FormInput
-                id="newpassword"
-                label="Nova senha:"
-                value={newPassword}
-                reference={newPasswordTextInput}
-                returnKeyType="done"
-                onChangeText={(newPassword) => {
-                  setNewPassword(newPassword);
-                  if (state.errorMessage) {
-                    clearError();
-                  }
-                }}
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry
-              />
+              <View style={styles.passwordContainer}>
+                <PasswordInput
+                  id="currentpassword"
+                  label="Digite sua senha atual:"
+                  value={password}
+                  secureTextEntry={secureTextEntryCurrentPassword}
+                  onChangeText={(pass) => {
+                    setPassword(pass);
+                    if (state.errorMessage) {
+                      clearError();
+                    }
+                  }}
+                  autoFocus
+                  secureTextEntry={secureTextEntryCurrentPassword}
+                />
+                {/* <FormInput
+                  id="currentpassword"
+                  label="Digite sua senha atual:"
+                  value={password}
+                  returnKeyType="next"
+                  onChangeText={(password) => {
+                    setPassword(password);
+                    if (state.errorMessage) {
+                      clearError();
+                    }
+                  }}
+                  onSubmitEditing={() => newPasswordTextInput.current.focus()}
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  secureTextEntry={secureTextEntry}
+                /> */}
+                <View style={styles.iconContainer}>
+                  <Feather
+                    name={secureTextEntryCurrentPassword ? 'eye-off' : 'eye'}
+                    size={24}
+                    color={Colors.primary}
+                    onPress={() =>
+                      setSecureTextEntryCurrentPassword(
+                        !secureTextEntryCurrentPassword
+                      )
+                    }
+                  />
+                </View>
+              </View>
+              <View style={styles.passwordContainer}>
+                <PasswordInput
+                  id="newpassword"
+                  label="Nova senha:"
+                  value={newPassword}
+                  secureTextEntry={secureTextEntryNewPassword}
+                  onChangeText={(newPasswordAux) => {
+                    setNewPassword(newPasswordAux);
+                    if (state.errorMessage) {
+                      clearError();
+                    }
+                  }}
+                  autoFocus
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  secureTextEntry={secureTextEntryNewPassword}
+                />
+                {/* <FormInput
+                  id="newpassword"
+                  label="Nova senha:"
+                  value={newPassword}
+                  reference={newPasswordTextInput}
+                  returnKeyType="done"
+                  onChangeText={(newPassword) => {
+                    setNewPassword(newPassword);
+                    if (state.errorMessage) {
+                      clearError();
+                    }
+                  }}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  secureTextEntry={secureTextEntry}
+                /> */}
+                <View style={styles.iconContainer}>
+                  <Feather
+                    name={secureTextEntryNewPassword ? 'eye-off' : 'eye'}
+                    size={24}
+                    color={Colors.primary}
+                    onPress={() =>
+                      setSecureTextEntryNewPassword(!secureTextEntryNewPassword)
+                    }
+                  />
+                </View>
+              </View>
               {state.errorMessage ? (
                 <Text style={styles.errorMessage}>{state.errorMessage}</Text>
               ) : null}
-              <Spacer />
             </ScrollView>
           </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
@@ -133,7 +191,7 @@ const styles = StyleSheet.create({
   screen,
   container: {
     flex: 1,
-    margin: 25,
+    margin: 15,
   },
   errorMessage: {
     fontSize: 16,
@@ -149,6 +207,17 @@ const styles = StyleSheet.create({
     marginTop: 5,
     backgroundColor: Colors.primary,
     alignSelf: 'center',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    marginRight: 5,
+    marginTop: 15,
+    // height: 50,
+  },
+  iconContainer: {
+    marginRight: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     alignItems: 'flex-start',
