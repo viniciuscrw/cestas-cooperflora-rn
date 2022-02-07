@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "2.4.3",
+    "version": "2.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "splash": {
@@ -24,7 +24,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "br.pro.bordignon",
-      "buildNumber": "2.4.3"
+      "buildNumber": "2.1.0"
     },
     "android": {
       "package": "br.pro.bordignon",
