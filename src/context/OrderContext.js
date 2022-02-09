@@ -333,8 +333,8 @@ const addOrder =
   async (userId, userName, deliveryId, deliveryFee, order, initialProducts) => {
     dispatch({ type: 'loading' });
     console.log('[Order Context] adding Order ---------');
-    console.log(`Initial products: ${JSON.stringify(initialProducts)}`);
-    console.log(`Updated products: ${JSON.stringify(order.extraProducts)}`);
+    // console.log(`Initial products: ${JSON.stringify(initialProducts)}`);
+    // console.log(`Updated products: ${JSON.stringify(order.extraProducts)}`);
 
     const extraProducts = order.extraProducts
       ? order.extraProducts.filter((prod) => prod.quantity > 0)

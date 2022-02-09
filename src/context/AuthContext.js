@@ -406,7 +406,7 @@ const updatePassword = (dispatch) => (email, password, newPassword) => {
             },
           ]);
           dispatch({ type: 'update_account' });
-          navigate('AccountOptions');
+          navigate('AccountOptionsScreen');
         })
         .catch((err) => {
           console.log(err);

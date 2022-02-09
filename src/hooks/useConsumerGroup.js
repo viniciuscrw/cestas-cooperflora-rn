@@ -10,7 +10,7 @@ export default () => {
     const groupData = await getFirst(GLOBALS.COLLECTION.GROUPS);
     // await AsyncStorage.setItem('group', JSON.stringify(groupData));
     setGroup(groupData);
-    console.log(groupData);
+    // console.log(groupData);
   };
 
   // const getResult = async () => {

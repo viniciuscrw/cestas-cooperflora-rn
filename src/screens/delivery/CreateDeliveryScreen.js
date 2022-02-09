@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   StyleSheet,
+  Text,
   TextInput,
   TouchableWithoutFeedback,
   TouchableOpacity,
@@ -173,6 +174,10 @@ const CreateDeliveryScreen = ({ route }) => {
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 100}
             behavior={Platform.OS === 'ios' ? 'position' : 'height'}
           >
+            <Text style={styles.text}>
+              Preço da cesta R$ {groupInfo?.baseProductsPrice.toFixed(2)}
+            </Text>
+            <Spacer />
             <View style={{ justifyContent: 'flex-end' }}>
               <ScrollView>
                 <TouchableOpacity
@@ -240,7 +245,6 @@ const CreateDeliveryScreen = ({ route }) => {
                     onChange={onOrdersDateTimeChange}
                   />
                 )}
-                <Spacer />
                 <View style={styles.textAreaContainer}>
                   <TextInput
                     {...accessibilityLabel('basketitens')}
@@ -309,8 +313,8 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   text: {
-    color: '#101010',
-    fontSize: 24,
+    color: Colors.tertiary,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   textAreaContainer: {

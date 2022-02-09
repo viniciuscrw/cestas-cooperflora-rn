@@ -81,11 +81,19 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
       payment
     )
       .then((data) => {
-        console.log(
-          '[Consumer Payment Screen] addPayment - Payment  included',
-          data
-        );
+        // console.log(
+        //   '[Consumer Payment Screen] addPayment - Payment  included',
+        //   data
+        // );
         updateUserBalance(userPayment.totalToBePaid);
+        // update order with payment completed.
+        updateDocAttribute(
+          GLOBALS.COLLECTION.ORDERS,
+          userPayment.orderId,
+          GLOBALS.ORDER.ATTRIBUTE.PAYMENT_STATUS,
+          GLOBALS.PAYMENT.STATUS.COMPLETED
+        );
+        //
         setIsLoading(false);
         navigation.navigate('ConsumerPaymentsScreen', {
           userId,
@@ -139,7 +147,7 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
                 );
               });
           })
-          .catch(() => {
+          .catch((error) => {
             Alert.alert(
               'Erro ao recuperar os metadados do comprovante de pagamento!',
               error

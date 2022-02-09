@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { format } from 'date-fns';
 import { useFocusEffect } from '@react-navigation/native';
+import { Entypo } from '@expo/vector-icons';
 import GLOBALS from '../../Globals';
 import { Context as OrderContext } from '../../context/OrderContext';
 import { Context as PaymentContext } from '../../context/PaymentContext';
@@ -22,7 +23,7 @@ import VegetableImage from '../../../assets/images/vegetable2.png';
 import Spinner from '../../components/Spinner';
 import { isConsumer, showAlert } from '../../helper/HelperFunctions';
 import { Context as DeliveryContext } from '../../context/DeliveryContext';
-import { Entypo } from '@expo/vector-icons';
+import { TextContent, TextLabel } from '../../components/StandardStyles';
 
 const ConsumerOrderScreen = ({ route, navigation }) => {
   const { user, delivery } = route.params;
@@ -123,8 +124,12 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
       });
 
     const transformedOrderProducts = orderExtraProducts;
+    // Sort the products list based on the quantity to facilitate the local delivery.
     transformedOrderProducts.sort((a, b) => {
-      return a.productTitle > b.productTitle ? 1 : -1;
+      // return a.productTitle > b.productTitle ? 1 : -1;
+      return a.quantity < b.quantity || a.productTitle > b.productTitle
+        ? 1
+        : -1;
     });
 
     setOrderProducts(transformedOrderProducts);
@@ -136,11 +141,10 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
       if (user && delivery) {
         if (!user.role || order == null) {
           console.log(`[Consumer Order Screen] Fetching order...`);
-          // Quando não tem role, é porque está vindo da tela de gerenciamento, então é uma pessoa organizadora que está manipulando o pedido
+          // When there is no role the the administrator (Organizador) is managing the order
+
           fetchUserOrder(user.id, delivery.id, delivery.extraProducts);
         }
-
-        // setBaseProducts(delivery.baseProducts);
         navigation.setParams({
           deliveryDate: format(delivery.deliveryDate, GLOBALS.FORMAT.DD_MM),
         });
@@ -154,7 +158,6 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
 
   const onHandleNewOrUpdatedOrder = () => {
     console.log('[Consumer Order Screen] Handle new or update order');
-
     addOrder(
       user.id,
       user.name,
@@ -216,7 +219,6 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
         </Button>
       );
     }
-
     return (
       <Button
         id="confirmOrderButton"
@@ -300,9 +302,9 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
         <View style={styles.baseProductsContainer}>
           <View style={styles.baseProducts}>
             <View style={styles.title}>
-              <Text
-                style={styles.textTitle}
-              >{`Cesta (${delivery.baseProductsPrice?.toFixed(2)})`}</Text>
+              <TextLabel>
+                {`Cesta (${delivery.baseProductsPrice?.toFixed(2)})`}
+              </TextLabel>
             </View>
             <View style={styles.controls}>
               <TouchableOpacity
@@ -325,25 +327,23 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
             </View>
           </View>
           <ScrollView style={styles.baseProductsItems}>
-            <Text style={styles.textItens}>
+            <TextContent>
               {formatBaseProducts(delivery.baseProducts)}
-            </Text>
+            </TextContent>
           </ScrollView>
         </View>
         <Divider style={{ borderBottomColor: Colors.secondary }} />
+        <TextLabel>Extras</TextLabel>
         <View style={styles.extraProductsContainer}>
-          <View style={styles.title}>
-            <Text style={styles.textTitle}>Extras</Text>
-          </View>
           <ScrollView style={styles.extraProducts}>
             {orderProducts.map((item, index) => {
               return (
                 <View key={index} style={styles.extraProductItems}>
                   <View style={styles.line}>
                     <View style={styles.itemContainer}>
-                      <Text style={styles.textItens}>
+                      <TextContent>
                         {item.productTitle} (R${item.productPrice.toFixed(2)})
-                      </Text>
+                      </TextContent>
                     </View>
                   </View>
                   <View style={styles.controls}>
@@ -372,7 +372,13 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.buttonContainer}>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
-          {renderConfirmButton()}
+          {order.paymentStatus === GLOBALS.PAYMENT.STATUS.COMPLETED ? (
+            <TextLabel>
+              Pagamento já foi efetuado. Não é possível fazer alterações.
+            </TextLabel>
+          ) : (
+            renderConfirmButton()
+          )}
           {renderCompleteDeliveryButton()}
         </View>
       </View>
@@ -382,9 +388,10 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
 
 export const consumerOrderScreenOptions = (navData) => {
   const { deliveryDate, user } = navData.route.params;
+  const firstName = user.name.split(' ')[0];
   const headerTitle = isConsumer(user)
     ? 'Fazer pedido'
-    : `Fazer pedido - ${user?.name}`;
+    : `Fazer pedido - ${firstName}`;
   // console.log(`navDataa${JSON.stringify(navData.route.params)}`);
 
   return {
@@ -431,7 +438,7 @@ const styles = StyleSheet.create({
   },
   baseProductsContainer: {
     marginBottom: 10,
-    height: '20%',
+    // height: '20%',
   },
   baseProducts: {
     flexDirection: 'row',
@@ -442,17 +449,11 @@ const styles = StyleSheet.create({
     // flexDirection: 'row',
     // justifyContent: 'space-between',
   },
-  title: {
-    flex: 1,
-    justifyContent: 'center',
-    height: 40,
-  },
-  textTitle: {
-    fontFamily: 'Roboto',
-    fontWeight: '700',
-    fontSize: 16,
-    color: '#505050',
-  },
+  // title: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   height: 40,
+  // },
   controls: {
     flexDirection: 'row',
   },
@@ -462,12 +463,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  textControls: {
-    fontFamily: 'Roboto',
-    fontSize: 25,
-    fontWeight: 'bold',
-    color: '#8898AA',
-  },
+  // textControls: {
+  //   fontFamily: 'Roboto',
+  //   fontSize: 25,
+  //   fontWeight: 'bold',
+  //   color: '#8898AA',
+  // },
   quantityContainer: {
     justifyContent: 'center',
   },
@@ -480,31 +481,27 @@ const styles = StyleSheet.create({
     color: '#8898AA',
   },
   extraProductsContainer: {
-    marginTop: 10,
-    marginBottom: 10,
-    height: '63%',
+    height: '59%',
+    borderWidth: 1,
+    borderColor: Colors.tertiary,
+    paddingLeft: 5,
+    paddingRight: 5,
   },
-  line: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  itemContainer: {
-    justifyContent: 'center',
-  },
-  extraProducts: {
-    marginTop: 10,
-  },
+  // line: {
+  //   flex: 1,
+  //   flexDirection: 'row',
+  // },
+  // itemContainer: {
+  //   justifyContent: 'center',
+  // },
+  // extraProducts: {
+  //   marginTop: 10,
+  // },
   extraProductItems: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingTop: 5,
-  },
-  textItens: {
-    fontFamily: 'Roboto',
-    fontWeight: '400',
-    fontSize: 16,
-    color: '#505050',
   },
   buttonContainer: {
     position: 'absolute',

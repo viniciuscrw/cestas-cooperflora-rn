@@ -120,8 +120,9 @@ const updateUser = (dispatch) => (id, name, email, phoneNumber, role) => {
   };
 
   console.log(`Updating user: ${id}`);
-  const routeName =
-    role === GLOBALS.USER.ROLE.CONSUMER ? 'Consumers' : 'Organizers';
+  // const routeName =
+  //   role === GLOBALS.USER.ROLE.CONSUMER ? 'ConsumersScreen' : 'ConsumersScreen';
+  const routeName = 'ConsumersScreen';
   updateDoc(GLOBALS.COLLECTION.USERS, id, user).then(() => {
     dispatch({ type: 'update_user' });
     navigate(routeName);

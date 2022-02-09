@@ -143,7 +143,6 @@ const createDelivery =
       GLOBALS.COLLECTION.DELIVERIES,
       delivery
     ).then(() => {
-      console.log('[createDelivery delivery context] then');
       dispatch({ type: 'add_delivery' });
       // navigate('Deliveries');
     });

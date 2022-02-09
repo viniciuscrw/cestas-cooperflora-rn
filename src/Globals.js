@@ -42,6 +42,10 @@ export default {
       COMPLETED: 'completed',
       CANCELED: 'canceled',
     },
+    ATTRIBUTE: {
+      PAYMENT_ID: 'paymentId',
+      PAYMENT_STATUS: 'paymentStatus',
+    },
   },
   PAYMENT: {
     STATUS: {

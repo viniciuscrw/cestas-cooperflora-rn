@@ -1,16 +1,13 @@
 import React, { useContext, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import TextInformation from '../components/TextInformation';
 import Spinner from '../components/Spinner';
 import { Context as ConsumerGroupContext } from '../context/ConsumerGroupContext';
 import GLOBALS from '../Globals';
-// import TextLink from '../components/TextLink';
-import { Entypo } from '@expo/vector-icons';
 import HeaderTitle from '../components/HeaderTitle';
-import { AntDesign } from '@expo/vector-icons';
 import BackArrow from '../components/BackArrow';
 import useUser from '../hooks/useUser';
-import { Ionicons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 import localIcon from '../../assets/images/icons/local.jpg';
 import greenBasketIcon from '../../assets/images/icons/greenbasket.png';
@@ -25,7 +22,7 @@ const ConsumerGroupInfoScreen = (props) => {
   if (user) {
     userRole = user.role;
   } else {
-    userRole = 'consumer'
+    userRole = 'consumer';
   }
   // console.log('[Consumer Group Info Screen ] user', user);
 
@@ -66,9 +63,7 @@ const ConsumerGroupInfoScreen = (props) => {
             </View>
             <View style={styles.card}>
               <View style={styles.iconContainer}>
-                <Image style={styles.icon}
-                  source={localIcon}
-                />
+                <Image style={styles.icon} source={localIcon} />
               </View>
               <View style={styles.textContainer}>
                 {state.consumerGroup && state.consumerGroup.address ? (
@@ -81,12 +76,11 @@ const ConsumerGroupInfoScreen = (props) => {
             </View>
             <View style={styles.card}>
               <View style={styles.iconContainer}>
-                <Image style={styles.icon}
-                  source={greenBasketIcon}
-                />
+                <Image style={styles.icon} source={greenBasketIcon} />
               </View>
               <View style={styles.textContainer}>
-                {state.consumerGroup && state.consumerGroup.deliveryFrequencyText ? (
+                {state.consumerGroup &&
+                state.consumerGroup.deliveryFrequencyText ? (
                   <TextInformation
                     title="Entregas"
                     text={state.consumerGroup.deliveryFrequencyText}
@@ -96,13 +90,14 @@ const ConsumerGroupInfoScreen = (props) => {
             </View>
             <View style={styles.card}>
               <View style={styles.iconContainer}>
-                <Image style={styles.icon}
-                  source={watchIcon}
-                />
+                <Image style={styles.icon} source={watchIcon} />
               </View>
               <View style={styles.textContainer}>
                 {state.consumerGroup && state.consumerGroup.time ? (
-                  <TextInformation title="Horário" text={state.consumerGroup.time} />
+                  <TextInformation
+                    title="Horário"
+                    text={state.consumerGroup.time}
+                  />
                 ) : null}
               </View>
             </View>
@@ -113,15 +108,12 @@ const ConsumerGroupInfoScreen = (props) => {
               />
             ) : null}
             <View style={styles.imageContainer}>
-              <Image
-                source={basketImage}
-                style={styles.image}
-              />
+              <Image source={basketImage} style={styles.image} />
             </View>
           </View>
         )}
       </View>
-    </View >
+    </View>
   );
 };
 
@@ -132,14 +124,14 @@ export const consumerGroupInfoScreenOptions = () => {
         <HeaderTitle title="Grupo de Consumo" subtitle="Barão Geraldo" />
       </View>
     ),
-    headerBackImage: () => (<BackArrow />),
+    headerBackImage: () => <BackArrow />,
     headerBackTitleVisible: false,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
-    }
+    },
   };
 };
 
@@ -150,15 +142,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
-    margin: 25
+    margin: 25,
   },
   title: {
     flexDirection: 'row',
@@ -183,21 +175,21 @@ const styles = StyleSheet.create({
     // flex: 1,
     alignContent: 'center',
     height: 40,
-    width: '30%'
+    width: '30%',
   },
   textContainer: {
     // flex: 1,
-    width: '70%'
+    width: '70%',
   },
   icon: {
     flex: 1,
     width: null,
     height: null,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   image: {
     width: '150%',
-    height: '150%'
+    height: '150%',
   },
   imageContainer: {
     width: 320,
@@ -205,10 +197,10 @@ const styles = StyleSheet.create({
     elevation: 49,
     // zIndex: 2,
     right: 0,
-    marginTop: -25
+    marginTop: -25,
   },
   header: {
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
 });
 
