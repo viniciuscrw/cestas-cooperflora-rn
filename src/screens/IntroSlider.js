@@ -12,7 +12,7 @@ const slides = [
     subtitle: 'Barão Geraldo',
     text1:
       'Bem vindo, bem vinda ao aplicativo  de gestão das cestas Cooperflora do grupo de consumo de Barão Geraldo',
-    text2: 'Versão 2.0.3',
+    text2: 'Versão 2.1.0',
     image: logo,
   },
   {

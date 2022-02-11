@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
     height: 48,
     alignSelf: 'stretch',
     borderRadius: 5,
-    marginLeft: 5,
-    marginRight: 5,
+    // marginLeft: 5,
+    // marginRight: 5,
   },
 });
 

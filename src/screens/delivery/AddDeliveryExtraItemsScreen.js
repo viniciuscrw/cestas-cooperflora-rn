@@ -411,6 +411,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     backgroundColor: Colors.secondary,
     alignSelf: 'center',
+    width: '100%',
   },
 });
 

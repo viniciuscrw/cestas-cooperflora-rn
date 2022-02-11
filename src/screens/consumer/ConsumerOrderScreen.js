@@ -339,12 +339,10 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
             {orderProducts.map((item, index) => {
               return (
                 <View key={index} style={styles.extraProductItems}>
-                  <View style={styles.line}>
-                    <View style={styles.itemContainer}>
-                      <TextContent>
-                        {item.productTitle} (R${item.productPrice.toFixed(2)})
-                      </TextContent>
-                    </View>
+                  <View style={styles.itemContainer}>
+                    <TextContent>
+                      {item.productTitle} (R${item.productPrice.toFixed(2)})
+                    </TextContent>
                   </View>
                   <View style={styles.controls}>
                     <View style={styles.incDecButton}>
@@ -431,8 +429,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginLeft: 25,
-    marginRight: 25,
+    marginLeft: 20,
+    marginRight: 20,
     marginTop: 10,
     marginBottom: 10,
   },
@@ -484,16 +482,13 @@ const styles = StyleSheet.create({
     height: '59%',
     borderWidth: 1,
     borderColor: Colors.tertiary,
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingLeft: 2,
+    paddingRight: 2,
   },
-  // line: {
-  //   flex: 1,
-  //   flexDirection: 'row',
-  // },
-  // itemContainer: {
-  //   justifyContent: 'center',
-  // },
+  itemContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
   // extraProducts: {
   //   marginTop: 10,
   // },
@@ -504,6 +499,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
   buttonContainer: {
+    flex: 1,
     position: 'absolute',
     width: '100%',
     bottom: 0,
@@ -511,12 +507,12 @@ const styles = StyleSheet.create({
   confirmButton: {
     marginTop: 5,
     backgroundColor: Colors.primary,
-    justifyContent: 'space-between',
+    width: '100%',
   },
   completeDeliveryButton: {
     marginTop: 5,
     backgroundColor: Colors.secondary,
-    justifyContent: 'space-between',
+    width: '100%',
   },
   disabledButton: {
     marginTop: 5,
