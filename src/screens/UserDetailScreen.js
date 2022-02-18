@@ -1,8 +1,12 @@
 import React from 'react';
 import { Text, StyleSheet, View, ScrollView } from 'react-native';
-import TextInformation from '../components/TextInformation';
-import TextLink from '../components/TextLink';
-import { FontAwesome, FontAwesome5, Entypo, AntDesign, Ionicons } from '@expo/vector-icons';
+import {
+  FontAwesome,
+  FontAwesome5,
+  Entypo,
+  AntDesign,
+  Ionicons,
+} from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 
 const UserDetailScreen = (props) => {
@@ -12,12 +16,20 @@ const UserDetailScreen = (props) => {
     <View style={styles.screen}>
       <ScrollView style={styles.container} maximumZoomScale={1.25}>
         <View style={styles.optionsContainer}>
-          <Ionicons style={styles.iconButton} name="chevron-back" size={24} color={Colors.secondary} onPress={() => props.navigation.goBack(null)} />
+          <Ionicons
+            style={styles.iconButton}
+            name="chevron-back"
+            size={24}
+            color={Colors.secondary}
+            onPress={() => props.navigation.goBack(null)}
+          />
           <AntDesign
             name="form"
             size={27}
             color={Colors.secondary}
-            onPress={() => props.navigation.navigate('CreateUserScreen', { user })}
+            onPress={() =>
+              props.navigation.navigate('CreateUserScreen', { user })
+            }
             style={styles.iconButton}
           />
           {/* <TextLink
@@ -57,13 +69,17 @@ const UserDetailScreen = (props) => {
           </View>
           <View style={styles.dataContainer}>
             <View style={styles.iconContainer}>
-              <FontAwesome5 name="dollar-sign" size={24} color={Colors.secondary} />
+              <FontAwesome5
+                name="dollar-sign"
+                size={24}
+                color={Colors.secondary}
+              />
             </View>
             <Text style={styles.text}>Saldo: {`R$ ${user.balance}`}</Text>
           </View>
         </View>
-      </ScrollView >
-    </View >
+      </ScrollView>
+    </View>
   );
 };
 
@@ -72,72 +88,51 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 4,
     backgroundColor: 'white',
-    // paddingLeft: 25,
-    // paddingRight: 25,
-    // borderRadius: 25,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    backgroundColor: '#F0F5F9',
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOpacity: 0.26,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 25
+    elevation: 25,
   },
   container: {
     flex: 1,
     margin: 10,
-    marginTop: 20
+    marginTop: 20,
   },
   optionsContainer: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
   },
   iconButton: {
-    padding: 10
+    padding: 10,
   },
-  // editButton: {
-  //   alignSelf: 'flex-end',
-  // },
-  // backButton: {
-  //   alignSelf: 'flex-end',
-  // },
   userDataContainer: {
-    marginLeft: 15
+    marginLeft: 15,
   },
   dataContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   text: {
     fontFamily: 'Roboto',
     fontWeight: '700',
     fontSize: 16,
     color: '#505050',
-    padding: 5
+    padding: 5,
   },
   iconContainer: {
     alignContent: 'center',
     height: 40,
-    width: '10%'
+    width: '10%',
   },
   icon: {
     flex: 1,
     width: null,
     height: null,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
-  // container: {
-  //   flex: 1,
-  //   padding: 10,
-  //   backgroundColor: '#ebebeb',
-  //   marginTop: -8,
-  // },
-  // increaseBalanceButton: {
-  //   marginRight: 20,
-  //   marginTop: -20,
-  //   alignSelf: 'flex-end',
-  // },
 });
 
 export default UserDetailScreen;

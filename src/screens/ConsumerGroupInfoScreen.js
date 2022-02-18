@@ -1,7 +1,12 @@
 import React, { useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import TextInformation from '../components/TextInformation';
+import { View, StyleSheet, Image } from 'react-native';
+import {
+  AntDesign,
+  Entypo,
+  FontAwesome,
+  FontAwesome5,
+  Ionicons,
+} from '@expo/vector-icons';
 import Spinner from '../components/Spinner';
 import { Context as ConsumerGroupContext } from '../context/ConsumerGroupContext';
 import GLOBALS from '../Globals';
@@ -9,10 +14,8 @@ import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import useUser from '../hooks/useUser';
 import Colors from '../constants/Colors';
-import localIcon from '../../assets/images/icons/local.jpg';
-import greenBasketIcon from '../../assets/images/icons/greenbasket.png';
-import watchIcon from '../../assets/images/icons/watch.jpg';
 import basketImage from '../../assets/images/basketproducts2.png';
+import { TextContent, TextLabel } from '../components/StandardStyles';
 
 const ConsumerGroupInfoScreen = (props) => {
   const { state, fetchConsumerGroup } = useContext(ConsumerGroupContext);
@@ -24,7 +27,6 @@ const ConsumerGroupInfoScreen = (props) => {
   } else {
     userRole = 'consumer';
   }
-  // console.log('[Consumer Group Info Screen ] user', user);
 
   useEffect(() => {
     const unsubscribe = props.navigation.addListener('focus', () => {
@@ -44,7 +46,7 @@ const ConsumerGroupInfoScreen = (props) => {
         ) : (
           <View style={styles.box}>
             <View style={styles.title}>
-              <Text style={styles.text}>Informações Gerais:</Text>
+              <TextLabel>Informações Gerais:</TextLabel>
               {userRole === GLOBALS.USER.ROLE.ORGANIZER ? (
                 <View style={styles.editButtonContainer}>
                   <AntDesign
@@ -63,49 +65,79 @@ const ConsumerGroupInfoScreen = (props) => {
             </View>
             <View style={styles.card}>
               <View style={styles.iconContainer}>
-                <Image style={styles.icon} source={localIcon} />
+                <Entypo name="location" size={44} color={Colors.primary} />
               </View>
               <View style={styles.textContainer}>
                 {state.consumerGroup && state.consumerGroup.address ? (
-                  <TextInformation
-                    title="Local"
-                    text={state.consumerGroup.address}
-                  />
+                  <>
+                    <TextLabel>Local</TextLabel>
+                    <TextContent>{state.consumerGroup.address}</TextContent>
+                  </>
                 ) : null}
               </View>
             </View>
             <View style={styles.card}>
               <View style={styles.iconContainer}>
-                <Image style={styles.icon} source={greenBasketIcon} />
+                <FontAwesome5
+                  name="shopping-basket"
+                  size={44}
+                  color={Colors.primary}
+                />
               </View>
               <View style={styles.textContainer}>
                 {state.consumerGroup &&
                 state.consumerGroup.deliveryFrequencyText ? (
-                  <TextInformation
-                    title="Entregas"
-                    text={state.consumerGroup.deliveryFrequencyText}
-                  />
+                  <>
+                    <TextLabel>Entregas</TextLabel>
+                    <TextContent>
+                      {state.consumerGroup.deliveryFrequencyText}
+                    </TextContent>
+                  </>
                 ) : null}
               </View>
             </View>
             <View style={styles.card}>
               <View style={styles.iconContainer}>
-                <Image style={styles.icon} source={watchIcon} />
+                <Ionicons
+                  name="time-outline"
+                  size={54}
+                  color={Colors.primary}
+                />
               </View>
               <View style={styles.textContainer}>
                 {state.consumerGroup && state.consumerGroup.time ? (
-                  <TextInformation
-                    title="Horário"
-                    text={state.consumerGroup.time}
-                  />
+                  <>
+                    <TextLabel>Horário</TextLabel>
+                    <TextContent>{state.consumerGroup.time}</TextContent>
+                  </>
+                ) : null}
+              </View>
+            </View>
+            <View style={styles.card}>
+              <View style={styles.iconContainer}>
+                <FontAwesome
+                  style={{ marginLeft: 12 }}
+                  name="dollar"
+                  size={44}
+                  color={Colors.primary}
+                />
+              </View>
+              <View style={styles.textContainer}>
+                {state.consumerGroup && state.consumerGroup.time ? (
+                  <>
+                    <TextLabel>Preço</TextLabel>
+                    <TextContent>
+                      {state.consumerGroup.baseProductsPrice.toFixed(2)}
+                    </TextContent>
+                  </>
                 ) : null}
               </View>
             </View>
             {state.consumerGroup && state.consumerGroup.notice ? (
-              <TextInformation
-                title="Observações"
-                text={state.consumerGroup.notice}
-              />
+              <>
+                <TextLabel style={{ marginTop: 10 }}>Observações</TextLabel>
+                <TextContent>{state.consumerGroup.notice}</TextContent>
+              </>
             ) : null}
             <View style={styles.imageContainer}>
               <Image source={basketImage} style={styles.image} />
@@ -173,9 +205,10 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     // flex: 1,
-    alignContent: 'center',
-    height: 40,
-    width: '30%',
+    // alignContent: 'center',
+    // height: 40,
+    marginLeft: 20,
+    width: '20%',
   },
   textContainer: {
     // flex: 1,
