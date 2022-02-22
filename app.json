@@ -28,7 +28,9 @@
     },
     "android": {
       "package": "br.pro.bordignon",
+      "googleServicesFile": "./google-services.json",
       "versionCode": 10,
+      "useNextNotificationsApi": true,
       "permissions":["CAMERA", "WRITE_EXTERNAL_STORAGE"]
     },
     "hooks": {
