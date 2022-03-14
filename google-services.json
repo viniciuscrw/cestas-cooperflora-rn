@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "384118273017",
-    "firebase_url": "https://cestascooperflorabarao-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "cestascooperflorabarao-dev",
-    "storage_bucket": "cestascooperflorabarao-dev.appspot.com"
+    "project_number": "1021764633897",
+    "project_id": "cestascooperflorabarao",
+    "storage_bucket": "cestascooperflorabarao.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:384118273017:android:89e61a472d9add2ad2c328",
+        "mobilesdk_app_id": "1:1021764633897:android:e6c12ea7e742fdf406a338",
         "android_client_info": {
           "package_name": "br.pro.bordignon"
         }
       },
       "oauth_client": [
         {
-          "client_id": "384118273017-ald0ktdjbq602vs3m9n3tbs7tumgp16m.apps.googleusercontent.com",
+          "client_id": "1021764633897-dr0vrs4k93o5nu60j3mlnmbqa407kha2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDEafDJzsdaog8zE7N3HbBud-rka9GCP84"
+          "current_key": "AIzaSyCxbnO9nq4M1AkuWkSzweyyIq72AkbsiuQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "384118273017-ald0ktdjbq602vs3m9n3tbs7tumgp16m.apps.googleusercontent.com",
+              "client_id": "1021764633897-dr0vrs4k93o5nu60j3mlnmbqa407kha2.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
