@@ -1,8 +1,6 @@
-import { useContext } from 'react';
 import Constants from 'expo-constants';
 import { Alert, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { Context as UserContext } from './context/UserContext';
 
 export const accessibilityLabel = (id) => {
   if (Platform.OS === 'android') {
@@ -58,7 +56,7 @@ export const sendPushNotification = async (users) => {
     if (user.pushNotificationToken) {
       console.log('Enviando notificação para', user.name);
       message.to = user.pushNotificationToken;
-      await fetch('https://exp.host/--/api/v2/push/send', {
+      fetch('https://exp.host/--/api/v2/push/send', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -68,5 +66,30 @@ export const sendPushNotification = async (users) => {
         body: JSON.stringify(message),
       });
     }
+  });
+};
+
+export const sendPushNotificationToUser = async (
+  userExpoNotificationToken,
+  notifcationMessage
+) => {
+  console.log('Token', userExpoNotificationToken);
+
+  console.log('Enviando notificação para usuário único!');
+  const message = {
+    to: userExpoNotificationToken,
+    sound: 'default',
+    title: 'Notificação de Cestas Cooperflora',
+    body: notifcationMessage,
+    data: { someData: 'goes here' },
+  };
+  fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
   });
 };
