@@ -27,7 +27,6 @@ const UserDetailScreen = (props) => {
 
   const sendUserNotification = () => {
     sendPushNotificationToUser(user.pushNotificationToken, notificationMessage);
-    console.log('Notificação enviada');
   };
 
   return (
@@ -106,7 +105,7 @@ const UserDetailScreen = (props) => {
                     color={Colors.secondary}
                   />
                 </TouchableHighlight>
-              </View>
+              </View> 
             </View>
             : <TextContent>
               Notificação não está habilitada para essa pessoa consumidora

@@ -91,5 +91,23 @@ export const sendPushNotificationToUser = async (
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(message),
-  });
+  })
+    .then((response) => response.json())
+    .then((res) => {
+      console.log(res.data.status);
+      if (res.data.status === 'error') {
+        console.log('Erro ao enviar notificação');
+        console.log(res);
+        Alert.alert('Ocorreu um problema ao enviar a notificação.');
+      } else {
+        console.log('Notificação enviada com sucesso!');
+        console.log(res);
+        Alert.alert('Notificação enviada com sucesso!');
+      }
+    })
+    .catch((error) => {
+      console.log('Erro ao enviar notificação');
+      console.log(error);
+      Alert.alert('Ocorreu um problema ao enviar a notificação.');
+    });
 };
