@@ -1,5 +1,12 @@
-import React from 'react';
-import { Text, StyleSheet, View, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import {
+  Text,
+  StyleSheet,
+  View,
+  ScrollView,
+  TextInput,
+  TouchableHighlight,
+} from 'react-native';
 import {
   FontAwesome,
   FontAwesome5,
@@ -8,10 +15,20 @@ import {
   Ionicons,
 } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
+import { TextLabel, TextContent } from '../components/StandardStyles';
+import { sendPushNotificationToUser } from '../utils';
 
 const UserDetailScreen = (props) => {
+  const [notificationMessage, setNotificationMessage] = useState(
+    'Mensagem de Cestas Cooperflora'
+  );
   // const user = navigation.getParam('user');
-  const user = props.route.params.user;
+  const { user } = props.route.params;
+
+  const sendUserNotification = () => {
+    sendPushNotificationToUser(user.pushNotificationToken, notificationMessage);
+  };
+
   return (
     <View style={styles.screen}>
       <ScrollView style={styles.container} maximumZoomScale={1.25}>
@@ -32,22 +49,7 @@ const UserDetailScreen = (props) => {
             }
             style={styles.iconButton}
           />
-          {/* <TextLink
-            text="Editar"
-            onPress={() => props.navigation.navigate('CreateUserScreen', { user })}
-            style={styles.editButton}
-          /> */}
-          {/*<TextLink*/}
-          {/*  text="Adicionar Saldo"*/}
-          {/*  onPress={() => navigation.goBack(null)}*/}
-          {/*  style={styles.increaseBalanceButton}*/}
-          {/*/>*/}
         </View>
-        {/* <TextLink
-          text="Voltar"
-          onPress={() => props.navigation.goBack(null)}
-          style={styles.backButton}
-        /> */}
         <View style={styles.userDataContainer}>
           <View style={styles.dataContainer}>
             <View style={styles.iconContainer}>
@@ -77,6 +79,38 @@ const UserDetailScreen = (props) => {
             </View>
             <Text style={styles.text}>Saldo: {`R$ ${user.balance}`}</Text>
           </View>
+          {user.pushNotificationToken ?
+            <View>
+              <TextLabel>Notificação</TextLabel>
+              <TextContent>Digite a mensagem e clique no sininho</TextContent>
+              <View style={styles.textAreaContainer}>
+                <TextInput
+                  style={styles.textArea}
+                  value={notificationMessage}
+                  onChangeText={(text) => setNotificationMessage(text)}
+                  underlineColorAndroid="transparent"
+                  placeholderTextColor="grey"
+                  numberOfLines={3}
+                  multiline
+                />
+                <TouchableHighlight
+                  style={styles.notificationIcon}
+                  onPress={() => {
+                    sendUserNotification();
+                  }}
+                >
+                  <Ionicons
+                    name="notifications-sharp"
+                    size={24}
+                    color={Colors.secondary}
+                  />
+                </TouchableHighlight>
+              </View> 
+            </View>
+            : <TextContent>
+              Notificação não está habilitada para essa pessoa consumidora
+            </TextContent>
+          }
         </View>
       </ScrollView>
     </View>
@@ -132,6 +166,29 @@ const styles = StyleSheet.create({
     width: null,
     height: null,
     resizeMode: 'contain',
+  },
+  textAreaContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    padding: 5,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  textArea: {
+    borderColor: Colors.tertiary,
+    borderWidth: 1,
+    fontSize: 16,
+    width: '90%',
+    height: 40,
+    textAlignVertical: 'top',
+    padding: 2,
+    paddingLeft: 5,
+  },
+  notificationIcon: {
+    marginLeft: 10,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

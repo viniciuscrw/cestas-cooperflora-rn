@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import { FontAwesome5 } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import Button from '../components/Button';
 import logo from '../../assets/images/logo.png';
 
@@ -12,7 +13,7 @@ const slides = [
     subtitle: 'Barão Geraldo',
     text1:
       'Bem vindo, bem vinda ao aplicativo  de gestão das cestas Cooperflora do grupo de consumo de Barão Geraldo',
-    text2: 'Versão 2.2.2',
+    text2: 'Versão 2.3.1',
     image: logo,
   },
   {
@@ -51,12 +52,16 @@ const IntroSlider = ({ setIntroSlider }) => {
   };
 
   const renderSlides = ({ item }) => {
+    const env = Constants.manifest.releaseChannel;
     return (
       <View style={styles.screenContainer}>
         {item.title ? <Text style={styles.title}>{item.title}</Text> : null}
         <Text style={styles.subtitle}>{item.subtitle}</Text>
         {item.text1 ? <Text style={styles.text1}>{item.text1}</Text> : null}
         <Text style={styles.text2}>{item.text2}</Text>
+        {__DEV__ || env === 'dev' ? (
+          <Text style={styles.text2}> Configuração de Desenvolvimento</Text>
+        ) : null}
         <View style={styles.imageContainer}>
           <Image style={styles.logoStyle} source={item.image} />
         </View>

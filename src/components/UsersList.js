@@ -9,14 +9,13 @@ import {
 } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FontAwesome5 } from '@expo/vector-icons'; 
-import { Feather } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 
 const UsersList = ({ navigation, data, onUserDelete }) => {
   const deleteIfNotSelfDeletion = async (user) => {
     const loggedUserId = await AsyncStorage.getItem('userId');
-    console.log('logged user: ' + loggedUserId);
+    // console.log(`logged user: ${loggedUserId}`);
 
     if (loggedUserId === user.id) {
       Alert.alert('Aviso', 'Não é possível excluir sua própria conta.', [
@@ -32,7 +31,7 @@ const UsersList = ({ navigation, data, onUserDelete }) => {
   const deleteUser = (user) => {
     Alert.alert(
       'Excluir conta',
-      'Tem certeza que deseja remover ' + user.name + ' do grupo de consumo?',
+      `Tem certeza que deseja remover ${user.name} do grupo de consumo?`,
       [
         {
           text: 'Cancelar',
@@ -47,7 +46,6 @@ const UsersList = ({ navigation, data, onUserDelete }) => {
   };
 
   const openDetails = (item) => {
-    console.log('[User List ]Cheguei no OpenDetails');
     navigation.navigate('UserDetailScreen', {
       user: {
         id: item.id,
@@ -57,9 +55,9 @@ const UsersList = ({ navigation, data, onUserDelete }) => {
         phoneNumber: item.phoneNumber,
         role: item.role,
         balance: item.balance,
+        pushNotificationToken: item.pushNotificationToken,
       },
     });
-    console.log('[User List ]Sai do OpenDetails');
   };
 
   const editUser = (item) => {
@@ -80,17 +78,14 @@ const UsersList = ({ navigation, data, onUserDelete }) => {
     <TouchableHighlight
       onPress={() => openDetails(data.item, navigation)}
       style={styles.rowFront}
-      underlayColor={'#ddd'}
+      underlayColor="#ddd"
     >
       <View style={styles.itemContainer}>
         <View style={styles.textContainer}>
           <Text style={styles.itemTitle}>{data.item.name}</Text>
-          {/* <Text style={styles.itemSubtitle}>{data.item.phoneNumber}</Text> */}
         </View>
         <View style={styles.iconContainer}>
           <FontAwesome5 name="user-edit" size={24} color={Colors.secondary} />
-
-          {/* <Feather name="chevron-right" size={18} color="#ddd" /> */}
         </View>
       </View>
     </TouchableHighlight>

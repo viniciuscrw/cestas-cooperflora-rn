@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "2.2.1",
+    "version": "2.3.1",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "splash": {
@@ -24,12 +24,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "br.pro.bordignon",
-      "buildNumber": "2.2.1"
+      "buildNumber": "2.3.1"
     },
     "android": {
       "package": "br.pro.bordignon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 13,
+      "versionCode": 17,
       "useNextNotificationsApi": true,
       "permissions":["CAMERA", "WRITE_EXTERNAL_STORAGE"]
     },
