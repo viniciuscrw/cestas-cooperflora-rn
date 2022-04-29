@@ -4,7 +4,8 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import Button from '../components/Button';
-import logo from '../../assets/images/logo.png';
+import logoCooperflora from '../../assets/images/logo.png';
+import logoIfsp from '../../assets/images/logoifspcampinas.png';
 
 const slides = [
   {
@@ -14,7 +15,8 @@ const slides = [
     text1:
       'Bem vindo, bem vinda ao aplicativo  de gestão das cestas Cooperflora do grupo de consumo de Barão Geraldo',
     text2: 'Versão 2.3.1',
-    image: logo,
+    image1: logoCooperflora,
+    image2: logoIfsp,
   },
   {
     key: '2',
@@ -62,8 +64,13 @@ const IntroSlider = ({ setIntroSlider }) => {
         {__DEV__ || env === 'dev' ? (
           <Text style={styles.text2}> Configuração de Desenvolvimento</Text>
         ) : null}
-        <View style={styles.imageContainer}>
-          <Image style={styles.logoStyle} source={item.image} />
+        <View style={styles.logosContainer}>
+          <View style={styles.logoContainer}>
+            <Image style={styles.logoImage} source={item.image1} />
+          </View>
+          <View style={styles.logoContainer}>
+            <Image style={styles.logoImage} source={item.image2} />
+          </View>
         </View>
         <View style={styles.buttonContainer}>
           <Button
@@ -160,19 +167,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  logoStyle: {
-    borderColor: '#F0F5F9',
-    borderWidth: 1,
-    borderRadius: 80,
+  // logoStyle: {
+  //   borderColor: '#F0F5F9',
+  //   borderWidth: 1,
+  //   borderRadius: 80,
+  // },
+  logosContainer: {
+    flexDirection: 'row',
+    height: 200,
   },
-  imageContainer: {
+  logoContainer: {
+    flex: 1,
+    margin: 5,
+    alignContent: 'center',
+    justifyContent: 'center',
+    width: '40%',
     alignSelf: 'center',
-    padding: 10,
+    // backgroundColor: 'red',
   },
-  imageStyle: {
-    width: 200,
-    height: 250,
+  logoImage: {
+    flex: 1,
+    width: '80%',
+    // height: null,
     resizeMode: 'contain',
+    alignSelf: 'center',
   },
   buttonContainer: {
     width: '100%',
