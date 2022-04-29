@@ -184,7 +184,7 @@ const SigninScreen = ({ navigation }) => {
               label="E-mail:"
               value={email}
               onChangeText={(email) => {
-                setEmail(email);
+                setEmail(email.replace(' ', ''));
                 if (state.userId || state.authorized) {
                   clearUserInfo();
                 }
