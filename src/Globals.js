@@ -14,6 +14,7 @@ export default {
       EMAIL: 'email',
       AUTH_ID: 'authId',
       BALANCE: 'balance',
+      CHECKBALANCE: 'checkBalance',
     },
     ROLE: {
       CONSUMER: 'consumer',

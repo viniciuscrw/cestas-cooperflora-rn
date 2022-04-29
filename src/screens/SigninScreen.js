@@ -9,7 +9,9 @@ import { Context as AuthContext } from '../context/AuthContext';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';
 import BasketProductsImage from '../../assets/images/basketproducts3.png';
-import MstFlag from '../../assets/images/bandeiradomst.png';
+import mstLogo from '../../assets/images/logomst.png';
+import ifspLogo from '../../assets/images/logoifspcampinas.png';
+import cooperfloraLogo from '../../assets/images/logocooperflora.png';
 import Colors from '../constants/Colors';
 import Globals from '../Globals';
 
@@ -214,8 +216,16 @@ const SigninScreen = ({ navigation }) => {
             {Globals.APP.INITIALSCREEN_TEXT}
           </Text>
         </View>
-        <View style={styles.flagContainer}>
-          <Image style={styles.flagImage} source={MstFlag} />
+        <View style={styles.logosContainer}>
+          <View style={styles.logoContainer}>
+            <Image style={styles.logoImage} source={ifspLogo} />
+          </View>
+          <View style={styles.logoContainer}>
+            <Image style={styles.logoImage} source={cooperfloraLogo} />
+          </View>
+          <View style={styles.logoContainer}>
+            <Image style={styles.logoImage} source={mstLogo} />
+          </View>
         </View>
       </View>
     </View>
@@ -316,14 +326,20 @@ const styles = StyleSheet.create({
     padding: 9,
     marginLeft: 20,
   },
-  flagContainer: {
+  logosContainer: {
     flex: 1,
+    flexDirection: 'row',
+    margin: 10,
+  },
+  logoContainer: {
+    flex: 1,
+    margin: 5,
     alignContent: 'center',
     justifyContent: 'center',
-    width: '50%',
+    width: '40%',
     alignSelf: 'center',
   },
-  flagImage: {
+  logoImage: {
     flex: 1,
     width: null,
     height: null,

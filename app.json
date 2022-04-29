@@ -7,11 +7,11 @@
       "ios",
       "android"
     ],
-    "version": "2.3.1",
+    "version": "2.4.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/splashscreenv2.0.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -24,12 +24,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "br.pro.bordignon",
-      "buildNumber": "2.3.1"
+      "buildNumber": "2.4.0"
     },
     "android": {
       "package": "br.pro.bordignon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 17,
+      "versionCode": 18,
       "useNextNotificationsApi": true,
       "permissions":["CAMERA", "WRITE_EXTERNAL_STORAGE"]
     },

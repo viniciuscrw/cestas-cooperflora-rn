@@ -53,7 +53,7 @@ const createPaymentForUser = (dispatch) => async (user, order) => {
     payment.currentBalance = userBalance + order.totalAmount;
     payment.totalToBePaid = order.totalAmount - userBalance;
 
-    //update the payment Doc
+    // update the payment Doc
     await updateDocInSubcollection(
       GLOBALS.COLLECTION.USERS,
       user.id,
@@ -78,6 +78,14 @@ const createPaymentForUser = (dispatch) => async (user, order) => {
     user.id,
     GLOBALS.USER.ATTRIBUTE.BALANCE,
     newBalance
+  );
+
+  // Update the checkbalance attribute. This attribute is used by the group admins to verify if they verify the users payments.
+  await updateDocAttribute(
+    GLOBALS.COLLECTION.USERS,
+    user.id,
+    GLOBALS.USER.ATTRIBUTE.CHECKBALANCE,
+    true
   );
 
   // Update order with the payment id.

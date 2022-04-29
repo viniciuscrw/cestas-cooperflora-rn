@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet, ScrollView, Image } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import logo from '../../assets/images/logo.png';
+import logo from '../../assets/images/logocooperflora.png';
 import basketproducts from '../../assets/images/basketproducts.png';
 import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
