@@ -177,12 +177,15 @@ export const deliveriesNavigationOptions = (navigation) => {
         <View style={styles.imageContainer}>
           <Image style={styles.image} source={BasketProductsImage} />
         </View>
-        <MainHeader />
+        <View style={{ marginLeft: 50 }}>
+          <MainHeader />
+        </View>
       </View>
     ),
     headerRight: () => (
       <ConsumerGroupDetails navigation={navigation.navigation} />
     ),
+    headerShown: true,
     headerStyle: {
       backgroundColor: 'transparent',
       elevation: 0,

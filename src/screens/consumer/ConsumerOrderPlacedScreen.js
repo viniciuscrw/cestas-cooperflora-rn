@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'absolute',
-    right: -100,
+    right: -120,
     width: 80,
     height: 50,
   },

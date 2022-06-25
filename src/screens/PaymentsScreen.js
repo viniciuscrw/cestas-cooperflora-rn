@@ -141,6 +141,7 @@ const PaymentsScreen = ({ navigation }) => {
                   value={consumer.checkBalance}
                   onValueChange={() => handleCheckBalanceBox(index)}
                   color={Colors.secondary}
+                  style={{ marginRight: 3 }}
                 />
                 <TextLabel style={styles.text}>{consumer.name}</TextLabel>
                 {/* <View style={styles.textBox}> */}
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     marginBottom: 5,
-    backgroundColor: '#F0F5F9',
+    backgroundColor: '#FFF',
     shadowColor: '#000',
     shadowOffset: {
       width: 1,
@@ -207,7 +208,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.87,
     shadowRadius: 4.65,
-    elevation: 2,
+    elevation: 4,
   },
 });
 

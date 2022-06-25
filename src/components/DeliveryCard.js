@@ -23,24 +23,21 @@ const DeliveryCard = ({
 
   const formatCardTitle = (deliveryDate) => {
     return (
-      <View style={styles.titleViewContainer}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>
-            {`${weekDayText}, ${format(
-              deliveryDate,
-              GLOBALS.FORMAT.DEFAULT_DATE
-            )}`}
-          </Text>
-          {showEditButton ? (
-            <Feather
-              name="edit"
-              size={24}
-              color={Colors.secondary}
-              onPress={onEditButtonPress}
-            />
-          ) : null}
-        </View>
-        <Divider style={{ backgroundColor: Colors.secondary }} />
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>
+          {`${weekDayText}, ${format(
+            deliveryDate,
+            GLOBALS.FORMAT.DEFAULT_DATE
+          )}`}
+        </Text>
+        {showEditButton ? (
+          <Feather
+            name="edit"
+            size={24}
+            color={Colors.secondary}
+            onPress={onEditButtonPress}
+          />
+        ) : null}
       </View>
     );
   };
@@ -54,9 +51,8 @@ const DeliveryCard = ({
             borderRadius: 30,
             backgroundColor: '#F0F5F9',
           }}
-          title={formatCardTitle(delivery.deliveryDate)}
-          dividerStyle={{ backgroundColor: borderColor }}
         >
+          <Card.Title>{formatCardTitle(delivery.deliveryDate)}</Card.Title>
           <View style={styles.contentContainer}>
             <Text>
               <Text style={styles.titleText}>{ordersDateText} </Text>
@@ -79,28 +75,25 @@ const DeliveryCard = ({
 };
 
 const styles = StyleSheet.create({
-  titleViewContainer: {
-    marginVertical: 10,
-  },
+  // titleViewContainer: {
+  //   marginVertical: 10,
+  // },
   titleContainer: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
     flexDirection: 'row',
-    flexWrap: 'wrap',
     flex: 1,
-    marginRight: 3,
-    marginBottom: 7,
-    top: -7,
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
   contentContainer: {
     flex: 1,
-    marginVertical: 7,
+    marginVertical: 1,
     justifyContent: 'space-evenly',
   },
   titleText: {
     fontFamily: 'Roboto',
     fontWeight: '700',
     fontSize: 16,
+    marginRight: 50,
     color: '#505050',
   },
   cardTextStrong: {

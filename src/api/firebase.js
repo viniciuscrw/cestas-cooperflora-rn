@@ -3,7 +3,7 @@ import 'firebase/firestore';
 import { navigate } from '../navigationRef';
 
 export const get = async (collection) => {
-  console.log(`[Firebase - get] collection: ${collection}`);
+  // console.log(`[Firebase - get] collection: ${collection}`);
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -22,7 +22,7 @@ export const get = async (collection) => {
 };
 
 export const getOrderingBy = async (collection, field, direction = 'asc') => {
-  console.log(`[Firebase - getOrderingBy] collection: ${collection}`);
+  // console.log(`[Firebase - getOrderingBy] collection: ${collection}`);
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -44,9 +44,9 @@ export const getOrderingBy = async (collection, field, direction = 'asc') => {
 };
 
 export const getByAttribute = async (collection, attribute, value) => {
-  console.log(
-    `[Firebase - getByAttribute] collection: ${collection}; attribute: ${attribute}; value: ${value}`
-  );
+  // console.log(
+  //   `[Firebase - getByAttribute] collection: ${collection}; attribute: ${attribute}; value: ${value}`
+  // );
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -71,9 +71,9 @@ export const getByAttributeOrderingBy = async (
   value,
   orderBy
 ) => {
-  console.log(
-    `[Firebase - getByAttribute] collection: ${collection}; attribute: ${attribute}; value: ${value}; orderBy: ${orderBy}`
-  );
+  // console.log(
+  //   `[Firebase - getByAttribute] collection: ${collection}; attribute: ${attribute}; value: ${value}; orderBy: ${orderBy}`
+  // );
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -93,7 +93,7 @@ export const getByAttributeOrderingBy = async (
 };
 
 export const getById = async (collection, id) => {
-  console.log(`[Firebase - getById] collection: ${collection}; id: ${id}`);
+  // console.log(`[Firebase - getById] collection: ${collection}; id: ${id}`);
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -111,7 +111,7 @@ export const getById = async (collection, id) => {
 };
 
 export const getFirst = async (collection) => {
-  console.log(`[Firebase - findFirstData] collection: ${collection}`);
+  // console.log(`[Firebase - findFirstData] collection: ${collection}`);
   const data = [];
 
   const db = firebase.firestore();
@@ -138,9 +138,9 @@ export const getFirstByAttribute = async (collection, attribute, value) => {
 };
 
 export const getGroupDeliveries = async (collection, doc, subcollection) => {
-  console.log(
-    `[Firebase - getGroupDeliveries] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}`
-  );
+  // console.log(
+  //   `[Firebase - getGroupDeliveries] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}`
+  // );
   const data = [];
 
   const db = firebase.firestore();
@@ -173,9 +173,9 @@ export const getByIdFromSubcollection = async (
   subcollection,
   subcollectionId
 ) => {
-  console.log(
-    `[Firebase - getByIdFromSubcollection] collection: ${collection}; doc: ${collectionId}; subcollection: ${subcollection}; subDoc: ${subcollectionId}`
-  );
+  // console.log(
+  //   `[Firebase - getByIdFromSubcollection] collection: ${collection}; doc: ${collectionId}; subcollection: ${subcollection}; subDoc: ${subcollectionId}`
+  // );
 
   let data = null;
 
@@ -208,9 +208,9 @@ export const getByIdFromSubcollectionPayments = async (
   subcollection,
   subcollectionId
 ) => {
-  console.log(
-    `[Firebase - getByIdFromSubcollection] collection: ${collection}; doc: ${collectionId}; subcollection: ${subcollection}; subDoc: ${subcollectionId}`
-  );
+  // console.log(
+  //   `[Firebase - getByIdFromSubcollection] collection: ${collection}; doc: ${collectionId}; subcollection: ${subcollection}; subDoc: ${subcollectionId}`
+  // );
 
   let data = null;
 
@@ -234,11 +234,11 @@ export const getByIdFromSubcollectionPayments = async (
 };
 
 export const insertDoc = async (collection, data) => {
-  console.log(
-    `[Firebase - insertDoc] collection: ${collection}; data: ${JSON.stringify(
-      data
-    )}`
-  );
+  // console.log(
+  //   `[Firebase - insertDoc] collection: ${collection}; data: ${JSON.stringify(
+  //     data
+  //   )}`
+  // );
 
   const db = firebase.firestore();
 
@@ -255,11 +255,11 @@ export const insertDoc = async (collection, data) => {
 };
 
 export const insertDocAndRetrieveId = async (collection, data) => {
-  console.log(
-    `[Firebase - insertDocAndRetrieveId] collection: ${collection}; data: ${JSON.stringify(
-      data
-    )}`
-  );
+  // console.log(
+  //   `[Firebase - insertDocAndRetrieveId] collection: ${collection}; data: ${JSON.stringify(
+  //     data
+  //   )}`
+  // );
 
   let id = null;
   const db = firebase.firestore();
@@ -286,9 +286,9 @@ export const insertIntoSubcollection = async (
   subcollection,
   data
 ) => {
-  console.log(
-    `[Firebase - insertIntoSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}`
-  );
+  // console.log(
+  //   `[Firebase - insertIntoSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}`
+  // );
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -315,9 +315,9 @@ export const updateDocInSubcollection = async (
   subcollectionDoc,
   data
 ) => {
-  console.log(
-    `[Firebase - updateDocInSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}; subcollection doc: ${subcollectionDoc}`
-  );
+  // console.log(
+  //   `[Firebase - updateDocInSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}; subcollection doc: ${subcollectionDoc}`
+  // );
 
   const db = firebase.firestore();
   const ref = db.collection(collection);
@@ -334,9 +334,9 @@ export const updateDocInSubcollection = async (
 };
 
 export const updateDocAttribute = async (collection, doc, attribute, value) => {
-  console.log(
-    `[Firebase - updateDocAttribute] collection: ${collection}; doc: ${doc}; attribute: ${attribute}; value: ${value}`
-  );
+  // console.log(
+  //   `[Firebase - updateDocAttribute] collection: ${collection}; doc: ${doc}; attribute: ${attribute}; value: ${value}`
+  // );
 
   const db = firebase.firestore();
 
@@ -353,11 +353,11 @@ export const updateDocAttribute = async (collection, doc, attribute, value) => {
 };
 
 export const updateDoc = async (collection, doc, data) => {
-  console.log(
-    `[Firebase - updateDoc] collection: ${collection}; doc: ${doc}; data: ${JSON.stringify(
-      data
-    )}`
-  );
+  // console.log(
+  //   `[Firebase - updateDoc] collection: ${collection}; doc: ${doc}; data: ${JSON.stringify(
+  //     data
+  //   )}`
+  // );
 
   const db = firebase.firestore();
 
@@ -374,7 +374,7 @@ export const updateDoc = async (collection, doc, data) => {
 };
 
 export const deleteDoc = async (collection, doc) => {
-  console.log(`[Firebase - deleteDoc] collection: ${collection}; doc: ${doc}`);
+  // console.log(`[Firebase - deleteDoc] collection: ${collection}; doc: ${doc}`);
 
   const db = firebase.firestore();
 
@@ -394,9 +394,9 @@ export const deleteDocInSubcollection = async (
   subcollection,
   subcollectionDoc
 ) => {
-  console.log(
-    `[Firebase - deleteDocInSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}; doc: ${subcollectionDoc}`
-  );
+  // console.log(
+  //   `[Firebase - deleteDocInSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}; doc: ${subcollectionDoc}`
+  // );
 
   const db = firebase.firestore();
   const ref = db.collection(collection);

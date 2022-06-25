@@ -517,6 +517,7 @@ const styles = StyleSheet.create({
   disabledButton: {
     marginTop: 5,
     backgroundColor: Colors.tertiary,
+    width: '100%',
     justifyContent: 'space-between',
   },
   header: {
@@ -524,7 +525,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'absolute',
-    right: -10,
+    right: -120,
     width: 80,
     height: 55,
   },

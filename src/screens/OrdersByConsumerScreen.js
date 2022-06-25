@@ -11,6 +11,8 @@ import HeaderTitle from '../components/HeaderTitle';
 import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
 import { Context as DeliveryContext } from '../context/DeliveryContext';
+import { TextContent, TextLabel } from '../components/StandardStyles';
+import { Entypo } from '@expo/vector-icons';
 
 const OrdersByConsumerScreen = (props) => {
   const {
@@ -61,14 +63,14 @@ const OrdersByConsumerScreen = (props) => {
       order.extraProducts != null && order.extraProducts.length > 0;
 
     if (hasBaseProducts && !hasExtraProducts) {
-      return `Total: R$ ${order.totalAmount} (Cesta)`;
+      return `Total: R$ ${order.totalAmount.toFixed(2)} (Cesta)`;
     }
 
     if (!hasBaseProducts && hasExtraProducts) {
-      return `Total: R$ ${order.totalAmount} (Extras)`;
+      return `Total: R$ ${order.totalAmount.toFixed(2)} (Extras)`;
     }
 
-    return `Total: R$ ${order.totalAmount} (Cesta + Extras)`;
+    return `Total: R$ ${order.totalAmount.toFixed(2)} (Cesta + Extras)`;
   };
 
   const matchUsersWithOrders = () => {
@@ -114,21 +116,21 @@ const OrdersByConsumerScreen = (props) => {
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-          type: 'ionicons',
-          name: 'search',
-          size: 25,
-          color: 'lightgrey',
-        }
+        type: 'ionicons',
+        name: 'search',
+        size: 25,
+        color: 'lightgrey',
+      }
       : {
-          type: 'material',
-          name: 'clear',
-          size: 25,
-          color: 'lightgrey',
-          onPress: () => {
-            setFilterText('');
-            setFilteredOrdersByConsumer([]);
-          },
-        };
+        type: 'material',
+        name: 'clear',
+        size: 25,
+        color: 'lightgrey',
+        onPress: () => {
+          setFilterText('');
+          setFilteredOrdersByConsumer([]);
+        },
+      };
   };
 
   const searchConsumersByFilter = () => {
@@ -148,24 +150,48 @@ const OrdersByConsumerScreen = (props) => {
             delivery: stateDelivery,
           })
         }
+        style={styles.consumerContainer}
       >
         <View style={styles.itemContainer}>
-          <ListItem
+          <View style={styles.container1}>
+            <TextLabel style={{ fontSize: 18 }}>
+              {userOrderItem.userName}
+            </TextLabel>
+            <TextContent style={{ fontSize: 14 }}>
+              {userOrderItem.subtitle}
+            </TextContent>
+          </View>
+          <View style={styles.container2}>
+            <TextContent style={{ fontSize: 14 }}>
+              {userOrderItem.orderStatus &&
+                userOrderItem.orderStatus === GLOBALS.ORDER.STATUS.COMPLETED
+                ? `Entrega concluída`
+                : null}
+            </TextContent>
+          </View>
+          <View style={styles.container3}>
+            <Entypo
+              name="chevron-small-right"
+              size={24}
+              color={Colors.primary}
+            />
+          </View>
+          {/* <ListItem
             containerStyle={styles.listItemContainer}
             title={`${userOrderItem.userName}`}
             titleStyle={styles.listItemTitle}
             subtitle={`${userOrderItem.subtitle}`}
             rightSubtitle={
               userOrderItem.orderStatus &&
-              userOrderItem.orderStatus === GLOBALS.ORDER.STATUS.COMPLETED
+                userOrderItem.orderStatus === GLOBALS.ORDER.STATUS.COMPLETED
                 ? `Entrega concluída`
                 : null
             }
             bottomDivider
-            chevron
-          />
+            chevron 
+          /> */}
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity >
     );
   };
 
@@ -186,7 +212,7 @@ const OrdersByConsumerScreen = (props) => {
           <FlatList
             data={
               filteredOrdersByConsumer != null &&
-              filteredOrdersByConsumer.length > 0
+                filteredOrdersByConsumer.length > 0
                 ? filteredOrdersByConsumer
                 : usersOrders
             }
@@ -249,24 +275,62 @@ const styles = StyleSheet.create({
   searchInput: {
     width: 300,
   },
-  itemContainer: {
+  consumerContainer: {
+    flexDirection: 'row',
+    padding: 5,
+    paddingLeft: 20,
+    borderRadius: 30,
+    marginLeft: 10,
+    marginRight: 10,
     marginBottom: 5,
-    // flexDirection: 'row',
-    backgroundColor: 'white',
-    borderRadius: 25,
+    backgroundColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
+    shadowOpacity: 0.87,
+    shadowRadius: 4.65,
+    elevation: 4,
   },
+  itemContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  container1: {
+    width: '73%',
+  },
+  container2: {
+    width: '20%',
+    justifyContent: 'center',
+  },
+  container3: {
+    width: '7%',
+    justifyContent: 'center',
+  },
+  // itemContainer: {
+  //   marginBottom: 5,
+  //   // flexDirection: 'row',
+  //   backgroundColor: 'white',
+  //   borderRadius: 25,
+  // },
   productsList: {
     marginTop: -10,
   },
   listItemContainer: {
     backgroundColor: 'transparent',
-    padding: 10,
-    minHeight: 60,
+    // padding: 10,
+    // minHeight: 60,
   },
   listItemTitle: {
     fontWeight: 'bold',
-    marginBottom: 5,
+    // marginBottom: 5,
     fontSize: 20,
+  },
+  consumerSubTitle: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
   header: {
     alignItems: 'flex-start',
