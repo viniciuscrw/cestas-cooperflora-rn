@@ -38,7 +38,7 @@ const OrdersItemsQuantity = (props) => {
         if (product.productTitle && product.quantity && product.quantity > 0) {
           productsToQuantityMap[`${product.productTitle}`] =
             productsToQuantityMap[`${product.productTitle}`] +
-              product.quantity || product.quantity;
+            product.quantity || product.quantity;
         }
       });
     });
@@ -58,21 +58,21 @@ const OrdersItemsQuantity = (props) => {
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-          type: 'ionicons',
-          name: 'search',
-          size: 25,
-          color: 'lightgrey',
-        }
+        type: 'ionicons',
+        name: 'search',
+        size: 25,
+        color: 'lightgrey',
+      }
       : {
-          type: 'material',
-          name: 'clear',
-          size: 25,
-          color: 'lightgrey',
-          onPress: () => {
-            setFilterText('');
-            setFilteredProducts(null);
-          },
-        };
+        type: 'material',
+        name: 'clear',
+        size: 25,
+        color: 'lightgrey',
+        onPress: () => {
+          setFilterText('');
+          setFilteredProducts(null);
+        },
+      };
   };
 
   const searchProductsByFilter = () => {
@@ -85,12 +85,14 @@ const OrdersItemsQuantity = (props) => {
 
   const renderItem = ({ item }) => {
     return (
-      <ListItem
-        containerStyle={styles.listItemContainer}
-        title={`${item.quantity} ${item.name}`}
-        titleStyle={styles.listItemTitle}
-        bottomDivider
-      />
+      <View>
+        <ListItem
+          containerStyle={styles.listItemContainer}
+          title={`${item.quantity} ${item.name}`}
+          titleStyle={styles.listItemTitle}
+          bottomDivider
+        />
+      </View>
     );
   };
 

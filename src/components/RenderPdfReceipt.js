@@ -1,20 +1,20 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import PDFReader from 'rn-pdf-reader-js';
+import * as OpenAnything from 'react-native-openanything';
+import Button from './Button';
+import Colors from '../constants/Colors';
 
 const RenderPdfReceipt = ({ documentUrl }) => {
-  const handleError = () => {
-    console.log('Erro ao exibir o pdf na tela.');
-  };
-
+  console.log('Document URI ->', documentUrl);
   return (
-    <View style={styles.receiptDocumentContainer}>
-      <PDFReader
-        source={{
-          uri: documentUrl,
-        }}
-        onError={handleError()}
-      />
+    <View>
+      <Button
+        style={styles.button}
+        textColor="white"
+        onPress={() => OpenAnything.Pdf(documentUrl)}
+      >
+        Abrir PDF
+      </Button>
     </View>
   );
 };
@@ -25,6 +25,12 @@ const styles = StyleSheet.create({
     // margin: 10,
     // alignItems: 'center',
     height: 200,
+  },
+  button: {
+    marginTop: 5,
+    backgroundColor: Colors.secondary,
+    alignSelf: 'center',
+    marginBottom: 5,
   },
 });
 

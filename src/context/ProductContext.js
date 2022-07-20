@@ -30,7 +30,7 @@ const productReducer = (state, action) => {
 
 const fetchProducts = (dispatch) => async () => {
   dispatch({ type: 'loading' });
-  console.log('Fetching products...');
+  // console.log('Fetching products...');
 
   const products = await getOrderingBy(GLOBALS.COLLECTION.PRODUCTS, 'name');
 
@@ -42,7 +42,7 @@ const fetchProducts = (dispatch) => async () => {
 
 const createProduct = (dispatch) => async ({ product }) => {
   dispatch({ type: 'loading' });
-  console.log('Creating new product: ' + JSON.stringify(product));
+  console.log(`Creating new product: ${JSON.stringify(product)}`);
 
   await insertDoc(GLOBALS.COLLECTION.PRODUCTS, product);
   dispatch({ type: 'add_product' });

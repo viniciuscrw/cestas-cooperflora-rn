@@ -15,6 +15,7 @@ import Spinner from '../components/Spinner';
 import HeaderTitle from '../components/HeaderTitle';
 import Colors from '../constants/Colors';
 import { formatCurrency } from '../helper/HelperFunctions';
+import BackArrow from '../components/BackArrow';
 
 const EditConsumerGroupScreen = ({ navigation, route }) => {
   // const group = navigation.getParam('group');
@@ -140,7 +141,8 @@ const EditConsumerGroupScreen = ({ navigation, route }) => {
 
 export const editConsumerGroupScreenOptions = (navData) => {
   return {
-    headerTitle: () => <HeaderTitle title="Edit Consumer" />,
+    headerTitle: () => <HeaderTitle title="Editar Informações" />,
+    headerBackImage: () => <BackArrow />,
   };
 };
 

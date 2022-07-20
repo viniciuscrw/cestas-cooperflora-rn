@@ -89,7 +89,8 @@ const tryLocalSignin = (dispatch) => async () => {
     console.log(`Local sign in for auth: ${authId}`);
     dispatch({ type: 'signin', payload: authId });
     console.log('[AuthContext] Navegando para Deliveries');
-    navigate('Deliveries');
+    // navigate('Deliveries');
+    navigate('DeliveriesScreen');
   } else {
     console.log('[AuthContext], Se não existir authId e user.');
     navigate('SigninScreen');
@@ -137,7 +138,8 @@ const onSigninSuccess = (dispatch) => async (email) => {
     await AsyncStorage.setItem('authId', authId);
 
     dispatch({ type: 'signin', payload: authId });
-    navigate('Deliveries');
+    // navigate('Deliveries');
+    navigate('DeliveriesScreen');
   } else {
     console.log(`Error retrieving user for auth: ${authId}`);
     dispatch({
@@ -149,37 +151,37 @@ const onSigninSuccess = (dispatch) => async (email) => {
 
 const signin =
   (dispatch) =>
-  ({ email, password, passwordConfirmation, userId }) => {
-    dispatch({ type: 'loading' });
+    ({ email, password, passwordConfirmation, userId }) => {
+      dispatch({ type: 'loading' });
 
-    if (passwordConfirmation) {
-      passwordConfirmation !== password
-        ? dispatch({
+      if (passwordConfirmation) {
+        passwordConfirmation !== password
+          ? dispatch({
             type: 'add_error',
             payload: 'As senhas digitadas são divergentes.',
           })
-        : signup(dispatch)(email, password, userId);
-    } else {
-      console.log(`Signing in existing user: ${userId}`);
+          : signup(dispatch)(email, password, userId);
+      } else {
+        console.log(`Signing in existing user: ${userId}`);
 
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(() => onSigninSuccess(dispatch)(email))
-        .catch((err) => {
-          console.log(err);
-          const errorMessage =
-            err.code === 'auth/wrong-password'
-              ? 'Senha inválida.'
-              : 'Algo deu errado com o login.';
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(email, password)
+          .then(() => onSigninSuccess(dispatch)(email))
+          .catch((err) => {
+            console.log(err);
+            const errorMessage =
+              err.code === 'auth/wrong-password'
+                ? 'Senha inválida.'
+                : 'Algo deu errado com o login.';
 
-          dispatch({
-            type: 'add_error',
-            payload: errorMessage,
+            dispatch({
+              type: 'add_error',
+              payload: errorMessage,
+            });
           });
-        });
-    }
-  };
+      }
+    };
 
 const signup = (dispatch) => (email, password, userId) => {
   console.log(`Creating auth for new user: ${userId}`);
@@ -209,40 +211,40 @@ const signup = (dispatch) => (email, password, userId) => {
 
 const checkAuthOrUser =
   (dispatch) =>
-  ({ email }) => {
-    dispatch({ type: 'loading' });
-    console.log(`Checking auth or user for email: ${email}`);
+    ({ email }) => {
+      dispatch({ type: 'loading' });
+      console.log(`Checking auth or user for email: ${email}`);
 
-    firebase
-      .auth()
-      .fetchSignInMethodsForEmail(email)
-      .then(async (signInMethods) => {
-        if (
-          signInMethods.indexOf(
-            firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
-          ) !== -1
-        ) {
-          console.log(`Auth found for email: ${email}`);
-          const user = await getFirstByAttribute('users', 'email', email);
+      firebase
+        .auth()
+        .fetchSignInMethodsForEmail(email)
+        .then(async (signInMethods) => {
+          if (
+            signInMethods.indexOf(
+              firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
+            ) !== -1
+          ) {
+            console.log(`Auth found for email: ${email}`);
+            const user = await getFirstByAttribute('users', 'email', email);
 
-          if (!user) {
-            console.log(`Auth found but user was deleted: ${email}`);
-            dispatch({ type: 'add_error', payload: 'E-mail não autorizado.' });
+            if (!user) {
+              console.log(`Auth found but user was deleted: ${email}`);
+              dispatch({ type: 'add_error', payload: 'E-mail não autorizado.' });
+            } else {
+              dispatch({ type: 'check_auth' });
+            }
           } else {
-            dispatch({ type: 'check_auth' });
+            await findUser(dispatch)(email);
           }
-        } else {
-          await findUser(dispatch)(email);
-        }
-      })
-      .catch((err) => {
-        const errorMessage =
-          err.code === 'auth/invalid-email'
-            ? 'Endereço de e-mail inválido.'
-            : 'Algo deu errado com a verificação do e-mail. Verifique sua conexão com a Internet.';
-        dispatch({ type: 'add_error', payload: errorMessage });
-      });
-  };
+        })
+        .catch((err) => {
+          const errorMessage =
+            err.code === 'auth/invalid-email'
+              ? 'Endereço de e-mail inválido.'
+              : 'Algo deu errado com a verificação do e-mail. Verifique sua conexão com a Internet.';
+          dispatch({ type: 'add_error', payload: errorMessage });
+        });
+    };
 
 const findUser = (dispatch) => async (email) => {
   console.log(`No auth. So finding user for email: ${email}`);

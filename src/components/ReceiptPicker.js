@@ -12,7 +12,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import { accessibilityLabel } from '../utils';
 import CameraIcon from '../../assets/images/icons/cameraicon.png';
 import RenderImageReceipt from './RenderImageReceipt';
-import RenderPdfReceipt from './RenderPdfReceipt';
+// import RenderPdfReceipt from './RenderPdfReceipt';
+import PDFImage from '../../assets/images/pdfimage.jpg';
 
 const ReceiptPicker = (props) => {
   const [pickedReceipt, setPickedReceipt] = useState({});
@@ -108,7 +109,8 @@ const ReceiptPicker = (props) => {
       return <RenderImageReceipt imageUrl={pickedReceipt.uri} />;
     }
     if (pickedReceipt.type === 'pdf') {
-      return <RenderPdfReceipt documentUrl={pickedReceipt.uri} />;
+      return <Image style={styles.image} source={PDFImage} />;
+      // return <RenderPdfReceipt documentUrl={pickedReceipt.uri} />;
     }
     return null;
   };
@@ -128,7 +130,6 @@ const ReceiptPicker = (props) => {
         </TouchableOpacity>
       </View>
       <View style={styles.receiptPreview}>{renderReceipt()}</View>
-
     </View>
   );
 };
@@ -167,6 +168,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
+  },
+  image: {
+    width: '100%',
+    height: '70%',
   },
   receiptPreview: {
     width: '100%',

@@ -37,6 +37,8 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   const { userId } = userPayment;
   const { getUserById } = useContext(userContext);
 
+  console.log('Add Payment screen started');
+
   useEffect(() => {
     setIsLoading(true);
     if (userId) {

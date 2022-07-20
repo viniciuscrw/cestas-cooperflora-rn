@@ -16,8 +16,6 @@ const group = {
   time: 'Das 18h30 às 19h00',
 };
 
-console.log(users);
-
 // Prod DB
 // const serviceAccount = require('../../cestascooperflorabarao-firebase-adminsdk-kg42n-264249460c.json');
 

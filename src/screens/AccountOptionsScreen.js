@@ -136,9 +136,12 @@ const AccountOptionsScreen = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
+              // navigation.navigate('UpdatePasswordScreen', {
+              //   userEmail: state.loggedUser.email,
+              //   navigation,
+              // })
               navigation.navigate('UpdatePasswordScreen', {
                 userEmail: state.loggedUser.email,
-                navigation,
               })
             }
           >

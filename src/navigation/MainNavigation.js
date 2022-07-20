@@ -59,10 +59,6 @@ import OrdersItemsQuantityScreen from '../screens/OrdersItemsQuantityScreen';
 import InitialScreen, { initialScreenOptions } from '../screens/InitialScreen';
 import Colors from '../constants/Colors';
 
-const defaultStackNavOptions = {
-  // headerTitleAlign: 'center',
-};
-
 const ConsumerGroupStackNavigator = createStackNavigator();
 export const ConsumerGroupNavigator = () => {
   return (
@@ -70,12 +66,14 @@ export const ConsumerGroupNavigator = () => {
       <ConsumerGroupStackNavigator.Screen
         name="ConsumerGroupInfoScreen"
         component={ConsumerGroupInfoScreen}
-        options={consumerGroupInfoScreenOptions}
+        options={{ headerShown: false }}
+      // options={consumerGroupInfoScreenOptions}
       />
       <ConsumerGroupStackNavigator.Screen
         name="EditConsumerGroupInfoScreen"
         component={EditConsumerGroupInfoScreen}
-        options={editConsumerGroupScreenOptions}
+        options={{ headerShown: false }}
+      // options={editConsumerGroupScreenOptions}
       />
     </ConsumerGroupStackNavigator.Navigator>
   );
@@ -88,14 +86,17 @@ export const ConsumerNavigator = () => {
       <ConsumerStackNavigator.Screen
         name="ConsumersScreen"
         component={ConsumersScreen}
+        options={{ headerShown: false }}
       />
       <ConsumerStackNavigator.Screen
         name="CreateUserScreen"
         component={CreateUserScreen}
+        options={{ headerShown: false }}
       />
       <ConsumerStackNavigator.Screen
         name="UserDetailScreen"
         component={UserDetailScreen}
+        options={{ headerShown: false }}
       />
     </ConsumerStackNavigator.Navigator>
   );
@@ -108,46 +109,38 @@ export const OrganizerNavigator = () => {
       <OrganizerStackNavigator.Screen
         name="OrganizersScreen"
         component={OrganizersScreen}
+        options={{ headerShown: false }}
       />
       <OrganizerStackNavigator.Screen
         name="CreateUserScreen"
         component={CreateUserScreen}
+        options={{ headerShown: false }}
       />
       <OrganizerStackNavigator.Screen
         name="UserDetailScreen"
         component={UserDetailScreen}
+        options={{ headerShown: false }}
       />
     </OrganizerStackNavigator.Navigator>
   );
-};
-
-const topTabBarOptions = {
-  style: {
-    backgroundColor: 'transparent',
-    height: 30,
-  },
-  labelStyle: {
-    marginTop: -8,
-    fontSize: 13,
-  },
-  activeTintColor: Colors.secondary,
-  inactiveTintColor: Colors.tertiary,
-  indicatorStyle: {
-    backgroundColor: Colors.secondary,
-  },
 };
 
 const TopTabNavigator = createMaterialTopTabNavigator();
 export const ConsumerGroupTopTabNavigator = () => {
   return (
     <TopTabNavigator.Navigator
-      tabBarOptions={topTabBarOptions}
+      screenOptions={{
+        tabBarActiveTintColor: Colors.activeIconColor,
+        tabBarInactiveTintColor: Colors.inactiveIconColor,
+        tabBarLabelStyle: [{ marginTop: -8, fontSize: 13 }, null],
+        tabBarIndicatorStyle: { backgroundColor: Colors.activeIconColor },
+        tabBarStyle: { backgroundColor: 'transparent', height: 30 },
+      }}
       initialRouteName="Informações"
     >
       <TopTabNavigator.Screen
         name="Informações"
         component={ConsumerGroupNavigator}
-        options={{ tabBarLabel: 'Informações' }}
       />
       <TopTabNavigator.Screen
         name="Consumidores"
@@ -164,7 +157,7 @@ export const ConsumerGroupTopTabNavigator = () => {
 const ExtraItemsStackNavigator = createStackNavigator();
 export const ExtraItemsNavigator = () => {
   return (
-    <ExtraItemsStackNavigator.Navigator>
+    <ExtraItemsStackNavigator.Navigator screenOptions={{ headerShown: false }}>
       <ExtraItemsStackNavigator.Screen
         name="AddDeliveryExtraItemsScreen"
         component={AddDeliveryExtraItemsScreen}
@@ -180,7 +173,16 @@ export const ExtraItemsNavigator = () => {
 const DelTopTabNavigator = createMaterialTopTabNavigator();
 export const DeliveryManagementTopTabNavigator = () => {
   return (
-    <DelTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
+    <DelTopTabNavigator.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: Colors.activeIconColor,
+        tabBarInactiveTintColor: Colors.inactiveIconColor,
+        tabBarLabelStyle: [{ marginTop: -8, fontSize: 13 }, null],
+        tabBarIndicatorStyle: { backgroundColor: Colors.activeIconColor },
+        tabBarStyle: { backgroundColor: 'transparent', height: 30 }
+      }}
+    >
+      {/* <DelTopTabNavigator.Navigator> */}
       <DelTopTabNavigator.Screen
         name="CreateDeliveryScreen"
         component={CreateDeliveryScreen}
@@ -199,7 +201,15 @@ const OrdTopTabNavigator = createMaterialTopTabNavigator();
 export const OrdersManagementTabNavigator = ({ route }) => {
   const delivery = route.params;
   return (
-    <OrdTopTabNavigator.Navigator tabBarOptions={topTabBarOptions}>
+    <OrdTopTabNavigator.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: Colors.activeIconColor,
+        tabBarInactiveTintColor: Colors.inactiveIconColor,
+        tabBarLabelStyle: [{ marginTop: -8, fontSize: 13 }, null],
+        tabBarIndicatorStyle: { backgroundColor: Colors.activeIconColor },
+        tabBarStyle: { backgroundColor: '#F0F5F9', height: 30 },
+      }}
+    >
       <OrdTopTabNavigator.Screen
         name="OrdersByConsumer"
         component={OrdersByConsumerScreen}
@@ -219,7 +229,7 @@ export const OrdersManagementTabNavigator = ({ route }) => {
 const DeliveryStackNavigator = createStackNavigator();
 export const DeliveryNavigator = () => {
   return (
-    <DeliveryStackNavigator.Navigator options={defaultStackNavOptions}>
+    <DeliveryStackNavigator.Navigator>
       <DeliveryStackNavigator.Screen
         name="DeliveriesScreen"
         component={DeliveriesScreen}
@@ -255,24 +265,14 @@ export const DeliveryNavigator = () => {
         component={ConsumerOrderPlacedScreen}
         options={consumerOrderPlacedScreenOptions}
       />
-      {/* <DeliveryStackNavigator.Screen
-        name="ConsumerAddPaymentScreen"
-        component={ConsumerAddPaymentScreen}
-        options={consumerAddPaymentScreenOptions}
-      /> */}
-      {/* <DeliveryStackNavigator.Screen
-        name="ConsumerPaymentsScreen"
-        component={ConsumerPaymentsScreen}
-      // options={ordersManagementNavigationOptions}
-      /> */}
-    </DeliveryStackNavigator.Navigator>
+    </DeliveryStackNavigator.Navigator >
   );
 };
 
 const PaymentsStackNavigator = createStackNavigator();
 export const PaymentsNavigator = () => {
   return (
-    <PaymentsStackNavigator.Navigator options={defaultStackNavOptions}>
+    <PaymentsStackNavigator.Navigator>
       <PaymentsStackNavigator.Screen
         name="PaymentScreen"
         component={PaymentScreen}
@@ -323,7 +323,7 @@ export const AuthNavigator = () => {
 const AccountStackNavigator = createStackNavigator();
 export const AccountNavigator = () => {
   return (
-    <AccountStackNavigator.Navigator options={defaultStackNavOptions}>
+    <AccountStackNavigator.Navigator>
       <AccountStackNavigator.Screen
         name="AccountOptionsScreen"
         component={AccountOptionsScreen}
@@ -353,34 +353,17 @@ export const AccountNavigator = () => {
   );
 };
 
-const tabBarOptions = {
-  activeTintColor: Colors.activeIconColor,
-  inactiveTintColor: Colors.inactiveIconColor,
-  tabBarActiveTintColor: Colors.activeIconColor,
-  tabBarInactiveTintColor: Colors.inactiveIconColor,
-  label: {
-    fontSize: 16,
-  },
-  style: {
-    height: 60,
-    backgroundColor: 'white',
-  },
-};
-
 const BottomTab = createBottomTabNavigator();
 export const BottomTabNavigator = () => {
   return (
     <BottomTab.Navigator
       initialRouteName="DeliveryNavigator"
-      // activeColor="red"
-      // inactiveColor="white"
-      // tabBarActiveTintColor='tomato'
-      // tabBarInactiveTintColor='gray'
-      // activeBackgroundColor="green"
-      // inactiveBackgroundColor="green"
-      tabBarOptions={{
-        activeTintColor: Colors.secondary,
-        inactiveTintColor: Colors.tertiary,
+      screenOptions={{
+        tabBarActiveTintColor: Colors.activeIconColor,
+        tabBarInactiveTintColor: Colors.inactiveIconColor,
+        // tabBarStyle: [{ display: 'flex' }, null],
+        tabBarStyle: { paddingTop: 5 },
+        headerShown: false,
       }}
     >
       <BottomTab.Screen
@@ -412,7 +395,6 @@ export const BottomTabNavigator = () => {
         options={{
           tabBarLabel: 'Pagamentos',
           tabBarAccessibilityLabel: 'Pagamentos',
-          tabBarActiveTintColor: 'red',
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="dollar-sign" size={34} color={color} />
           ),
@@ -450,19 +432,6 @@ export const MainNavigator = () => {
         component={ConsumerGroupTopTabNavigator}
         options={consumerGroupInfoScreenOptions}
       />
-      {/* <MainStackNavigator.Screen
-        name="CreateDeliveryScreen"
-        component={CreateDeliveryScreen}
-        options={createDeliveryScreenOptions}
-      /> */}
-      {/* <MainStackNavigator.Screen
-        name="DeliveryTopTabNavigator" component={DeliveryTopTabNavigator}
-      />
-      <MainStackNavigator.Screen
-        name="PaymentsScreen" 
-        component={PaymentsScreen}
-        options={PaymentsScreenOptions}
-      /> */}
     </MainStackNavigator.Navigator>
   );
 };

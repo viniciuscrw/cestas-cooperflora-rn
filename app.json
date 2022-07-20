@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "2.4.0",
+    "version": "2.5.2",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "splash": {
@@ -24,14 +24,17 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "br.pro.bordignon",
-      "buildNumber": "2.4.0"
+      "buildNumber": "2.5.2"
     },
     "android": {
       "package": "br.pro.bordignon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 18,
+      "versionCode": 22,
       "useNextNotificationsApi": true,
-      "permissions":["CAMERA", "WRITE_EXTERNAL_STORAGE"]
+      "permissions": [
+        "CAMERA",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "hooks": {
       "postPublish": [
@@ -45,6 +48,8 @@
         }
       ]
     },
-    "plugins": ["sentry-expo"]
+    "plugins": [
+      "sentry-expo"
+    ]
   }
 }
