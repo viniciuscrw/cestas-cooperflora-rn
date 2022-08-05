@@ -28,7 +28,6 @@ export default App = () => {
   LogBox.ignoreLogs(['Setting a timer']);
   LogBox.ignoreLogs(['It appears']);
   LogBox.ignoreLogs(["'Card."]);
-  LogBox.ignoreLogs(["'ListItem."]);
   LogBox.ignoreAllLogs();
 
   if (!firebase.apps.length) {

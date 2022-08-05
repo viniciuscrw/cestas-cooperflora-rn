@@ -9,9 +9,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import Checkbox from 'expo-checkbox';
 import { AntDesign } from '@expo/vector-icons';
 import endOfDay from 'date-fns/endOfDay';
-import { Input, ListItem } from 'react-native-elements';
+import { Input } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as UserContext } from '../../context/UserContext';
 import { Context as ProductContext } from '../../context/ProductContext';
@@ -81,21 +82,21 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-          type: 'ionicons',
-          name: 'search',
-          size: 25,
-          color: 'lightgrey',
-        }
+        type: 'ionicons',
+        name: 'search',
+        size: 25,
+        color: 'lightgrey',
+      }
       : {
-          type: 'material',
-          name: 'clear',
-          size: 25,
-          color: 'lightgrey',
-          onPress: () => {
-            setFilterText('');
-            setFilteredProducts(products);
-          },
-        };
+        type: 'material',
+        name: 'clear',
+        size: 25,
+        color: 'lightgrey',
+        onPress: () => {
+          setFilterText('');
+          setFilteredProducts(products);
+        },
+      };
   };
 
   const handleItemCheck = (item) => {
@@ -211,8 +212,40 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
 
     return (
       <View style={styles.productContainer}>
-        <TouchableWithoutFeedback>
-          <ListItem
+        <TouchableWithoutFeedback
+          onPress={() =>
+            navigation.navigate('CreateExtraItemScreen', {
+              product: item,
+              selectedProducts: checkedItems,
+            })
+          }
+        >
+          <View style={styles.itemContainer}>
+            <View style={{ width: '85%' }}>
+              <Text
+                style={{
+                  fontFamily: 'Roboto',
+                  fontWeight: '700',
+                  marginBottom: 5,
+                  fontSize: 16,
+                }}
+              >
+                {item.name} - R$ {priceDisplay}
+              </Text>
+              {renderQuantityInfoText(item)}
+            </View>
+            <Checkbox
+              style={styles.checkbox}
+              value={checkedItems.includes(item.id)}
+              onValueChange={() => handleItemCheck(item)}
+              color={
+                checkedItems.includes(item.id)
+                  ? Colors.secondary
+                  : Colors.tertiary
+              }
+            />
+          </View>
+          {/* <ListItem
             containerStyle={styles.listItemContainer}
             title={
               <TouchableOpacity
@@ -246,7 +279,7 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
                 marginRight: 7,
               },
             }}
-          />
+          /> */}
         </TouchableWithoutFeedback>
       </View>
     );
@@ -299,7 +332,6 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
         {!loading ? (
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.container}>
-              {/* <NavigationEvents onWillFocus={fetchProducts} /> */}
               <Input
                 containerStyle={styles.searchInput}
                 placeholder="Nome do produto"
@@ -310,11 +342,6 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
                 autoCorrect={false}
                 rightIcon={renderSearchIcon()}
               />
-              {/* <TextLink
-                text="Novo item"
-                onPress={() => navigation.navigate('CreateExtraItemScreen', { products })}
-                style={styles.newProductButton}
-              /> */}
               <TouchableOpacity
                 style={styles.newProductButton}
                 onPress={() =>
@@ -328,8 +355,8 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
                 />
               </TouchableOpacity>
               {filterText.length &&
-              filteredProducts &&
-              !filteredProducts.length ? (
+                filteredProducts &&
+                !filteredProducts.length ? (
                 <Text style={styles.productNotFoundText}>
                   Nenhum produto encontrado por este nome.
                 </Text>
@@ -379,14 +406,29 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   productContainer: {
-    marginTop: 5,
+    marginTop: 3,
     backgroundColor: 'white',
     borderRadius: 15,
   },
-  listItemContainer: {
+  itemInformation: {
+    // flex: 1,
+    // flexDirection: 'column',
+    // // width: '20%',
+    // backgroundColor: 'green',
+    // // color: 'green',
+    // // height: 100,
+  },
+  itemContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: 'transparent',
     padding: 10,
     minHeight: 50,
+  },
+  checkbox: {
+    borderRadius: 5,
   },
   searchInput: {
     width: 250,
