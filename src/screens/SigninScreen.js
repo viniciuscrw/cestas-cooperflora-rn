@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Keyboard, StyleSheet, Image, View } from 'react-native';
-import { Text } from 'react-native-elements';
+import { Keyboard, StyleSheet, Image, View, Text } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
@@ -9,7 +8,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';
 import BasketProductsImage from '../../assets/images/basketproducts3.png';
-import mstLogo from '../../assets/images/logomst.png';
+import mstLogo from '../../assets/images/logomst169x169.png';
 import ifspLogo from '../../assets/images/logoifspcampinas.png';
 import cooperfloraLogo from '../../assets/images/logocooperflora.png';
 import Colors from '../constants/Colors';
@@ -87,16 +86,10 @@ const SigninScreen = ({ navigation }) => {
 
   const renderPasswordForm = () => {
     if (state.authorized || state.userId) {
-      // const styleForMultiplePasswordInput = {
-      //   label: { flex: 1 },
-      //   input: { flex: 1 },
-      // };
-
       return (
         <>
           {state.userId ? (
             <View style={styles.passwordsContainer}>
-              {/* <Text>Cadastre sua senha:</Text> */}
               <View style={styles.newPasswordContainer}>
                 <View style={styles.passwordContainer}>
                   <PasswordInput
@@ -217,15 +210,9 @@ const SigninScreen = ({ navigation }) => {
           </Text>
         </View>
         <View style={styles.logosContainer}>
-          <View style={styles.logoContainer}>
-            <Image style={styles.logoImage} source={ifspLogo} />
-          </View>
-          <View style={styles.logoContainer}>
-            <Image style={styles.logoImage} source={cooperfloraLogo} />
-          </View>
-          <View style={styles.logoContainer}>
-            <Image style={styles.logoImage} source={mstLogo} />
-          </View>
+          <Image style={styles.logoImage} source={cooperfloraLogo} />
+          <Image style={styles.logoImageIfsp} source={ifspLogo} />
+          <Image style={styles.logoImage} source={mstLogo} />
         </View>
       </View>
     </View>
@@ -267,11 +254,6 @@ const styles = StyleSheet.create({
     marginTop: -30,
     width: 250,
   },
-  // title: {
-  //   fontSize: 30,
-  //   bottom: 40,
-  //   textAlign: 'center',
-  // },
   emailInputContainer: {
     height: 50,
   },
@@ -309,11 +291,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  // smallTitle: {
-  //   fontSize: 20,
-  //   bottom: 20,
-  //   textAlign: 'center',
-  // },
   errorMessage: {
     fontSize: 16,
     color: 'red',
@@ -328,22 +305,21 @@ const styles = StyleSheet.create({
   },
   logosContainer: {
     flex: 1,
+    justifyContent: 'space-around',
     flexDirection: 'row',
-    margin: 10,
-  },
-  logoContainer: {
-    flex: 1,
-    margin: 5,
-    alignContent: 'center',
-    justifyContent: 'center',
-    width: '40%',
-    alignSelf: 'center',
+    alignItems: 'flex-end',
   },
   logoImage: {
+    width: '30%',
     flex: 1,
-    width: null,
-    height: null,
+    margin: 3,
     resizeMode: 'contain',
+  },
+  logoImageIfsp: {
+    width: '30%',
+    flex: 1,
+    resizeMode: 'contain',
+    marginBottom: 30,
   },
   iconContainer: {
     marginRight: 10,
