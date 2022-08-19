@@ -13,6 +13,7 @@ import * as Clipboard from 'expo-clipboard';
 import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
 import Colors from '../constants/Colors';
+import { TextLabel } from '../components/StandardStyles';
 
 const OrdersItemsQuantity = (props) => {
   const {
@@ -86,12 +87,17 @@ const OrdersItemsQuantity = (props) => {
   const renderItem = ({ item }) => {
     return (
       <View>
-        <ListItem
+        {/* <ListItem
           containerStyle={styles.listItemContainer}
           title={`${item.quantity} ${item.name}`}
           titleStyle={styles.listItemTitle}
           bottomDivider
-        />
+        /> */}
+        <View style={styles.listItemContainer}>
+          <TextLabel
+            style={styles.listItemTitle}
+          >{`${item.quantity} ${item.name}`}</TextLabel>
+        </View>
       </View>
     );
   };
@@ -205,12 +211,13 @@ const styles = StyleSheet.create({
   },
   listItemContainer: {
     backgroundColor: 'transparent',
-    padding: 10,
-    minHeight: 60,
+    paddingRight: 10,
+    paddingLeft: 10,
+    paddingBottom: 5,
   },
   listItemTitle: {
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 2,
     fontSize: 20,
   },
   controlsContainer: {

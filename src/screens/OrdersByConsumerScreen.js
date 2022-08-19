@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';
-import { Input, ListItem } from 'react-native-elements';
+import { Input } from 'react-native-elements';
 import { useFocusEffect } from '@react-navigation/native';
+import { Entypo } from '@expo/vector-icons';
 import GLOBALS from '../Globals';
 import { Context as OrderContext } from '../context/OrderContext';
 import { Context as UserContext } from '../context/UserContext';
@@ -12,7 +13,6 @@ import BackArrow from '../components/BackArrow';
 import Colors from '../constants/Colors';
 import { Context as DeliveryContext } from '../context/DeliveryContext';
 import { TextContent, TextLabel } from '../components/StandardStyles';
-import { Entypo } from '@expo/vector-icons';
 
 const OrdersByConsumerScreen = (props) => {
   const {
@@ -176,22 +176,8 @@ const OrdersByConsumerScreen = (props) => {
               color={Colors.primary}
             />
           </View>
-          {/* <ListItem
-            containerStyle={styles.listItemContainer}
-            title={`${userOrderItem.userName}`}
-            titleStyle={styles.listItemTitle}
-            subtitle={`${userOrderItem.subtitle}`}
-            rightSubtitle={
-              userOrderItem.orderStatus &&
-                userOrderItem.orderStatus === GLOBALS.ORDER.STATUS.COMPLETED
-                ? `Entrega concluída`
-                : null
-            }
-            bottomDivider
-            chevron 
-          /> */}
         </View>
-      </TouchableOpacity >
+      </TouchableOpacity>
     );
   };
 
