@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Keyboard, StyleSheet, Image, View, Text } from 'react-native';
+import { Keyboard, StyleSheet, Image, View, Text, KeyboardAvoidingView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
@@ -304,7 +304,8 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   logosContainer: {
-    flex: 1,
+    flex: 0,
+    height: 300,
     justifyContent: 'space-around',
     flexDirection: 'row',
     alignItems: 'flex-end',
