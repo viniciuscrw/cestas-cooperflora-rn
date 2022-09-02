@@ -49,6 +49,8 @@ const OrdersItemsQuantity = (props) => {
       productsArray.push({ name: key, quantity: value });
     }
 
+    productsArray.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+
     setProductsToQuantity(productsArray);
   };
 

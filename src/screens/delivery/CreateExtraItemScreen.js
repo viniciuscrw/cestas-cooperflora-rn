@@ -185,13 +185,23 @@ const CreateExtraItemScreen = ({ route, navigation }) => {
 
   const renderRemoveButton = () => {
     return product && !state.loading ? (
-      <LoadingButton
-        style={styles.removeItemButton}
-        color="darkorange"
-        onPress={removeItem}
-      >
-        Excluir item
-      </LoadingButton>
+      <View style={styles.buttonContainer}>
+        <Button
+          id="removeItemButton"
+          style={styles.button}
+          textColor="white"
+          onPress={removeItem}
+        >
+          Excluir item
+        </Button>
+      </View>
+      // <LoadingButton
+      //   style={styles.removeItemButton}
+      //   color="darkorange"
+      //   onPress={removeItem}
+      // >
+      //   Excluir item
+      // </LoadingButton>
     ) : null;
   };
 
@@ -291,9 +301,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonContainer: {
-    // position: 'absolute',
     width: '100%',
-    // bottom: 0,
   },
   button: {
     marginTop: 5,
