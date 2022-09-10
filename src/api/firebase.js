@@ -149,6 +149,7 @@ export const getGroupDeliveries = async (collection, doc, subcollection) => {
     .doc(doc)
     .collection(subcollection)
     .orderBy('date', 'desc')
+    .limit(8) //Limit the number of deliveries listed to users due to limitation to read the database.
     .get()
     .then((snapshot) => {
       snapshot.forEach((document) => {
