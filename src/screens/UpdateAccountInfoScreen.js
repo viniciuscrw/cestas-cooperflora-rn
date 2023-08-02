@@ -62,6 +62,8 @@ const UpdateAccountInfoScreen = ({ navigation, route }) => {
     );
   };
 
+  console.log(phoneNumber);
+
   const updateUserInfo = () => {
     if (
       user.name === name &&

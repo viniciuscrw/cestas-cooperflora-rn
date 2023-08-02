@@ -13,6 +13,8 @@ export const accessibilityLabel = (id) => {
 };
 
 export const setPushNotificationToken = async () => {
+  console.log('[Utils - setPushNotification]');
+
   let token;
   if (Constants.isDevice) {
     const { status: existingStatus } =

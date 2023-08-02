@@ -15,6 +15,7 @@ import Colors from '../constants/Colors';
 import Globals from '../Globals';
 
 const SigninScreen = ({ navigation }) => {
+  console.log('[SignIn Screen started]');
   const { state, signin, checkAuthOrUser, clearUserInfo, clearError } =
     useContext(AuthContext);
   const [email, setEmail] = useState('');

@@ -15,33 +15,89 @@ import RenderImageReceipt from './RenderImageReceipt';
 // import RenderPdfReceipt from './RenderPdfReceipt';
 import PDFImage from '../../assets/images/pdfimage.jpg';
 
-const ReceiptPicker = (props) => {
+const ReceiptPicker = ({ onReceiptPicker }) => {
   const [pickedReceipt, setPickedReceipt] = useState({});
 
   const launchCamera = async () => {
     console.log('[ImagePicker] launchCamera');
-    const image = await ImagePicker.launchCameraAsync({
-      // allowsEditing: true,
-      // aspect: [16, 9],
-      quality: 0.5,
-    });
-    image.type = 'image';
-    setPickedReceipt(image);
-    props.onReceiptPicker(image);
+
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        throw new Error('Camera permission not granted');
+      }
+      const image = await ImagePicker.launchCameraAsync({
+        // allowsEditing: true,
+        // aspect: [16, 9],
+        quality: 0.5,
+      });
+      if (!image.canceled) {
+        // Handle the image data if the user takes a picture.
+        console.log('Image data:', image);
+        image.type = 'image';
+        setPickedReceipt(image);
+        onReceiptPicker(image);
+      } else {
+        console.log('[ImagePicker] Problemas para acesso à câmera');
+      }
+    } catch (error) {
+      console.log('Error while accessing the camera:', error.message);
+      Alert.alert('Atenção', 'Acesso à câmera não permitido');
+    }
+
+    // const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    // if (status !== 'granted') {
+    //   console.log('[ImagePicker] launchCamera - permission not granted');
+    //   throw new Error('Camera permission not granted');
+    // }
+
+    // const image = await ImagePicker.launchCameraAsync({
+    //   // allowsEditing: true,
+    //   // aspect: [16, 9],
+    //   quality: 0.5,
+    // });
+    // image.type = 'image';
+    // setPickedReceipt(image);
+    // onReceiptPicker(image);
   };
 
   const launchImageGalery = async () => {
     console.log('[ImagePicker] launchGalery');
-    const options = {
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      // allowsEditing: true,
-      // aspect: [16, 9],
-      quality: 0.5,
-    };
-    const image = await ImagePicker.launchImageLibraryAsync(options);
-    image.type = 'image';
-    setPickedReceipt(image);
-    props.onReceiptPicker(image);
+    try {
+      // const permissionResult =
+      //   await ImagePicker.requestMediaLibraryPermissionsAsync();
+      // if (permissionResult.granted === false) {
+      //   throw new Error('Media library permission not granted');
+      // }
+      const image = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        // allowsEditing: true,
+        // aspect: [4, 3],
+        quality: 0.5,
+      });
+      // console.log('[ReceiptPicker] image', JSON.stringify(image, null, 2));
+      image.assets[0].type = 'image';
+      setPickedReceipt(image.assets[0]);
+      onReceiptPicker(image.assets[0]);
+    } catch (error) {
+      console.log('Error while picking image:', error);
+    }
+
+    // const options = {
+    //   mediaTypes: ImagePicker.MediaTypeOptions.All,
+    //   // allowsEditing: true,
+    //   // aspect: [16, 9],
+    //   quality: 0.5,
+    // };
+    // try {
+    //   const image = await ImagePicker.launchImageLibraryAsync(options);
+    //   image.type = 'image';
+    //   console.log('[ReceiptPicker] image', JSON.stringify(image, null, 2));
+    //   setPickedReceipt(image);
+    //   // onReceiptPicker(image);
+    // } catch (error) {
+    //   console.log('[ReceiptPicker] error to get image', error);
+    // }
   };
 
   const launchDocumentGalery = async () => {
@@ -52,7 +108,7 @@ const ReceiptPicker = (props) => {
     });
     document.type = 'pdf';
     setPickedReceipt(document);
-    props.onReceiptPicker(document);
+    onReceiptPicker(document);
   };
 
   const takeReceiptHandler = async () => {

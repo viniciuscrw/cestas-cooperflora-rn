@@ -1,72 +1,74 @@
-import firebase from 'firebase';
-import 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  getDoc,
+  getDocs,
+  orderBy,
+  limit,
+  doc,
+  addDoc,
+  deleteDoc,
+  updateDoc as updateDocument,
+} from 'firebase/firestore';
+import { auth, db } from '../constants/FirebaseConfig';
+
 import { navigate } from '../navigationRef';
 
-export const get = async (collection) => {
-  // console.log(`[Firebase - get] collection: ${collection}`);
-
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
+export const get = async (col) => {
+  console.log(`[Firebase - get] collection: ${collection}`);
   const data = [];
-
-  await ref
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() });
-      });
-    })
-    .catch((err) => console.log('Error while fetching data (get)', err));
-
+  try {
+    const querySnapshot = await getDocs(collection(db, col));
+    querySnapshot.forEach((document) => {
+      data.push({ id: document.id, ...document.data() });
+    });
+  } catch (error) {
+    console.error('Error getting document: ', error);
+  }
   return data;
 };
 
-export const getOrderingBy = async (collection, field, direction = 'asc') => {
+export const getOrderingBy = async (col, field, direction = 'asc') => {
   // console.log(`[Firebase - getOrderingBy] collection: ${collection}`);
-
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
   const data = [];
-
-  await ref
-    .orderBy(field, direction)
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() });
-      });
-    })
-    .catch((err) =>
-      console.log('Error while fetching data (getOrderingBy)', err)
+  try {
+    const colRef = collection(db, col);
+    const querySnapshot = await getDocs(
+      query(colRef, orderBy(field, direction))
     );
+    querySnapshot.forEach((documentRead) => {
+      data.push({ id: documentRead.id, ...documentRead.data() });
+    });
+  } catch (error) {
+    console.error('Error while fetching data (getOrderingBy)', error);
+  }
+  // console.log(`[Firebase - getOrderingBy] collection: ${collection} ${data}`);
 
   return data;
 };
 
-export const getByAttribute = async (collection, attribute, value) => {
-  // console.log(
-  //   `[Firebase - getByAttribute] collection: ${collection}; attribute: ${attribute}; value: ${value}`
-  // );
+export const getByAttribute = async (col, attribute, value) => {
+  console.log(
+    `[Firebase - getByAttribute] collection: ${col}; attribute: ${attribute}; value: ${value}`
+  );
 
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
+  const ref = collection(db, col);
   const data = [];
-
-  await ref
-    .where(attribute, '==', value)
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() });
-      });
-    })
-    .catch((err) => console.log('Error while getting data by attribute', err));
-
+  try {
+    const q = query(ref, where(attribute, '==', value));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      data.push({ id: doc.id, ...doc.data() });
+    });
+  } catch (error) {
+    console.error('Error getting document: ', error);
+  }
   return data;
 };
 
 export const getByAttributeOrderingBy = async (
-  collection,
+  col,
   attribute,
   value,
   orderBy
@@ -74,58 +76,50 @@ export const getByAttributeOrderingBy = async (
   // console.log(
   //   `[Firebase - getByAttribute] collection: ${collection}; attribute: ${attribute}; value: ${value}; orderBy: ${orderBy}`
   // );
-
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
+  const ref = collection(db, col);
   const data = [];
-
-  await ref
-    .where(attribute, '==', value)
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() });
-      });
-    })
-    .catch((err) => console.log('Error while getting data by attribute', err));
-
+  try {
+    const q = query(ref, where(attribute, '==', value));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      data.push({ id: doc.id, ...doc.data() });
+    });
+    // console.log('[Firebase util] users', JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error('Error getting document: ', error);
+  }
   return data;
 };
 
-export const getById = async (collection, id) => {
-  // console.log(`[Firebase - getById] collection: ${collection}; id: ${id}`);
+export const getById = async (collectionName, id) => {
+  console.log(`[Firebase - getById] collection: ${collectionName}; id: ${id}`);
 
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
   let data = null;
 
-  await ref
-    .doc(id)
-    .get()
-    .then((doc) => {
-      data = { id: doc.id, ...doc.data() };
-    })
-    .catch((err) => console.log('Error while getting by id.', err));
-
+  try {
+    const docSnap = await getDoc(doc(db, collectionName, id));
+    data = { id: docSnap.id, ...docSnap.data() };
+  } catch (error) {
+    console.error('Error while getting by id.', error);
+  }
   return data;
 };
 
-export const getFirst = async (collection) => {
+export const getFirst = async (col) => {
   // console.log(`[Firebase - findFirstData] collection: ${collection}`);
   const data = [];
 
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
-  await ref
-    .limit(1)
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() });
-      });
-    })
-    .catch((err) => console.log('Error while getting data by attribute', err));
+  try {
+    const colRef = collection(db, col);
 
+    const querySnapshot = await getDocs(colRef, limit(1));
+
+    querySnapshot.forEach((document) => {
+      data.push({ id: document.id, ...document.data() });
+    });
+  } catch (error) {
+    console.error('Error while getting data by attribute: ', error);
+  }
   return data.length > 0 ? data[0] : null;
 };
 
@@ -137,74 +131,71 @@ export const getFirstByAttribute = async (collection, attribute, value) => {
   return docs.length ? docs.shift() : null;
 };
 
-export const getGroupDeliveries = async (collection, doc, subcollection) => {
-  // console.log(
-  //   `[Firebase - getGroupDeliveries] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}`
-  // );
+export const getGroupDeliveries = async (col, document, subcol) => {
+  console.log(
+    `[Firebase - getGroupDeliveries] collection: ${col}; doc: ${document}; subcollection: ${subcol}`
+  );
+
   const data = [];
-
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
-  await ref
-    .doc(doc)
-    .collection(subcollection)
-    .orderBy('date', 'desc')
-    .limit(8) //Limit the number of deliveries listed to users due to limitation to read the database.
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((document) => {
-        data.push({
-          id: document.id,
-          deliveryDate: document.data().date.toDate(),
-          limitDate: document.data().ordersLimitDate.toDate(),
-          ...document.data(),
-        });
-      });
-    })
-    .catch((err) =>
-      console.log('Error while getting data from deliveries', err)
+  try {
+    const colRef = collection(db, col, document, subcol);
+    const querySnapshot = await getDocs(
+      query(colRef, limit(8), orderBy('date', 'desc'))
     );
-
+    querySnapshot.forEach((documentRead) => {
+      data.push({
+        id: documentRead.id,
+        deliveryDate: documentRead.data().date.toDate(),
+        limitDate: documentRead.data().ordersLimitDate.toDate(),
+        ...documentRead.data(),
+      });
+    });
+  } catch (error) {
+    console.error('Error getting document: ', error);
+  }
+  // console.log(
+  //   `[Firebase - getGroupDeliveries] collection: `,
+  //   JSON.stringify(data, null, 2)
+  // );
   return data;
 };
 
 export const getByIdFromSubcollection = async (
-  collection,
+  collectionName,
   collectionId,
-  subcollection,
-  subcollectionId
+  subCollectionName,
+  subCollectionId
 ) => {
-  // console.log(
-  //   `[Firebase - getByIdFromSubcollection] collection: ${collection}; doc: ${collectionId}; subcollection: ${subcollection}; subDoc: ${subcollectionId}`
-  // );
+  console.log(
+    `[Firebase - getByIdFromSubcollection] collection: ${collectionName}; doc: ${collectionId}; subcollection: ${subCollectionName}; subDoc: ${subCollectionId}`
+  );
 
   let data = null;
 
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
-  await ref
-    .doc(collectionId)
-    .collection(subcollection)
-    .doc(subcollectionId)
-    .get()
-    .then((doc) => {
-      data = {
-        id: doc.id,
-        deliveryDate: doc.data().date.toDate(),
-        limitDate: doc.data().ordersLimitDate.toDate(),
-        ...doc.data(),
-      };
-    })
-    .catch((err) =>
-      console.log('Error while getting by id from subcollection', err)
+  try {
+    const docRef = doc(
+      db,
+      collectionName,
+      collectionId,
+      subCollectionName,
+      subCollectionId
     );
-
+    const docSnap = await getDoc(docRef);
+    data = {
+      id: docSnap.id,
+      deliveryDate: docSnap.data().date.toDate(),
+      limitDate: docSnap.data().ordersLimitDate.toDate(),
+      ...docSnap.data(),
+    };
+  } catch (error) {
+    console.error('Error getting document: ', error);
+  }
   return data;
 };
 
 // This function should be merged with the above function in the future
 export const getByIdFromSubcollectionPayments = async (
-  collection,
+  collectionName,
   collectionId,
   subcollection,
   subcollectionId
@@ -215,16 +206,15 @@ export const getByIdFromSubcollectionPayments = async (
 
   let data = null;
 
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
+  const ref = db.collection(collectionName);
   await ref
     .doc(collectionId)
     .collection(subcollection)
     .doc(subcollectionId)
     .get()
-    .then((doc) => {
+    .then((document) => {
       data = {
-        ...doc.data(),
+        ...document.data(),
       };
     })
     .catch((err) =>
@@ -234,177 +224,142 @@ export const getByIdFromSubcollectionPayments = async (
   return data;
 };
 
-export const insertDoc = async (collection, data) => {
-  // console.log(
-  //   `[Firebase - insertDoc] collection: ${collection}; data: ${JSON.stringify(
-  //     data
-  //   )}`
-  // );
+export const insertDoc = async (collectionName, data) => {
+  console.log(
+    `[Firebase - insertDoc] collection: ${collectionName}; data: ${JSON.stringify(
+      data
+    )}`
+  );
 
-  const db = firebase.firestore();
-
-  await db
-    .collection(collection)
-    .doc()
-    .set(data)
-    .catch((err) => {
-      console.log('Error while adding data.', err);
-      if (err.code === 'permission-denied') {
-        navigate('SigninScreen');
-      }
-    });
+  try {
+    const docRef = await addDoc(collection(db, collectionName), data);
+    return docRef;
+  } catch (err) {
+    console.log('Error while adding data.', err);
+    if (err.code === 'permission-denied') {
+      navigate('SigninScreen');
+    }
+  }
 };
 
-export const insertDocAndRetrieveId = async (collection, data) => {
-  // console.log(
-  //   `[Firebase - insertDocAndRetrieveId] collection: ${collection}; data: ${JSON.stringify(
-  //     data
-  //   )}`
-  // );
+export const insertDocAndRetrieveId = async (collectionName, data) => {
+  console.log(
+    `[Firebase - insertDocAndRetrieveId] collection: ${collectionName}; data: ${JSON.stringify(
+      data
+    )}`
+  );
 
-  let id = null;
-  const db = firebase.firestore();
-
-  await db
-    .collection(collection)
-    .add(data)
-    .then((docRef) => {
-      id = docRef.id;
-    })
-    .catch((err) => {
-      console.log('Error while adding data.', err);
-      if (err.code === 'permission-denied') {
-        navigate('SigninScreen');
-      }
-    });
-
-  return id;
+  try {
+    const docRef = await addDoc(collection(db, collectionName), data);
+    return docRef.id;
+  } catch (err) {
+    console.log('Error while adding data.', err);
+    if (err.code === 'permission-denied') {
+      navigate('SigninScreen');
+    }
+  }
 };
 
-export const insertIntoSubcollection = async (
-  collection,
-  doc,
-  subcollection,
-  data
-) => {
+export const insertIntoSubcollection = async (col, document, subCol, data) => {
   // console.log(
   //   `[Firebase - insertIntoSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}`
   // );
-
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
   let docRefId = null;
-  await ref
-    .doc(doc)
-    .collection(subcollection)
-    .add(data)
-    .then((docRef) => {
-      console.log('[Firebase api] inserIntoSubcollection return', docRef.id);
-      docRefId = docRef.id;
-    })
-    .catch((err) =>
-      console.log('Error while inserting doc into subcollection', err)
-    );
-  // return data;
+  try {
+    const ref = collection(db, col, document, subCol);
+    const docRef = await addDoc(ref, data);
+    console.log('[Firebase api] inserIntoSubcollection return', docRef.id);
+    docRefId = docRef.id;
+  } catch (error) {
+    console.log('Error while inserting doc into subcollection', error);
+  }
   return docRefId;
 };
 
 export const updateDocInSubcollection = async (
-  collection,
-  doc,
-  subcollection,
-  subcollectionDoc,
+  collectionName,
+  documentId,
+  subCollectionName,
+  subCollectionDocumentId,
   data
 ) => {
-  // console.log(
-  //   `[Firebase - updateDocInSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}; subcollection doc: ${subcollectionDoc}`
-  // );
-
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
-  await ref
-    .doc(doc)
-    .collection(subcollection)
-    .doc(subcollectionDoc)
-    .set(data)
-    .catch((err) =>
-      console.log('Error while updating doc in subcollection', err)
+  console.log(
+    `[Firebase - updateDocInSubcollection] collection: ${collectionName}; doc: ${documentId}; subcollection: ${subCollectionName}; subcollection doc: ${subCollectionDocumentId}`
+  );
+  try {
+    const subColRef = doc(
+      db,
+      collectionName,
+      documentId,
+      subCollectionName,
+      subCollectionDocumentId
     );
-
-  return data;
+    const docRef = updateDocument(subColRef, data);
+    console.log(docRef);
+  } catch (error) {
+    console.log('Error while updating doc in subcollection', error);
+  }
 };
 
-export const updateDocAttribute = async (collection, doc, attribute, value) => {
+export const updateDocAttribute = async (col, docId, attribute, value) => {
   // console.log(
-  //   `[Firebase - updateDocAttribute] collection: ${collection}; doc: ${doc}; attribute: ${attribute}; value: ${value}`
+  //   `[Firebase - updateDocAttribute] collection: ${col}; doc: ${doc}; attribute: ${attribute}; value: ${value}`
   // );
 
-  const db = firebase.firestore();
-
-  await db
-    .collection(collection)
-    .doc(doc)
-    .update(attribute, value)
-    .catch((err) => {
-      console.log(`Error updating document: ${doc}`, err);
-      if (err.code === 'permission-denied') {
-        navigate('SigninScreen');
-      }
-    });
-};
-
-export const updateDoc = async (collection, doc, data) => {
-  // console.log(
-  //   `[Firebase - updateDoc] collection: ${collection}; doc: ${doc}; data: ${JSON.stringify(
-  //     data
-  //   )}`
-  // );
-
-  const db = firebase.firestore();
-
-  await db
-    .collection(collection)
-    .doc(doc)
-    .update(data)
-    .catch((err) => {
-      console.log(`Error updating document: ${doc}`, err);
-      if (err.code === 'permission-denied') {
-        navigate('SigninScreen');
-      }
-    });
-};
-
-export const deleteDoc = async (collection, doc) => {
-  // console.log(`[Firebase - deleteDoc] collection: ${collection}; doc: ${doc}`);
-
-  const db = firebase.firestore();
-
-  await db
-    .collection(collection)
-    .doc(doc)
-    .delete()
-    .catch((err) => {
-      console.log(`Error deleting document: ${doc}`, err);
+  try {
+    console.log('===== Entrei');
+    const docRef = doc(db, col, docId);
+    await updateDocument(docRef, { [attribute]: value });
+    console.log('Document attribute successfully updated!');
+  } catch (error) {
+    console.error(`Error updating document: ${docId}`, error);
+    if (error.code === 'permission-denied') {
       navigate('SigninScreen');
-    });
+    }
+    throw error;
+  }
+};
+
+export const updateDoc = async (col, docId, data) => {
+  try {
+    const ref = doc(db, col, docId);
+
+    const docRef = updateDocument(ref, data);
+    console.log(docRef);
+  } catch (error) {
+    console.log('Error while updating doc in subcollection', error);
+  }
+};
+
+export const deleteDocument = async (collectionName, documentId) => {
+  console.log(
+    `[Firebase - deleteDoc] collection: ${collectionName}; doc: ${documentId}`
+  );
+
+  try {
+    await deleteDoc(doc(db, collectionName, documentId));
+    console.log(`Document ${doc} deleted successfully.`);
+  } catch (err) {
+    console.log(`Error deleting document ${doc}:`, err);
+    throw err; // Re-throw the error to handle it outside this function if needed.
+  }
 };
 
 export const deleteDocInSubcollection = async (
-  collection,
-  doc,
-  subcollection,
+  collectionName,
+  document,
+  subCollectionName,
   subcollectionDoc
 ) => {
   // console.log(
   //   `[Firebase - deleteDocInSubcollection] collection: ${collection}; doc: ${doc}; subcollection: ${subcollection}; doc: ${subcollectionDoc}`
   // );
 
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
+  const ref = db.collection(collectionName);
 
   await ref
-    .doc(doc)
-    .collection(subcollection)
+    .doc(document)
+    .collection(subCollectionName)
     .doc(subcollectionDoc)
     .delete()
     .catch((err) => {
@@ -414,43 +369,44 @@ export const deleteDocInSubcollection = async (
 };
 
 export const resetPassword = (email) => {
-  return firebase.auth().sendPasswordResetEmail(email);
+  return auth().sendPasswordResetEmail(email);
 };
 
-export const fetchPayments = async (collection, subcollection, doc) => {
-  const db = firebase.firestore();
-  const ref = db.collection(collection);
+export const fetchPayments = async (
+  collectionName,
+  subCollectionName,
+  documentId
+) => {
+  console.log(
+    `[Firebase - fetchPayments] collection: ${collectionName}; doc: ${documentId}; subcollection: ${subCollectionName};`
+  );
   const userPayments = [];
-  await ref
-    .doc(doc)
-    .collection(subcollection)
-    .orderBy('date')
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((payment) => {
-        const date = new Date(payment.data().date);
-        userPayments.push({
-          paymentId: payment.id,
-          userId: payment.data().userId,
-          currentBalance: payment.data().currentBalance,
-          date,
-          orderId: payment.data().orderId,
-          orderTotalAmount: payment.data().orderTotalAmount,
-          status: payment.data().status,
-          totalToBePaid: payment.data().totalToBePaid,
-          receipt: payment.data().receipt ? payment.data().receipt : {},
-          showReceiptImage: false,
-          paymentNote: payment.data().paymentNote,
-        });
+  const colRef = collection(db, collectionName, documentId, subCollectionName);
+  try {
+    const querySnapshot = await getDocs(query(colRef));
+    querySnapshot.forEach((payment) => {
+      const date = new Date(payment.data().date);
+      userPayments.push({
+        paymentId: payment.id,
+        userId: payment.data().userId,
+        currentBalance: payment.data().currentBalance,
+        date,
+        orderId: payment.data().orderId,
+        orderTotalAmount: payment.data().orderTotalAmount,
+        status: payment.data().status,
+        totalToBePaid: payment.data().totalToBePaid,
+        receipt: payment.data().receipt ? payment.data().receipt : {},
+        showReceiptImage: false,
+        paymentNote: payment.data().paymentNote,
       });
-      userPayments.sort((a, b) => {
-        return a.date < b.date ? 1 : -1;
-      });
-    })
-    .catch((err) => {
-      console.log('Erro ao carregar os pagamentos!', err);
-      return err;
-      // Alert.alert('Erro ao carregar os seus pagamentos!', err);
     });
+    userPayments.sort((a, b) => {
+      return a.date < b.date ? 1 : -1;
+    });
+  } catch (error) {
+    console.log('Erro ao carregar os pagamentos!', error);
+    return error;
+  }
+
   return userPayments;
 };

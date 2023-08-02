@@ -29,6 +29,7 @@ import Button from '../../components/Button';
 import { sendPushNotification } from '../../utils';
 
 const AddDeliveryExtraItemsScreen = ({ navigation }) => {
+  console.log('[Add delivery Extra Item Screen started...]');
   const {
     state: { loading, products },
     fetchProducts,
@@ -82,21 +83,21 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-        type: 'ionicons',
-        name: 'search',
-        size: 25,
-        color: 'lightgrey',
-      }
+          type: 'ionicons',
+          name: 'search',
+          size: 25,
+          color: 'lightgrey',
+        }
       : {
-        type: 'material',
-        name: 'clear',
-        size: 25,
-        color: 'lightgrey',
-        onPress: () => {
-          setFilterText('');
-          setFilteredProducts(products);
-        },
-      };
+          type: 'material',
+          name: 'clear',
+          size: 25,
+          color: 'lightgrey',
+          onPress: () => {
+            setFilterText('');
+            setFilteredProducts(products);
+          },
+        };
   };
 
   const handleItemCheck = (item) => {
@@ -146,6 +147,11 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
       baseProductsPrice: groupInfo.baseProductsPrice,
       deliveryFee: groupInfo.deliveryFee,
     };
+
+    console.log(
+      '[Add Delivery Item Screen] delivery',
+      JSON.stringify(delivery, null, 2)
+    );
 
     if (state.nextDelivery) {
       updateDelivery({ deliveryId: state.nextDelivery.id, delivery });
@@ -355,8 +361,8 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
                 />
               </TouchableOpacity>
               {filterText.length &&
-                filteredProducts &&
-                !filteredProducts.length ? (
+              filteredProducts &&
+              !filteredProducts.length ? (
                 <Text style={styles.productNotFoundText}>
                   Nenhum produto encontrado por este nome.
                 </Text>

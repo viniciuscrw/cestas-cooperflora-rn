@@ -1,4 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  getMetadata,
+} from 'firebase/storage';
 import { format } from 'date-fns';
 import {
   StyleSheet,
@@ -11,7 +18,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-import firebase from 'firebase';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';
 import Divider from '../../components/Divider';
@@ -121,44 +127,62 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
       );
       return;
     }
+    const firebaseStorage = getStorage();
     const date = new Date();
     const documentName = format(date, 'yyyyMMddHHMMSS');
-    const response = await fetch(receiptDocument.uri);
-    const blob = await response.blob();
-    const receiptRef = firebase
-      .storage()
-      .ref()
-      .child(`${userId}/${documentName}`);
-    setIsLoading(true);
-    receiptRef
-      .put(blob)
-      .then((response) => {
-        receiptRef
-          .getMetadata()
-          .then((receiptMetadata) => {
-            receiptRef
-              .getDownloadURL()
-              .then((receiptUrl) => {
-                updatePayment(receiptUrl, receiptMetadata);
-              })
-              .catch((error) => {
-                console.log('Erro =>', error);
-                Alert.alert(
-                  'Erro ao recuperar o endereço da imagem do comprovante do banco de dados!',
-                  error
-                );
-              });
-          })
-          .catch((error) => {
-            Alert.alert(
-              'Erro ao recuperar os metadados do comprovante de pagamento!',
-              error
-            );
-          });
-      })
-      .catch((error) => {
-        Alert.alert('Erro ao armazenar a imagem do comprovante!', error);
-      });
+    try {
+      const response = await fetch(receiptDocument.uri);
+      const blob = await response.blob();
+      setIsLoading(true);
+      const storageRef = ref(firebaseStorage, `${userId}/${documentName}`);
+      const snapshot = await uploadBytes(storageRef, blob);
+      console.log('Snapshot:', snapshot, userId);
+      const receiptUrl = await getDownloadURL(storageRef);
+      const receiptMetadata = await getMetadata(storageRef);
+      updatePayment(receiptUrl, receiptMetadata);
+      // console.log('Image uploaded successfully. Download URL:', receiptUrl);
+    } catch (error) {
+      console.log(
+        '[ConsumerAddPaymentScreen] Problems to store image on storage',
+        error
+      );
+      Alert.alert('Erro ao carregar a imagem do comprovante!', error);
+    }
+
+    // const receiptRef = firebase
+    //   .storage()
+    //   .ref()
+    //   .child(`${userId}/${documentName}`);
+    // setIsLoading(true);
+    // receiptRef
+    //   .put(blob)
+    //   .then((response) => {
+    //     receiptRef
+    //       .getMetadata()
+    //       .then((receiptMetadata) => {
+    //         receiptRef
+    //           .getDownloadURL()
+    //           .then((receiptUrl) => {
+    //             updatePayment(receiptUrl, receiptMetadata);
+    //           })
+    //           .catch((error) => {
+    //             console.log('Erro =>', error);
+    //             Alert.alert(
+    //               'Erro ao recuperar o endereço da imagem do comprovante do banco de dados!',
+    //               error
+    //             );
+    //           });
+    //       })
+    //       .catch((error) => {
+    //         Alert.alert(
+    //           'Erro ao recuperar os metadados do comprovante de pagamento!',
+    //           error
+    //         );
+    //       });
+    //   })
+    //   .catch((error) => {
+    //     Alert.alert('Erro ao armazenar a imagem do comprovante!', error);
+    //   });
   };
 
   if (isLoading) {

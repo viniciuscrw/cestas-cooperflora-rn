@@ -30,7 +30,7 @@ import RenderImageReceipt from '../../components/RenderImageReceipt';
 import RenderPdfReceipt from '../../components/RenderPdfReceipt';
 
 const ConsumerPaymentsScreen = ({ route, navigation }) => {
-  // console.log('[ConsumerPaymentsScreen started]');
+  console.log('[ConsumerPaymentsScreen started] specific user');
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState();
   const [userPayments, setUserPayments] = useState([]);
@@ -40,6 +40,22 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
   const { userId } = route.params;
 
   const { getUserById } = useContext(userContext);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setIsLoading(true);
+      if (userId) {
+        getUserById(userId).then((data) => {
+          setUserData(data);
+          // fetchPayments();
+          handleFetchPayments();
+          setIsLoading(false);
+        });
+      }
+    });
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation, userId]);
 
   const handleFetchPayments = () => {
     setPaymentsOpened(false);
@@ -63,22 +79,6 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
         Alert.alert('Erro ao carregar os seus pagamentos!', error);
       });
   };
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      setIsLoading(true);
-      if (userId) {
-        getUserById(userId).then((data) => {
-          setUserData(data);
-          // fetchPayments();
-          handleFetchPayments();
-          setIsLoading(false);
-        });
-      }
-    });
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
-  }, [navigation, userId]);
 
   const showImage = (index) => {
     const newUserPayments = [...userPayments];

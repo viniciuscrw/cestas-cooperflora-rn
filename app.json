@@ -43,13 +43,17 @@
           "config": {
             "organization": "ifsp-fn",
             "project": "cestas-cooperflora",
-            "authToken": "8ea6a44bf50f44669fd2911ba93b5699aa97f7d586f44b0c9ed1ce85b267389b"
           }
         }
       ]
     },
     "plugins": [
       "sentry-expo"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0ee452b5-ed8e-48f7-8214-8be5cc32cfa4"
+      }
+    }
   }
 }

@@ -15,6 +15,7 @@ import { Context as DeliveryContext } from '../context/DeliveryContext';
 import { TextContent, TextLabel } from '../components/StandardStyles';
 
 const OrdersByConsumerScreen = (props) => {
+  console.log('[OrdersByConsumer Screen] starting...');
   const {
     state: { loading: orderLoading, orders },
     fetchOrdersByDelivery,
@@ -30,6 +31,7 @@ const OrdersByConsumerScreen = (props) => {
     fetchDelivery,
   } = useContext(DeliveryContext);
 
+  // eslint-disable-next-line react/destructuring-assignment
   const delivery = props.route.params ? props.route.params.delivery : null;
 
   const [usersOrders, setUsersOrders] = useState([]);
@@ -74,8 +76,10 @@ const OrdersByConsumerScreen = (props) => {
   };
 
   const matchUsersWithOrders = () => {
+    console.log('[OrdersByConsumersScreen] matchUsersWirhOrders');
     const userOrderItems = [];
     let userOrderItem;
+    // eslint-disable-next-line no-unused-expressions
     users?.forEach((user) => {
       const userOrdersResult = orders.filter((order) => {
         return order.userId === user.id;
@@ -111,26 +115,27 @@ const OrdersByConsumerScreen = (props) => {
       return a.userName.toLowerCase() < b.userName.toLowerCase() ? -1 : 1;
     });
     setUsersOrders(userOrderItems);
+    console.log('[OrdersByConsumersScreen] matchUsersWirhOrders finished');
   };
 
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-        type: 'ionicons',
-        name: 'search',
-        size: 25,
-        color: 'lightgrey',
-      }
+          type: 'ionicons',
+          name: 'search',
+          size: 25,
+          color: 'lightgrey',
+        }
       : {
-        type: 'material',
-        name: 'clear',
-        size: 25,
-        color: 'lightgrey',
-        onPress: () => {
-          setFilterText('');
-          setFilteredOrdersByConsumer([]);
-        },
-      };
+          type: 'material',
+          name: 'clear',
+          size: 25,
+          color: 'lightgrey',
+          onPress: () => {
+            setFilterText('');
+            setFilteredOrdersByConsumer([]);
+          },
+        };
   };
 
   const searchConsumersByFilter = () => {
@@ -145,6 +150,7 @@ const OrdersByConsumerScreen = (props) => {
     return (
       <TouchableOpacity
         onPress={() =>
+          // eslint-disable-next-line react/destructuring-assignment
           props.navigation.navigate('ConsumerOrderScreen', {
             user: { id: userOrderItem.userId, name: userOrderItem.userName },
             delivery: stateDelivery,
@@ -164,7 +170,7 @@ const OrdersByConsumerScreen = (props) => {
           <View style={styles.container2}>
             <TextContent style={{ fontSize: 14 }}>
               {userOrderItem.orderStatus &&
-                userOrderItem.orderStatus === GLOBALS.ORDER.STATUS.COMPLETED
+              userOrderItem.orderStatus === GLOBALS.ORDER.STATUS.COMPLETED
                 ? `Entrega concluída`
                 : null}
             </TextContent>
@@ -198,7 +204,7 @@ const OrdersByConsumerScreen = (props) => {
           <FlatList
             data={
               filteredOrdersByConsumer != null &&
-                filteredOrdersByConsumer.length > 0
+              filteredOrdersByConsumer.length > 0
                 ? filteredOrdersByConsumer
                 : usersOrders
             }
@@ -265,7 +271,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 5,
     paddingLeft: 20,
-    borderRadius: 30,
+    borderRadius: 15,
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 5,

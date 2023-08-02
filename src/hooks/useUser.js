@@ -9,6 +9,7 @@ export default () => {
     const userId = await AsyncStorage.getItem('userId');
     const userRole = await AsyncStorage.getItem('userRole');
     const userName = await AsyncStorage.getItem('userName');
+    console.log(userId, userRole, userName);
 
     if (!(userId && userRole && userName)) {
       const user = await getById('users', userId);

@@ -1,6 +1,6 @@
 import createDataContext from './createDataContext';
 import {
-  deleteDoc,
+  deleteDocument,
   getFirstByAttribute,
   insertDoc,
   updateDoc,
@@ -133,7 +133,7 @@ const deleteUser = (dispatch) => async (user) => {
   dispatch({ type: 'loading' });
 
   console.log(`Deleting user: ${user.id}`);
-  deleteDoc(GLOBALS.COLLECTION.USERS, user.id).then(() => {
+  deleteDocument(GLOBALS.COLLECTION.USERS, user.id).then(() => {
     dispatch({ type: 'delete_user' });
     console.log(`User deleted: ${user.id}`);
 

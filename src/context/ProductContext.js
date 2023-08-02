@@ -1,6 +1,6 @@
 import createDataContext from './createDataContext';
 import {
-  deleteDoc,
+  deleteDocument,
   get,
   getOrderingBy,
   insertDoc,
@@ -40,31 +40,37 @@ const fetchProducts = (dispatch) => async () => {
   });
 };
 
-const createProduct = (dispatch) => async ({ product }) => {
-  dispatch({ type: 'loading' });
-  console.log(`Creating new product: ${JSON.stringify(product)}`);
+const createProduct =
+  (dispatch) =>
+  async ({ product }) => {
+    dispatch({ type: 'loading' });
+    console.log(`Creating new product: ${JSON.stringify(product)}`);
 
-  await insertDoc(GLOBALS.COLLECTION.PRODUCTS, product);
-  dispatch({ type: 'add_product' });
-};
+    await insertDoc(GLOBALS.COLLECTION.PRODUCTS, product);
+    dispatch({ type: 'add_product' });
+  };
 
-const updateProduct = (dispatch) => async ({ productId, updatedProduct }) => {
-  dispatch({ type: 'loading' });
-  console.log(
-    'Updating product ' + productId + ': ' + JSON.stringify(updatedProduct)
-  );
+const updateProduct =
+  (dispatch) =>
+  async ({ productId, updatedProduct }) => {
+    dispatch({ type: 'loading' });
+    console.log(
+      `Updating product ${productId}: ${JSON.stringify(updatedProduct)}`
+    );
 
-  await updateDoc(GLOBALS.COLLECTION.PRODUCTS, productId, updatedProduct);
-  dispatch({ type: 'update_product' });
-};
+    await updateDoc(GLOBALS.COLLECTION.PRODUCTS, productId, updatedProduct);
+    dispatch({ type: 'update_product' });
+  };
 
-const deleteProduct = (dispatch) => async ({ productId }) => {
-  dispatch({ type: 'loading' });
-  console.log('Deleting product with id: ' + productId);
+const deleteProduct =
+  (dispatch) =>
+  async ({ productId }) => {
+    dispatch({ type: 'loading' });
+    console.log(`Deleting product with id: ${productId}`);
 
-  await deleteDoc(GLOBALS.COLLECTION.PRODUCTS, productId);
-  dispatch({ type: 'delete_product' });
-};
+    await deleteDocument(GLOBALS.COLLECTION.PRODUCTS, productId);
+    dispatch({ type: 'delete_product' });
+  };
 
 export const { Provider, Context } = createDataContext(
   productReducer,

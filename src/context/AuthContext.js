@@ -1,8 +1,18 @@
-import firebase from 'firebase';
+// import firebase from 'firebase';
+import {
+  getAuth,
+  updateEmail,
+  updatePassword as updatePass,
+  fetchSignInMethodsForEmail,
+  signInWithEmailAndPassword,
+  signOut,
+  sendPasswordResetEmail,
+} from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import { auth } from '../constants/FirebaseConfig';
 import createDataContext from './createDataContext';
-import 'firebase/firestore';
+// import 'firebase/firestore';
 import { navigate } from '../navigationRef';
 import {
   getFirstByAttribute,
@@ -98,8 +108,14 @@ const tryLocalSignin = (dispatch) => async () => {
 };
 
 const onSigninSuccess = (dispatch) => async (email) => {
-  const authId = firebase.auth().currentUser.uid;
+  // const authId = firebase.auth().currentUser.uid;
+  const authId = auth.currentUser.uid;
+
   console.log(`Sign in success for auth: ${authId}`);
+  // console.log(
+  //   '[Auth Context - onSignInSuccess]',
+  //   JSON.stringify(authId, null, 2)
+  // );
 
   let user = await getFirstByAttribute('users', 'authId', authId);
 
@@ -151,37 +167,62 @@ const onSigninSuccess = (dispatch) => async (email) => {
 
 const signin =
   (dispatch) =>
-    ({ email, password, passwordConfirmation, userId }) => {
-      dispatch({ type: 'loading' });
-
-      if (passwordConfirmation) {
-        passwordConfirmation !== password
-          ? dispatch({
+  async ({ email, password, passwordConfirmation, userId }) => {
+    dispatch({ type: 'loading' });
+    console.log(
+      '[Auth Context - SigIn started]',
+      email,
+      password,
+      passwordConfirmation,
+      userId
+    );
+    if (passwordConfirmation) {
+      passwordConfirmation !== password
+        ? dispatch({
             type: 'add_error',
             payload: 'As senhas digitadas são divergentes.',
           })
-          : signup(dispatch)(email, password, userId);
-      } else {
-        console.log(`Signing in existing user: ${userId}`);
-
-        firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then(() => onSigninSuccess(dispatch)(email))
-          .catch((err) => {
-            console.log(err);
-            const errorMessage =
-              err.code === 'auth/wrong-password'
-                ? 'Senha inválida.'
-                : 'Algo deu errado com o login.';
-
-            dispatch({
-              type: 'add_error',
-              payload: errorMessage,
-            });
-          });
+        : signup(dispatch)(email, password, userId);
+    } else {
+      console.log(`Signing in existing user: ${userId}`);
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        // console.log('[Auth Context - SignIn]', userCredential);
+        onSigninSuccess(dispatch)(email);
+      } catch (error) {
+        const errorMessage =
+          error.code === 'auth/wrong-password'
+            ? 'Senha inválida.'
+            : 'Algo deu errado com o login.';
+        dispatch({
+          type: 'add_error',
+          payload: errorMessage,
+        });
+        console.log('[Auth Context - SignIn]', error);
       }
-    };
+
+      // firebase
+      //   .auth()
+      //   .signInWithEmailAndPassword(email, password)
+      //   .then(() => onSigninSuccess(dispatch)(email))
+      //   .catch((err) => {
+      //     console.log(err);
+      //     const errorMessage =
+      //       err.code === 'auth/wrong-password'
+      //         ? 'Senha inválida.'
+      //         : 'Algo deu errado com o login.';
+
+      //     dispatch({
+      //       type: 'add_error',
+      //       payload: errorMessage,
+      //     });
+      //   });
+    }
+  };
 
 const signup = (dispatch) => (email, password, userId) => {
   console.log(`Creating auth for new user: ${userId}`);
@@ -211,40 +252,63 @@ const signup = (dispatch) => (email, password, userId) => {
 
 const checkAuthOrUser =
   (dispatch) =>
-    ({ email }) => {
-      dispatch({ type: 'loading' });
-      console.log(`Checking auth or user for email: ${email}`);
+  async ({ email }) => {
+    dispatch({ type: 'loading' });
+    console.log(`Checking auth or user for email: ${email}`);
 
-      firebase
-        .auth()
-        .fetchSignInMethodsForEmail(email)
-        .then(async (signInMethods) => {
-          if (
-            signInMethods.indexOf(
-              firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
-            ) !== -1
-          ) {
-            console.log(`Auth found for email: ${email}`);
-            const user = await getFirstByAttribute('users', 'email', email);
+    try {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      console.log('SignIn Methods =>', signInMethods);
+      if (signInMethods.includes('password')) {
+        console.log(`Auth found for email: ${email}`);
+        const user = await getFirstByAttribute('users', 'email', email);
+        if (!user) {
+          console.log(`Auth found but user was deleted: ${email}`);
+          dispatch({ type: 'add_error', payload: 'E-mail não autorizado.' });
+        } else {
+          dispatch({ type: 'check_auth' });
+        }
+      } else {
+        await findUser(dispatch)(email);
+      }
+    } catch (error) {
+      const errorMessage =
+        error.code === 'auth/invalid-email'
+          ? 'Endereço de e-mail inválido.'
+          : 'Algo deu errado com a verificação do e-mail. Verifique sua conexão com a Internet.';
+      dispatch({ type: 'add_error', payload: errorMessage });
+    }
 
-            if (!user) {
-              console.log(`Auth found but user was deleted: ${email}`);
-              dispatch({ type: 'add_error', payload: 'E-mail não autorizado.' });
-            } else {
-              dispatch({ type: 'check_auth' });
-            }
-          } else {
-            await findUser(dispatch)(email);
-          }
-        })
-        .catch((err) => {
-          const errorMessage =
-            err.code === 'auth/invalid-email'
-              ? 'Endereço de e-mail inválido.'
-              : 'Algo deu errado com a verificação do e-mail. Verifique sua conexão com a Internet.';
-          dispatch({ type: 'add_error', payload: errorMessage });
-        });
-    };
+    // auth()
+    //   .fetchSignInMethodsForEmail(email)
+    //   .then(async (signInMethods) => {
+    //     if (
+    //       signInMethods.indexOf(
+    //         // firebase.auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
+    //         auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD
+    //       ) !== -1
+    //     ) {
+    //       console.log(`Auth found for email: ${email}`);
+    //       const user = await getFirstByAttribute('users', 'email', email);
+
+    //       if (!user) {
+    //         console.log(`Auth found but user was deleted: ${email}`);
+    //         dispatch({ type: 'add_error', payload: 'E-mail não autorizado.' });
+    //       } else {
+    //         dispatch({ type: 'check_auth' });
+    //       }
+    //     } else {
+    //       await findUser(dispatch)(email);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     const errorMessage =
+    //       err.code === 'auth/invalid-email'
+    //         ? 'Endereço de e-mail inválido.'
+    //         : 'Algo deu errado com a verificação do e-mail. Verifique sua conexão com a Internet.';
+    //     dispatch({ type: 'add_error', payload: errorMessage });
+    //   });
+  };
 
 const findUser = (dispatch) => async (email) => {
   console.log(`No auth. So finding user for email: ${email}`);
@@ -292,26 +356,25 @@ const clearUserInfo = (dispatch) => () => {
 const signout = (dispatch) => () => {
   dispatch({ type: 'loading' });
 
-  firebase
-    .auth()
-    .signOut()
+  signOut(auth)
     .then(async () => {
+      console.log('[AuthContext] signout sucessfully');
       await AsyncStorage.removeItem('authId');
       await AsyncStorage.removeItem('userId');
       await AsyncStorage.removeItem('userRole');
       await AsyncStorage.removeItem('userName');
       await AsyncStorage.removeItem('group');
       dispatch({ type: 'signout' });
+    })
+    .catch((error) => {
+      console.log('[AuthContext] signout error', error);
     });
 };
 
 const resetPassword = (dispatch) => (email) => {
   console.log(`Reseting password for user with email: ${email}`);
   dispatch({ type: 'loading' });
-
-  firebase
-    .auth()
-    .sendPasswordResetEmail(email)
+  sendPasswordResetEmail(auth, email)
     .then(() => {
       Alert.alert(
         'E-mail enviado',
@@ -325,18 +388,47 @@ const resetPassword = (dispatch) => (email) => {
       dispatch({ type: 'reset_password' });
       navigate('SigninScreen');
     })
-    .catch((err) => {
-      console.log(`Error while reseting password for email: ${email}`, err);
+    .catch((error) => {
+      console.log(`Error while reseting password for email: ${email}`, error);
       let errorMessage = 'Algo deu errado com a redefinição de senha.';
 
-      if (err.code === 'auth/invalid-email') {
+      if (error.code === 'auth/invalid-email') {
         errorMessage = 'Endereço de e-mail inválido.';
-      } else if (err.code === 'auth/user-not-found') {
+      } else if (error.code === 'auth/user-not-found') {
         errorMessage = 'Endereço de e-mail não cadastrado.';
       }
 
       dispatch({ type: 'add_error', payload: errorMessage });
     });
+
+  // firebase
+  //   .auth()
+  //   .sendPasswordResetEmail(email)
+  //   .then(() => {
+  //     Alert.alert(
+  //       'E-mail enviado',
+  //       `E-mail enviado com as instruções para redefinição de senha para ${email}`,
+  //       [
+  //         {
+  //           text: 'OK',
+  //         },
+  //       ]
+  //     );
+  //     dispatch({ type: 'reset_password' });
+  //     navigate('SigninScreen');
+  //   })
+  //   .catch((err) => {
+  //     console.log(`Error while reseting password for email: ${email}`, err);
+  //     let errorMessage = 'Algo deu errado com a redefinição de senha.';
+
+  //     if (err.code === 'auth/invalid-email') {
+  //       errorMessage = 'Endereço de e-mail inválido.';
+  //     } else if (err.code === 'auth/user-not-found') {
+  //       errorMessage = 'Endereço de e-mail não cadastrado.';
+  //     }
+
+  //     dispatch({ type: 'add_error', payload: errorMessage });
+  //   });
 };
 
 const updateAccount = (dispatch) => async (currentEmail, password, user) => {
@@ -356,28 +448,25 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
     `Setting new e-mail [${user.email}] for user with e-mail: ${currentEmail}`
   );
 
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(currentEmail, password)
-    .then((userCredential) => {
-      userCredential.user
-        .updateEmail(user.email)
+  signInWithEmailAndPassword(auth, currentEmail, password)
+    .then(
+      updateEmail(auth.currentUser, user.email)
         .then(() => {
           updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
             dispatch({ type: 'update_account', payload: user });
           });
         })
-        .catch((err) => {
+        .catch((error) => {
           console.log(
             `Error while updating email for user: ${currentEmail}`,
-            err
+            error
           );
           user.email = currentEmail;
           updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
             dispatch({ type: 'update_account', payload: user });
           });
-        });
-    })
+        })
+    )
     .catch((err) => {
       console.log(err);
       const errorMessage =
@@ -390,51 +479,110 @@ const updateWithEmail = (dispatch) => (currentEmail, password, user) => {
         payload: errorMessage,
       });
     });
+
+  // firebase
+  //   .auth()
+  //   .signInWithEmailAndPassword(currentEmail, password)
+  //   .then((userCredential) => {
+  //     userCredential.user
+  //       .updateEmail(user.email)
+  //       .then(() => {
+  //         updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
+  //           dispatch({ type: 'update_account', payload: user });
+  //         });
+  //       })
+  //       .catch((err) => {
+  //         console.log(
+  //           `Error while updating email for user: ${currentEmail}`,
+  //           err
+  //         );
+  //         user.email = currentEmail;
+  //         updateDoc(GLOBALS.COLLECTION.USERS, user.id, user).then(() => {
+  //           dispatch({ type: 'update_account', payload: user });
+  //         });
+  //       });
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //     const errorMessage =
+  //       err.code === 'auth/wrong-password'
+  //         ? 'Senha inválida.'
+  //         : 'Algo deu errado com a atualização de senha.';
+
+  //     dispatch({
+  //       type: 'add_error',
+  //       payload: errorMessage,
+  //     });
+  //   });
 };
 
-const updatePassword = (dispatch) => (email, password, newPassword) => {
+const updatePassword = (dispatch) => async (email, password, newPassword) => {
   dispatch({ type: 'loading' });
   console.log(`Updating password for user: ${email}`);
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      userCredential.user
-        .updatePassword(newPassword)
-        .then(() => {
-          Alert.alert('Sua senha foi atualizada!', '', [
-            {
-              text: 'OK',
-            },
-          ]);
-          dispatch({ type: 'update_account' });
-          navigate('AccountOptionsScreen');
-        })
-        .catch((err) => {
-          console.log(err);
-          const errorMessage =
-            err.code === 'auth/weak-password'
-              ? 'A nova senha deve possuir pelo menos 6 caracteres.'
-              : 'Algo deu errado com a atualização de senha.';
 
-          dispatch({
-            type: 'add_error',
-            payload: errorMessage,
-          });
-        });
-    })
-    .catch((err) => {
-      console.log(err);
-      const errorMessage =
-        err.code === 'auth/wrong-password'
-          ? 'Senha atual inválida.'
-          : 'Algo deu errado com a atualização de senha.';
+  try {
+    const user = auth.currentUser;
+    await updatePass(user, newPassword);
+    Alert.alert('Sua senha foi atualizada!', '', [
+      {
+        text: 'OK',
+      },
+    ]);
+    dispatch({ type: 'update_account' });
+    navigate('AccountOptionsScreen');
+  } catch (error) {
+    console.log(error);
+    const errorMessage =
+      error.code === 'auth/weak-password'
+        ? 'A nova senha deve possuir pelo menos 6 caracteres.'
+        : 'Algo deu errado com a atualização de senha.';
 
-      dispatch({
-        type: 'add_error',
-        payload: errorMessage,
-      });
+    dispatch({
+      type: 'add_error',
+      payload: errorMessage,
     });
+  }
+
+  // firebase
+  //   .auth()
+  //   .signInWithEmailAndPassword(email, password)
+  //   .then((userCredential) => {
+  //     userCredential.user
+  //       .updatePassword(newPassword)
+  //       .then(() => {
+  //         Alert.alert('Sua senha foi atualizada!', '', [
+  //           {
+  //             text: 'OK',
+  //           },
+  //         ]);
+  //         dispatch({ type: 'update_account' });
+  //         navigate('AccountOptionsScreen');
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //         const errorMessage =
+  //           err.code === 'auth/weak-password'
+  //             ? 'A nova senha deve possuir pelo menos 6 caracteres.'
+  //             : 'Algo deu errado com a atualização de senha.';
+
+  //         dispatch({
+  //           type: 'add_error',
+  //           payload: errorMessage,
+  //         });
+  //       });
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //     const errorMessage =
+  //       err.code === 'auth/wrong-password'
+  //         ? 'Senha atual inválida.'
+  //         : 'Algo deu errado com a atualização de senha.';
+
+  //     dispatch({
+  //       type: 'add_error',
+  //       payload: errorMessage,
+  //     });
+  //   });
 };
 
 export const { Provider, Context } = createDataContext(

@@ -18,6 +18,7 @@ import { TextLabel } from '../components/StandardStyles';
 import { updateDocAttribute } from '../api/firebase';
 
 const PaymentsScreen = ({ navigation }) => {
+  console.log('[PaymentsScreen] started');
   const [isLoading, setIsLoading] = useState(false);
   const [consumers, setConsumers] = useState([]);
   const [refreshing, setRefreshing] = useState(false);

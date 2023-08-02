@@ -44,6 +44,8 @@ const deliveryReducer = (state, action) => {
 };
 
 const getNextDelivery = (deliveries) => {
+  // console.log('[Delivery Context] deliveries', deliveries);
+
   let nextDelivery = [];
   if (deliveries) {
     const currentDate = new Date();
@@ -56,10 +58,15 @@ const getNextDelivery = (deliveries) => {
 };
 
 const getLastDeliveries = (deliveries) => {
+  // console.log(
+  //   '[Delivery Context] getLastDeliveries',
+  //   JSON.stringify(deliveries, null, 2)
+  // );
   let lastDeliveries = [];
   if (deliveries) {
     const currentDate = new Date();
     lastDeliveries = deliveries.filter((delivery) => {
+      console.log(currentDate, delivery.deliveryDate);
       return delivery.deliveryDate < currentDate;
     });
   }
@@ -92,8 +99,13 @@ const fetchDeliveries = (dispatch) => async () => {
     GLOBALS.COLLECTION.DELIVERIES
   );
 
+  // console.log('[Delivery Context] deliveries', deliveries);
+
   const nextDelivery = getNextDelivery(deliveries);
   const lastDeliveries = getLastDeliveries(deliveries);
+
+  // console.log('[Delivery Context] next delivery', nextDelivery);
+  // console.log('[Delivery Context] last deliveries', lastDeliveries);
 
   dispatch({
     type: 'fetch_deliveries',
@@ -135,7 +147,7 @@ const createDelivery =
   (dispatch) =>
   async ({ delivery }) => {
     dispatch({ type: 'loading' });
-    console.log(`Creating new delivery: ${JSON.stringify(delivery)}`);
+    // console.log(`Creating new delivery: ${JSON.stringify(delivery)}`);
 
     insertIntoSubcollection(
       GLOBALS.COLLECTION.GROUPS,

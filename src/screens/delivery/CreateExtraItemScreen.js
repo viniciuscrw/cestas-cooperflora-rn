@@ -15,7 +15,7 @@ import FormInput from '../../components/FormInput';
 import Button from '../../components/Button';
 import Spacer from '../../components/Spacer';
 import TextLink from '../../components/TextLink';
-import LoadingButton from '../../components/LoadingButton';
+// import LoadingButton from '../../components/LoadingButton';
 import { Context as ProductContext } from '../../context/ProductContext';
 import {
   formatCurrency,
@@ -195,13 +195,6 @@ const CreateExtraItemScreen = ({ route, navigation }) => {
           Excluir item
         </Button>
       </View>
-      // <LoadingButton
-      //   style={styles.removeItemButton}
-      //   color="darkorange"
-      //   onPress={removeItem}
-      // >
-      //   Excluir item
-      // </LoadingButton>
     ) : null;
   };
 

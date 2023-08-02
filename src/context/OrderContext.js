@@ -1,6 +1,8 @@
-import firebase from 'firebase';
-import 'firebase/firestore';
+// import firebase from 'firebase';
+// import 'firebase/firestore';
+import { doc, runTransaction } from 'firebase/firestore';
 import createDataContext from './createDataContext';
+
 import {
   getByAttribute,
   insertDocAndRetrieveId,
@@ -8,6 +10,7 @@ import {
 } from '../api/firebase';
 import GLOBALS from '../Globals';
 import { showAlert } from '../helper/HelperFunctions';
+import { db } from '../constants/FirebaseConfig';
 
 const orderReducer = (state, action) => {
   switch (action.type) {
@@ -270,22 +273,36 @@ const findExtraProductsToUpdate = (
 
 const updateDeliveryExtraProductsQuantities =
   (dispatch) => async (deliveryId, extraProductsToUpdate) => {
-    const db = firebase.firestore();
-    const deliveryRef = await db
-      .collection(GLOBALS.COLLECTION.GROUPS)
-      .doc(GLOBALS.CONSUMER_GROUP.ID)
-      .collection(GLOBALS.COLLECTION.DELIVERIES)
-      .doc(deliveryId);
+    // const deliveryRef = await db
+    //   .collection(GLOBALS.COLLECTION.GROUPS)
+    //   .doc(GLOBALS.CONSUMER_GROUP.ID)
+    //   .collection(GLOBALS.COLLECTION.DELIVERIES)
+    //   .doc(deliveryId);
+    const deliveryRef = doc(
+      db,
+      GLOBALS.COLLECTION.GROUPS,
+      GLOBALS.CONSUMER_GROUP.ID,
+      GLOBALS.COLLECTION.DELIVERIES,
+      deliveryId
+    );
 
-    await db.runTransaction((transaction) => {
-      console.log('Update delivery extra products - Init transaction');
-      return transaction.get(deliveryRef).then((deliveryDoc) => {
+    try {
+      await runTransaction(db, async (transaction) => {
+        console.log('Update delivery extra products - Init transaction');
+        const deliveryDoc = await transaction.get(deliveryRef);
         if (!deliveryDoc.exists) {
           console.log(
             `Delivery ${deliveryId} not found to update its products.`
           );
         } else {
           const delivery = deliveryDoc.data();
+          console.log(
+            `[Order Context] delivery before.${JSON.stringify(
+              delivery.extraProducts,
+              null,
+              2
+            )}`
+          );
           delivery.extraProducts.forEach((product, index) => {
             const extraToUpdateArr = extraProductsToUpdate.filter(
               (extra) => extra.productId === product.id
@@ -308,6 +325,7 @@ const updateDeliveryExtraProductsQuantities =
                 extraToUpdate.quantityDiff > currentAvailableQuantity
               ) {
                 dispatch({ type: 'stop_loading' });
+                // eslint-disable-next-line no-throw-literal
                 throw `Não há quantidade suficiente disponível de ${extraToUpdate.productTitle}. Por favor, tente refazer o pedido com uma quantidade menor.`;
               }
             }
@@ -323,9 +341,69 @@ const updateDeliveryExtraProductsQuantities =
           transaction.update(deliveryRef, {
             extraProducts: delivery.extraProducts,
           });
+          console.log(
+            `[Order Context] delivery before.${JSON.stringify(
+              delivery.extraProducts,
+              null,
+              2
+            )}`
+          );
         }
       });
-    });
+      console.log('Transaction successfully committed!');
+    } catch (e) {
+      console.log('Transaction failed: ', e);
+    }
+
+    // await db.runTransaction((transaction) => {
+    //   console.log('Update delivery extra products - Init transaction');
+    //   return transaction.get(deliveryRef).then((deliveryDoc) => {
+    //     if (!deliveryDoc.exists) {
+    //       console.log(
+    //         `Delivery ${deliveryId} not found to update its products.`
+    //       );
+    //     } else {
+    //       const delivery = deliveryDoc.data();
+    //       delivery.extraProducts.forEach((product, index) => {
+    //         const extraToUpdateArr = extraProductsToUpdate.filter(
+    //           (extra) => extra.productId === product.id
+    //         );
+    //         const extraToUpdate = extraToUpdateArr ? extraToUpdateArr[0] : null;
+
+    //         if (!extraToUpdate) {
+    //           return;
+    //         }
+
+    //         if (product.availableQuantity != null) {
+    //           const currentAvailableQuantity =
+    //             product.availableQuantity - product.orderedQuantity;
+
+    //           console.log(`Current available: ${currentAvailableQuantity}`);
+    //           console.log(`To update: ${JSON.stringify(extraToUpdate)}`);
+
+    //           if (
+    //             extraToUpdate.quantityDiff > 0 &&
+    //             extraToUpdate.quantityDiff > currentAvailableQuantity
+    //           ) {
+    //             dispatch({ type: 'stop_loading' });
+    //             throw `Não há quantidade suficiente disponível de ${extraToUpdate.productTitle}. Por favor, tente refazer o pedido com uma quantidade menor.`;
+    //           }
+    //         }
+
+    //         // TODO: Considerar alteraçao da quantidade maxima permitida por pessoa durante o pedido
+
+    //         product.orderedQuantity += extraToUpdate.quantityDiff;
+    //         delivery.extraProducts[index] = product;
+    //       });
+    //       console.log(
+    //         `Atualizando extras: ${JSON.stringify(delivery.extraProducts)}`
+    //       );
+    //       transaction.update(deliveryRef, {
+    //         extraProducts: delivery.extraProducts,
+    //       });
+    //     }
+    //   });
+    // });
   };
 
 const addOrder =
