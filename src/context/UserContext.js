@@ -98,6 +98,7 @@ const createUser = (dispatch) => async (name, email, phoneNumber, role) => {
     role,
     consumerGroupId,
     balance: 0.0,
+    createdAt: new Date().toISOString(),
   };
 
   console.log(`Creating user: ${JSON.stringify(user)}`);
