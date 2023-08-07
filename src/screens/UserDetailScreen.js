@@ -69,7 +69,7 @@ const UserDetailScreen = (props) => {
             </View>
             <Text style={styles.text}>{user.phoneNumber}</Text>
           </View>
-          <View style={styles.dataContainer}>
+          {/* <View style={styles.dataContainer}>
             <View style={styles.iconContainer}>
               <FontAwesome5
                 name="dollar-sign"
@@ -78,8 +78,8 @@ const UserDetailScreen = (props) => {
               />
             </View>
             <Text style={styles.text}>Saldo: {`R$ ${user.balance}`}</Text>
-          </View>
-          {user.pushNotificationToken ?
+          </View> */}
+          {user.pushNotificationToken ? (
             <View>
               <TextLabel>Notificação</TextLabel>
               <TextContent>Digite a mensagem e clique no sininho</TextContent>
@@ -105,12 +105,13 @@ const UserDetailScreen = (props) => {
                     color={Colors.secondary}
                   />
                 </TouchableHighlight>
-              </View> 
+              </View>
             </View>
-            : <TextContent>
+          ) : (
+            <TextContent>
               Notificação não está habilitada para essa pessoa consumidora
             </TextContent>
-          }
+          )}
         </View>
       </ScrollView>
     </View>

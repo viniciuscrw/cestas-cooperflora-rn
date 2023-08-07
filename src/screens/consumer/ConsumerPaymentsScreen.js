@@ -250,10 +250,10 @@ const ConsumerPaymentsScreen = ({ route, navigation }) => {
           }
         >
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>
+            {/* <Text style={styles.title}>
               Saldo: {userData.balance.toFixed(2)}{' '}
-            </Text>
-            <Text>{userData.name}</Text>
+            </Text> */}
+            <Text style={styles.title}>{userData.name}</Text>
           </View>
           <Divider style={{ borderBottomColor: Colors.secondary }} />
           <View style={styles.paymentsContainer}>

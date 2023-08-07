@@ -146,7 +146,7 @@ const PaymentsScreen = ({ navigation }) => {
                 />
                 <TextLabel style={styles.text}>{consumer.name}</TextLabel>
                 {/* <View style={styles.textBox}> */}
-                <TextLabel
+                {/* <TextLabel
                   style={{
                     justifyContent: 'center',
                     textAlign: 'right',
@@ -154,7 +154,7 @@ const PaymentsScreen = ({ navigation }) => {
                   }}
                 >
                   R$ {consumer.balance.toFixed(2)}
-                </TextLabel>
+                </TextLabel> */}
                 {/* </View> */}
               </TouchableOpacity>
             );
@@ -167,7 +167,9 @@ const PaymentsScreen = ({ navigation }) => {
 
 export const paymentsScreenOptions = () => {
   return {
-    headerTitle: () => <HeaderTitle title="Saldo dos Consumidores(as)" />,
+    headerTitle: () => (
+      <HeaderTitle title="Pagamentos das Pessoas Consumidoras" />
+    ),
     headerLeft: () => {
       return null;
     },

@@ -28,7 +28,9 @@ import AppNavigator from './src/navigation/AppNavigator';
 // // Access any @sentry/browser exports via:
 // Sentry.Browser.*
 
+// eslint-disable-next-line no-undef
 export default App = () => {
+  console.log('[App] started');
   LogBox.ignoreLogs(['Setting a timer']);
   LogBox.ignoreLogs(['It appears']);
   LogBox.ignoreLogs(["'Card."]);

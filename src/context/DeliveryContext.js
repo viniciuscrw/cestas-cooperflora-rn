@@ -66,7 +66,7 @@ const getLastDeliveries = (deliveries) => {
   if (deliveries) {
     const currentDate = new Date();
     lastDeliveries = deliveries.filter((delivery) => {
-      console.log(currentDate, delivery.deliveryDate);
+      // console.log(currentDate, delivery.deliveryDate);
       return delivery.deliveryDate < currentDate;
     });
   }

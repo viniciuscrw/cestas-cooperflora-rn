@@ -196,32 +196,49 @@ export const getByIdFromSubcollection = async (
 // This function should be merged with the above function in the future
 export const getByIdFromSubcollectionPayments = async (
   collectionName,
-  collectionId,
-  subcollection,
-  subcollectionId
+  documentId,
+  subCollectionName,
+  subCollectionDocumentId
 ) => {
-  // console.log(
-  //   `[Firebase - getByIdFromSubcollection] collection: ${collection}; doc: ${collectionId}; subcollection: ${subcollection}; subDoc: ${subcollectionId}`
-  // );
+  console.log(
+    `[Firebase - getByIdFromSubcollection] collection: ${collectionName}; doc: ${documentId}; subcollection: ${subCollectionName}; subDoc: ${subCollectionDocumentId}`
+  );
 
-  let data = null;
-
-  const ref = db.collection(collectionName);
-  await ref
-    .doc(collectionId)
-    .collection(subcollection)
-    .doc(subcollectionId)
-    .get()
-    .then((document) => {
-      data = {
-        ...document.data(),
-      };
-    })
-    .catch((err) =>
-      console.log('Error while getting by id from subcollection', err)
+  try {
+    const docRef = doc(
+      db,
+      collectionName,
+      documentId,
+      subCollectionName,
+      subCollectionDocumentId
     );
+    const document = await getDoc(docRef);
+    console.log(document.data());
+    if (document.exists) {
+      return { ...document.data() };
+    }
+    console.log('Document not found');
+    return null;
+  } catch (err) {
+    console.log('Error while getting by id from subcollection', err);
+    return null;
+  }
+  // const ref = db.collection(collectionName);
+  // await ref
+  //   .doc(collectionId)
+  //   .collection(subcollection)
+  //   .doc(subcollectionId)
+  //   .get()
+  //   .then((document) => {
+  //     data = {
+  //       ...document.data(),
+  //     };
+  //   })
+  //   .catch((err) =>
+  //     console.log('Error while getting by id from subcollection', err)
+  //   );
 
-  return data;
+  // return data;
 };
 
 export const insertDoc = async (collectionName, data) => {
@@ -295,7 +312,7 @@ export const updateDocInSubcollection = async (
       subCollectionDocumentId
     );
     const docRef = updateDocument(subColRef, data);
-    console.log(docRef);
+    // console.log(docRef);
   } catch (error) {
     console.log('Error while updating doc in subcollection', error);
   }
@@ -307,10 +324,8 @@ export const updateDocAttribute = async (col, docId, attribute, value) => {
   // );
 
   try {
-    console.log('===== Entrei');
     const docRef = doc(db, col, docId);
     await updateDocument(docRef, { [attribute]: value });
-    console.log('Document attribute successfully updated!');
   } catch (error) {
     console.error(`Error updating document: ${docId}`, error);
     if (error.code === 'permission-denied') {
@@ -325,7 +340,7 @@ export const updateDoc = async (col, docId, data) => {
     const ref = doc(db, col, docId);
 
     const docRef = updateDocument(ref, data);
-    console.log(docRef);
+    // console.log(docRef);
   } catch (error) {
     console.log('Error while updating doc in subcollection', error);
   }

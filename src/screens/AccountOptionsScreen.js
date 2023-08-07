@@ -107,7 +107,7 @@ const AccountOptionsScreen = ({ navigation }) => {
                 <Text>{state.loggedUser.phoneNumber}</Text>
               </View>
               <Divider />
-              <TouchableOpacity onPress={() => navigation.navigate('Payments')}>
+              {/* <TouchableOpacity onPress={() => navigation.navigate('Payments')}>
                 <View style={styles.listItemContainer}>
                   <View style={styles.listItem}>
                     <Text style={styles.listItemTitle}>Meu Saldo</Text>
@@ -116,7 +116,7 @@ const AccountOptionsScreen = ({ navigation }) => {
                   <Image source={FrontArrow} />
                 </View>
                 <Divider />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </ScrollView>
           ) : null}
           <TouchableOpacity
@@ -205,7 +205,7 @@ export const AccountOptionsScreenOptions = () => {
 const styles = StyleSheet.create({
   screen,
   container: {
-    flex: 1,
+    // flex: 1,
     margin: 25,
   },
   headerContainer: {

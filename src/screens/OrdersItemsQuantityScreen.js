@@ -13,45 +13,106 @@ import * as Clipboard from 'expo-clipboard';
 import { Context as OrderContext } from '../context/OrderContext';
 import Spinner from '../components/Spinner';
 import Colors from '../constants/Colors';
-import { TextLabel } from '../components/StandardStyles';
+import { TextContent, TextLabel } from '../components/StandardStyles';
+import Globals from '../Globals';
 
 const OrdersItemsQuantity = (props) => {
   const {
     state: { orders, loading },
   } = useContext(OrderContext);
 
-  // console.log(`nav: ${JSON.stringify(navigation)}`);
   const [productsToQuantity, setProductsToQuantity] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState(null);
   const [filterText, setFilterText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
   const mapProductsToQuantity = () => {
-    const productsToQuantityMap = new Map();
+    // const productsToQuantityMap = new Map();
+    const productsToQuantityAux = [];
+    // console.log(
+    //   `[Orders Items Quantity Screen] products ${JSON.stringify(
+    //     productsToQuantityAux,
+    //     null,
+    //     2
+    //   )}`
+    // );
     orders.forEach((order) => {
+      // console.log(`Order: ${JSON.stringify(order, null, 2)}`);
       if (order.baseProducts && order.baseProducts > 0) {
-        productsToQuantityMap.Cesta =
-          productsToQuantityMap.Cesta + order.baseProducts ||
-          order.baseProducts;
+        let productIndex = productsToQuantityAux.findIndex(
+          (obj) => obj.name === 'Cesta'
+        );
+        if (productIndex > -1) {
+          console.log('BaseProduct Found');
+          // eslint-disable-next-line operator-assignment
+          productsToQuantityAux[productIndex].quantityOrdered =
+            productsToQuantityAux[productIndex].quantityOrdered +
+            order.baseProducts;
+        } else {
+          console.log('Baseproduct not found');
+          const productAux = {
+            name: 'Cesta',
+            quantityOrdered: order.baseProducts,
+            quantityDelivered: 0,
+          };
+          productsToQuantityAux.push(productAux);
+          productIndex = productsToQuantityAux.length - 1;
+        }
+        if (order.status === Globals.ORDER.STATUS.COMPLETED) {
+          productsToQuantityAux[productIndex].quantityDelivered =
+            productsToQuantityAux[productIndex].quantityDelivered +
+              order.baseProducts || order.baseProducts;
+        }
       }
 
       order.extraProducts.forEach((product) => {
         if (product.productTitle && product.quantity && product.quantity > 0) {
-          productsToQuantityMap[`${product.productTitle}`] =
-            productsToQuantityMap[`${product.productTitle}`] +
-            product.quantity || product.quantity;
+          let productIndex = productsToQuantityAux.findIndex(
+            (obj) => obj.name === product.productTitle
+          );
+          if (productIndex > -1) {
+            // eslint-disable-next-line operator-assignment
+            productsToQuantityAux[productIndex].quantityOrdered =
+              productsToQuantityAux[productIndex].quantityOrdered +
+              product.quantity;
+          } else {
+            const productAux = {
+              name: product.productTitle,
+              quantityOrdered: product.quantity,
+              quantityDelivered: 0,
+            };
+            productsToQuantityAux.push(productAux);
+            productIndex = productsToQuantityAux.length - 1;
+          }
+          if (order.status === Globals.ORDER.STATUS.COMPLETED) {
+            // eslint-disable-next-line operator-assignment
+            productsToQuantityAux[productIndex].quantityDelivered =
+              productsToQuantityAux[productIndex].quantityDelivered +
+              product.quantity;
+          }
         }
       });
     });
 
-    const productsArray = [];
-    for (const [key, value] of Object.entries(productsToQuantityMap)) {
-      productsArray.push({ name: key, quantity: value });
-    }
+    // console.log(
+    //   `[Orders Items Quantity Screen] products ${JSON.stringify(
+    //     productsToQuantityAux,
+    //     null,
+    //     2
+    //   )}`
+    // );
 
-    productsArray.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+    // const productsArray = [];
+    // for (const [key, value] of Object.entries(productsToQuantityMap)) {
+    //   productsArray.push({ name: key, quantityOrdered: value });
+    // }
 
-    setProductsToQuantity(productsArray);
+    productsToQuantityAux.sort((a, b) =>
+      // eslint-disable-next-line no-nested-ternary
+      a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+    );
+
+    setProductsToQuantity(productsToQuantityAux);
   };
 
   useEffect(() => {
@@ -61,21 +122,21 @@ const OrdersItemsQuantity = (props) => {
   const renderSearchIcon = () => {
     return !filterText.length
       ? {
-        type: 'ionicons',
-        name: 'search',
-        size: 25,
-        color: 'lightgrey',
-      }
+          type: 'ionicons',
+          name: 'search',
+          size: 25,
+          color: 'lightgrey',
+        }
       : {
-        type: 'material',
-        name: 'clear',
-        size: 25,
-        color: 'lightgrey',
-        onPress: () => {
-          setFilterText('');
-          setFilteredProducts(null);
-        },
-      };
+          type: 'material',
+          name: 'clear',
+          size: 25,
+          color: 'lightgrey',
+          onPress: () => {
+            setFilterText('');
+            setFilteredProducts(null);
+          },
+        };
   };
 
   const searchProductsByFilter = () => {
@@ -96,9 +157,12 @@ const OrdersItemsQuantity = (props) => {
           bottomDivider
         /> */}
         <View style={styles.listItemContainer}>
-          <TextLabel
-            style={styles.listItemTitle}
-          >{`${item.quantity} ${item.name}`}</TextLabel>
+          <TextContent
+            style={{ fontSize: 18 }}
+          >{`${item.quantityOrdered} ${item.name}`}</TextContent>
+          <TextContent
+            style={{ fontSize: 18 }}
+          >{`${item.quantityDelivered}`}</TextContent>
         </View>
       </View>
     );
@@ -108,7 +172,7 @@ const OrdersItemsQuantity = (props) => {
     if (productsToQuantity != null && productsToQuantity.length > 0) {
       let quantitiesText = '';
       productsToQuantity.forEach((product, index) => {
-        quantitiesText += `${product.quantity} ${product.name}`;
+        quantitiesText += `${product.quantityOrdered} ${product.name}`;
         if (index !== productsToQuantity.length - 1) {
           quantitiesText += '\n';
         }
@@ -163,16 +227,22 @@ const OrdersItemsQuantity = (props) => {
           </TouchableOpacity>
         </View>
         {!loading ? (
-          <FlatList
-            data={
-              filteredProducts && filteredProducts.length
-                ? filteredProducts
-                : productsToQuantity
-            }
-            renderItem={renderItem}
-            keyExtractor={(item) => item.name}
-            style={styles.productsList}
-          />
+          <View>
+            <View style={styles.listItemContainer}>
+              <TextLabel style={styles.listItemTitle}>Pedidos</TextLabel>
+              <TextLabel style={styles.listItemTitle}>Entregues</TextLabel>
+            </View>
+            <FlatList
+              data={
+                filteredProducts && filteredProducts.length
+                  ? filteredProducts
+                  : productsToQuantity
+              }
+              renderItem={renderItem}
+              keyExtractor={(item) => item.name}
+              style={styles.productsList}
+            />
+          </View>
         ) : (
           <Spinner />
         )}
@@ -212,14 +282,15 @@ const styles = StyleSheet.create({
     marginTop: -10,
   },
   listItemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     backgroundColor: 'transparent',
     paddingRight: 10,
     paddingLeft: 10,
     paddingBottom: 5,
   },
   listItemTitle: {
-    fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 8,
     fontSize: 20,
   },
   controlsContainer: {

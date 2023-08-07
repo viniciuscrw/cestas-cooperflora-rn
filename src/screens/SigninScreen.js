@@ -171,7 +171,8 @@ const SigninScreen = ({ navigation }) => {
     <View style={styles.screen}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.textTitle}>Cestas Cooperflora</Text>
+          <Text style={styles.textTitle}>Cestas</Text>
+          <Text style={styles.textTitle}>Cooperflora</Text>
           <Image style={styles.image} source={BasketProductsImage} />
         </View>
         <View>
@@ -246,9 +247,9 @@ const styles = StyleSheet.create({
     fontSize: 35,
     color: '#2D6535',
     fontWeight: 'bold',
-    right: '-48%',
+    right: '-40%',
     textAlign: 'right',
-    width: '50%',
+    width: '55%',
   },
   image: {
     marginLeft: 5,

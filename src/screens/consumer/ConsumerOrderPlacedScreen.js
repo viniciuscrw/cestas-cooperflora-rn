@@ -70,6 +70,13 @@ const ConsumerOrderPlacedScreen = ({ navigation, route }) => {
         >
           Editar Pedido
         </Button>
+        <Button
+          style={styles.confirmButton}
+          textColor="white"
+          onPress={() => navigation.navigate('DeliveriesScreen')}
+        >
+          Voltar
+        </Button>
       </>
     );
   };
@@ -231,7 +238,7 @@ const styles = StyleSheet.create({
     color: '#505050',
   },
   orderedItemsContainer: {
-    height: '30%',
+    height: '20%',
   },
   orderItemContainer: {
     flex: 1,

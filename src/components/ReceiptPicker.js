@@ -195,10 +195,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonContainer: {
+    flex: 1,
     alignContent: 'center',
     justifyContent: 'center',
-    marginTop: 15,
-    width: 343,
+    // width: 343,
     height: 48,
   },
   buttonReceiptPicker: {
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     borderColor: '#8898AA',
     borderWidth: 1,
-    width: 343,
+    // width: 310,
     height: 48,
     borderRadius: 5,
   },
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   imageIcon: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: 20,
   },
   image: {
     width: '100%',

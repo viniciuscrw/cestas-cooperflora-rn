@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   textContent: {
     fontFamily: 'Roboto',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '400',
     color: '#505050',
   },

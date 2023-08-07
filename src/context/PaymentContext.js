@@ -24,7 +24,9 @@ const createPaymentForUser = (dispatch) => async (user, order) => {
   dispatch({ type: 'loading' });
 
   console.log(`Creating payment for user: ${user.id}`);
-  let userBalance = user.balance ? user.balance : 0;
+  // let userBalance = user.balance ? user.balance : 0;
+  let userBalance = 0;
+  // Disabled the user balance in this version. Can be updated in the future.
 
   const payment = {
     date: new Date().toISOString(),
@@ -32,7 +34,6 @@ const createPaymentForUser = (dispatch) => async (user, order) => {
     orderId: order.id,
     currentBalance: userBalance,
     orderTotalAmount: order.totalAmount,
-    // totalToBePaid: order.totalAmount - userBalance,
     totalToBePaid: order.totalAmount,
     status: GLOBALS.PAYMENT.STATUS.OPENED,
   };
@@ -42,14 +43,16 @@ const createPaymentForUser = (dispatch) => async (user, order) => {
   let newBalance = null;
   if (order.paymentId) {
     // Read the current open payment
-    const currentPaymentDoc = await getByIdFromSubcollectionPayments(
-      GLOBALS.COLLECTION.USERS,
-      user.id,
-      GLOBALS.SUB_COLLECTION.PAYMENTS,
-      order.paymentId
-    );
-    userBalance += currentPaymentDoc.orderTotalAmount;
-    newBalance = userBalance - order.totalAmount;
+    // const currentPaymentDoc = await getByIdFromSubcollectionPayments(
+    //   GLOBALS.COLLECTION.USERS,
+    //   user.id,
+    //   GLOBALS.SUB_COLLECTION.PAYMENTS,
+    //   order.paymentId
+    // );
+    // userBalance += currentPaymentDoc.orderTotalAmount;
+    userBalance = 0;
+    // newBalance = userBalance - order.totalAmount;
+    newBalance = 0;
     payment.currentBalance = userBalance + order.totalAmount;
     payment.totalToBePaid = order.totalAmount - userBalance;
 
@@ -61,7 +64,8 @@ const createPaymentForUser = (dispatch) => async (user, order) => {
       order.paymentId,
       payment
     );
-    newBalance = userBalance - order.totalAmount; // - valor anterior;
+    // newBalance = userBalance - order.totalAmount; // - valor anterior;
+    newBalance = 0;
     paymentId = order.paymentId;
   } else {
     paymentId = await insertIntoSubcollection(
@@ -70,7 +74,8 @@ const createPaymentForUser = (dispatch) => async (user, order) => {
       GLOBALS.SUB_COLLECTION.PAYMENTS,
       payment
     );
-    newBalance = userBalance - order.totalAmount;
+    // newBalance = userBalance - order.totalAmount;
+    newBalance = 0;
   }
 
   await updateDocAttribute(

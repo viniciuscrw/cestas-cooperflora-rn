@@ -60,7 +60,8 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   };
 
   const updateUserBalance = (paidValue) => {
-    const newBalance = paidValue + userData.balance;
+    // const newBalance = paidValue + userData.balance;
+    const newBalance = 0;
     updateDocAttribute('users', userId, 'balance', newBalance);
   };
 
@@ -136,7 +137,6 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
       setIsLoading(true);
       const storageRef = ref(firebaseStorage, `${userId}/${documentName}`);
       const snapshot = await uploadBytes(storageRef, blob);
-      console.log('Snapshot:', snapshot, userId);
       const receiptUrl = await getDownloadURL(storageRef);
       const receiptMetadata = await getMetadata(storageRef);
       updatePayment(receiptUrl, receiptMetadata);
@@ -186,7 +186,7 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
   };
 
   if (isLoading) {
-    console.log('[Consumer Payments Screen] isLoading', isLoading);
+    // console.log('[Consumer Payments Screen] isLoading', isLoading);
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -204,12 +204,12 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
               <Number>{`R$ ${userPayment.orderTotalAmount.toFixed(2)}`}</Number>
             </View>
           </View>
-          <View style={styles.itemContainer}>
+          {/* <View style={styles.itemContainer}>
             <TextLabel>Saldo atual</TextLabel>
             <View style={styles.itemBox}>
               <Number>{`R$ ${userData.balance.toFixed(2)}`}</Number>
             </View>
-          </View>
+          </View> */}
         </View>
         <Divider style={{ borderBottomColor: Colors.tertiary }} />
         <View style={styles.receiptContainer}>
@@ -230,12 +230,12 @@ const ConsumerAddPaymentScreen = ({ route, navigation }) => {
             >
               <ScrollView>
                 <View style={styles.addContainer}>
-                  <View style={styles.inputContainer}>
+                  {/* <View style={styles.inputContainer}>
                     <Text style={styles.itemText}>Saldo a Pagar</Text>
                     <Number>{`R$ ${userPayment.totalToBePaid.toFixed(
                       2
                     )}`}</Number>
-                  </View>
+                  </View> */}
                   <View>
                     <ReceiptPicker onReceiptPicker={receiptSelectedHandler} />
                   </View>

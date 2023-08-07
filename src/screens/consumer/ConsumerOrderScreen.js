@@ -26,6 +26,7 @@ import { Context as DeliveryContext } from '../../context/DeliveryContext';
 import { TextContent, TextLabel } from '../../components/StandardStyles';
 
 const ConsumerOrderScreen = ({ route, navigation }) => {
+  console.log('[Consumer Order Screen] started.');
   const { user, delivery } = route.params;
   // const [baseProducts, setBaseProducts] = useState();
   const [orderProducts, setOrderProducts] = useState([]);
@@ -98,9 +99,9 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
           orderProduct.maxQuantity =
             initialProducts.length > 0 && initialProducts[initialIndex] != null
               ? resolveProductAvailableQuantity(
-                deliveryProduct,
-                initialProducts[initialIndex].quantity
-              )
+                  deliveryProduct,
+                  initialProducts[initialIndex].quantity
+                )
               : resolveProductAvailableQuantity(deliveryProduct, 0);
         }
       });
@@ -250,6 +251,7 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
   const renderCompleteDeliveryButton = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    // eslint-disable-next-line no-unused-expressions
     delivery.deliveryDate?.setHours(0, 0, 0, 0);
 
     if (

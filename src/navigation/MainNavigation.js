@@ -67,13 +67,13 @@ export const ConsumerGroupNavigator = () => {
         name="ConsumerGroupInfoScreen"
         component={ConsumerGroupInfoScreen}
         options={{ headerShown: false }}
-      // options={consumerGroupInfoScreenOptions}
+        // options={consumerGroupInfoScreenOptions}
       />
       <ConsumerGroupStackNavigator.Screen
         name="EditConsumerGroupInfoScreen"
         component={EditConsumerGroupInfoScreen}
         options={{ headerShown: false }}
-      // options={editConsumerGroupScreenOptions}
+        // options={editConsumerGroupScreenOptions}
       />
     </ConsumerGroupStackNavigator.Navigator>
   );
@@ -179,7 +179,7 @@ export const DeliveryManagementTopTabNavigator = () => {
         tabBarInactiveTintColor: Colors.inactiveIconColor,
         tabBarLabelStyle: [{ marginTop: -8, fontSize: 13 }, null],
         tabBarIndicatorStyle: { backgroundColor: Colors.activeIconColor },
-        tabBarStyle: { backgroundColor: 'transparent', height: 30 }
+        tabBarStyle: { backgroundColor: 'transparent', height: 30 },
       }}
     >
       {/* <DelTopTabNavigator.Navigator> */}
@@ -243,7 +243,7 @@ export const DeliveryNavigator = () => {
       <DeliveryStackNavigator.Screen
         name="ConsumerGroupTopTabNavigator"
         component={ConsumerGroupTopTabNavigator}
-      // options={consumerGroupInfoNavigationOptions}
+        // options={consumerGroupInfoNavigationOptions}
       />
       <DeliveryStackNavigator.Screen
         name="ConsumerGroupInfoScreen"
@@ -265,7 +265,7 @@ export const DeliveryNavigator = () => {
         component={ConsumerOrderPlacedScreen}
         options={consumerOrderPlacedScreenOptions}
       />
-    </DeliveryStackNavigator.Navigator >
+    </DeliveryStackNavigator.Navigator>
   );
 };
 

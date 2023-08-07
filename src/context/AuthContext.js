@@ -4,6 +4,7 @@ import {
   updateEmail,
   updatePassword as updatePass,
   fetchSignInMethodsForEmail,
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
@@ -177,6 +178,7 @@ const signin =
       userId
     );
     if (passwordConfirmation) {
+      // eslint-disable-next-line no-unused-expressions
       passwordConfirmation !== password
         ? dispatch({
             type: 'add_error',
@@ -224,30 +226,49 @@ const signin =
     }
   };
 
-const signup = (dispatch) => (email, password, userId) => {
+const signup = (dispatch) => async (email, password, userId) => {
   console.log(`Creating auth for new user: ${userId}`);
 
-  firebase
-    .auth()
-    .createUserWithEmailAndPassword(email, password)
-    .then((data) => {
-      console.log(`Updating authId for user: ${userId}`);
-      updateDocAttribute('users', userId, 'authId', data.user.uid).then(() =>
-        onSigninSuccess(dispatch)(email)
-      );
-    })
-    .catch((err) => {
-      console.log(`Error creating auth for new user: ${userId}`, err.code);
-      const errorMessage =
-        err.code === 'auth/weak-password'
-          ? 'A senha deve possuir pelo menos 6 caracteres.'
-          : 'Algo deu errado com o login.';
+  try {
+    const data = await createUserWithEmailAndPassword(auth, email, password);
+    console.log(`Updating authId for user: ${userId}`);
+    updateDocAttribute('users', userId, 'authId', data.user.uid).then(() =>
+      onSigninSuccess(dispatch)(email)
+    );
+  } catch (error) {
+    console.log(`Error creating auth for new user: ${userId}`, error);
+    const errorMessage =
+      error.code === 'auth/weak-password'
+        ? 'A senha deve possuir pelo menos 6 caracteres.'
+        : 'Algo deu errado com o login.';
 
-      dispatch({
-        type: 'add_error',
-        payload: errorMessage,
-      });
+    dispatch({
+      type: 'add_error',
+      payload: errorMessage,
     });
+  }
+
+  // firebase
+  //   .auth()
+  //   .createUserWithEmailAndPassword(email, password)
+  //   .then((data) => {
+  //     console.log(`Updating authId for user: ${userId}`);
+  //     updateDocAttribute('users', userId, 'authId', data.user.uid).then(() =>
+  //       onSigninSuccess(dispatch)(email)
+  //     );
+  //   })
+  //   .catch((err) => {
+  //     console.log(`Error creating auth for new user: ${userId}`, err.code);
+  //     const errorMessage =
+  //       err.code === 'auth/weak-password'
+  //         ? 'A senha deve possuir pelo menos 6 caracteres.'
+  //         : 'Algo deu errado com o login.';
+
+  //     dispatch({
+  //       type: 'add_error',
+  //       payload: errorMessage,
+  //     });
+  //   });
 };
 
 const checkAuthOrUser =

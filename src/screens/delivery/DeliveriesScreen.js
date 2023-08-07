@@ -18,7 +18,7 @@ import { stardardScreenStyle as screen } from '../screenstyles/ScreenStyles';
 import { showAlert } from '../../helper/HelperFunctions';
 
 const DeliveriesScreen = ({ navigation }) => {
-  console.log('[Delivery Screen] started...');
+  console.log('[Deliveries Screen] started...');
   const [refreshing, setRefreshing] = useState(false);
   const user = useUser();
   const {
