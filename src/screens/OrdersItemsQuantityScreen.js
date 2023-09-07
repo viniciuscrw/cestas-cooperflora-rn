@@ -49,7 +49,6 @@ const OrdersItemsQuantity = (props) => {
             productsToQuantityAux[productIndex].quantityOrdered +
             order.baseProducts;
         } else {
-          console.log('Baseproduct not found');
           const productAux = {
             name: 'Cesta',
             quantityOrdered: order.baseProducts,
@@ -150,13 +149,7 @@ const OrdersItemsQuantity = (props) => {
   const renderItem = ({ item }) => {
     return (
       <View>
-        {/* <ListItem
-          containerStyle={styles.listItemContainer}
-          title={`${item.quantity} ${item.name}`}
-          titleStyle={styles.listItemTitle}
-          bottomDivider
-        /> */}
-        <View style={styles.listItemContainer}>
+        <View style={styles.listItem}>
           <TextContent
             style={{ fontSize: 18 }}
           >{`${item.quantityOrdered} ${item.name}`}</TextContent>
@@ -228,11 +221,12 @@ const OrdersItemsQuantity = (props) => {
         </View>
         {!loading ? (
           <View>
-            <View style={styles.listItemContainer}>
+            <View style={styles.title}>
               <TextLabel style={styles.listItemTitle}>Pedidos</TextLabel>
               <TextLabel style={styles.listItemTitle}>Entregues</TextLabel>
             </View>
             <FlatList
+              style={styles.listItemContainer}
               data={
                 filteredProducts && filteredProducts.length
                   ? filteredProducts
@@ -240,7 +234,6 @@ const OrdersItemsQuantity = (props) => {
               }
               renderItem={renderItem}
               keyExtractor={(item) => item.name}
-              style={styles.productsList}
             />
           </View>
         ) : (
@@ -281,7 +274,17 @@ const styles = StyleSheet.create({
   productsList: {
     marginTop: -10,
   },
+  title: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingRight: 10,
+    paddingLeft: 10,
+    paddingBottom: 5,
+  },
   listItemContainer: {
+    marginBottom: 115,
+  },
+  listItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: 'transparent',

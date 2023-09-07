@@ -3,13 +3,18 @@
     "name": "cestascooperflora",
     "description": "Aplicativo para gerenciamento de vendas das cestas de produtos orgânicos da cooperativa Cooperflora",
     "slug": "cestascooperflora",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "version": "3.1.0",
+    "platforms": ["ios", "android"],
+    "version": "3.1.1",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.png",
+    "backgroundColor": "#ffffff",
+    "icon": "./assets/images/icon.png",
+    "notification": {
+      "icon": "./assets/images/",
+      "color": "#007aff",
+      "androidMode": "collapse",
+      "androidCollapsedTitle": "New Notification",
+      "iosDisplayInForeground": true
+    },
     "splash": {
       "image": "./assets/images/splashscreenv2.0.png",
       "resizeMode": "contain",
@@ -18,23 +23,18 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "br.pro.bordignon",
-      "buildNumber": "3.1.0"
+      "buildNumber": "3.1.1"
     },
     "android": {
       "package": "br.pro.bordignon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 29,
+      "versionCode": 30,
       "useNextNotificationsApi": true,
-      "permissions": [
-        "CAMERA",
-        "WRITE_EXTERNAL_STORAGE"
-      ]
+      "permissions": ["CAMERA", "WRITE_EXTERNAL_STORAGE"]
     },
     "hooks": {
       "postPublish": [
@@ -42,14 +42,12 @@
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
             "organization": "ifsp-fn",
-            "project": "cestas-cooperflora",
+            "project": "cestas-cooperflora"
           }
         }
       ]
     },
-    "plugins": [
-      "sentry-expo"
-    ],
+    "plugins": ["sentry-expo"],
     "extra": {
       "eas": {
         "projectId": "0ee452b5-ed8e-48f7-8214-8be5cc32cfa4"

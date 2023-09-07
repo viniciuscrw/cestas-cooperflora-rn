@@ -126,12 +126,11 @@ const ConsumerOrderScreen = ({ route, navigation }) => {
 
     const transformedOrderProducts = orderExtraProducts;
     // Sort the products list based on the quantity to facilitate the local delivery.
-    transformedOrderProducts.sort((a, b) => {
-      // return a.productTitle > b.productTitle ? 1 : -1;
-      return a.quantity < b.quantity || a.productTitle > b.productTitle
-        ? 1
-        : -1;
-    });
+    // transformedOrderProducts.sort((a, b) => {
+    //   return a.quantity < b.quantity || a.productTitle > b.productTitle
+    //     ? 1
+    //     : -1;
+    // });
 
     setOrderProducts(transformedOrderProducts);
   };
