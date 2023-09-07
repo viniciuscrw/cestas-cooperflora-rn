@@ -33,7 +33,6 @@
       "package": "br.pro.bordignon",
       "googleServicesFile": "./google-services.json",
       "versionCode": 31,
-      "useNextNotificationsApi": true,
       "permissions": ["CAMERA", "WRITE_EXTERNAL_STORAGE"]
     },
     "hooks": {
