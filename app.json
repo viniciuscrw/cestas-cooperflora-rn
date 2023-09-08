@@ -9,7 +9,7 @@
     "backgroundColor": "#ffffff",
     "icon": "./assets/images/icon.png",
     "notification": {
-      "icon": "./assets/images/",
+      "icon": "./assets/images/notificationicon.png",
       "color": "#007aff",
       "androidMode": "collapse",
       "androidCollapsedTitle": "New Notification",

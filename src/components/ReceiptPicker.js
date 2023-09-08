@@ -31,12 +31,18 @@ const ReceiptPicker = ({ onReceiptPicker }) => {
         // aspect: [16, 9],
         quality: 0.5,
       });
+      // console.log('Image', JSON.stringify(image, null, 2));
       if (!image.canceled) {
         // Handle the image data if the user takes a picture.
-        console.log('Image data:', image);
-        image.type = 'image';
-        setPickedReceipt(image);
-        onReceiptPicker(image);
+        // console.log('Image data:', image);
+        const imageAux = {
+          uri: image.assets[0].uri,
+          width: image.assets[0].width,
+          height: image.assets[0].height,
+          type: 'image',
+        };
+        setPickedReceipt(imageAux);
+        onReceiptPicker(imageAux);
       } else {
         console.log('[ImagePicker] Problemas para acesso à câmera');
       }
@@ -44,21 +50,6 @@ const ReceiptPicker = ({ onReceiptPicker }) => {
       console.log('Error while accessing the camera:', error.message);
       Alert.alert('Atenção', 'Acesso à câmera não permitido');
     }
-
-    // const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    // if (status !== 'granted') {
-    //   console.log('[ImagePicker] launchCamera - permission not granted');
-    //   throw new Error('Camera permission not granted');
-    // }
-
-    // const image = await ImagePicker.launchCameraAsync({
-    //   // allowsEditing: true,
-    //   // aspect: [16, 9],
-    //   quality: 0.5,
-    // });
-    // image.type = 'image';
-    // setPickedReceipt(image);
-    // onReceiptPicker(image);
   };
 
   const launchImageGalery = async () => {
@@ -76,9 +67,15 @@ const ReceiptPicker = ({ onReceiptPicker }) => {
         quality: 0.5,
       });
       // console.log('[ReceiptPicker] image', JSON.stringify(image, null, 2));
-      image.assets[0].type = 'image';
-      setPickedReceipt(image.assets[0]);
-      onReceiptPicker(image.assets[0]);
+      const imageAux = {
+        uri: image.assets[0].uri,
+        width: image.assets[0].width,
+        height: image.assets[0].height,
+        type: 'image',
+      };
+      // image.assets[0].type = 'image';
+      setPickedReceipt(imageAux);
+      onReceiptPicker(imageAux);
     } catch (error) {
       console.log('Error while picking image:', error);
     }
@@ -158,10 +155,13 @@ const ReceiptPicker = ({ onReceiptPicker }) => {
   };
 
   const renderReceipt = () => {
+    // console.log('Render Receipt', JSON.stringify(pickedReceipt, null, 2));
+    // if (!pickedReceipt.uri) {
     if (!pickedReceipt.uri) {
       return <Text>Nenhuma Imagem Selecionada.</Text>;
     }
     if (pickedReceipt.type === 'image') {
+      console.log('Entrei');
       return <RenderImageReceipt imageUrl={pickedReceipt.uri} />;
     }
     if (pickedReceipt.type === 'pdf') {

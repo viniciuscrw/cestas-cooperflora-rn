@@ -54,7 +54,7 @@ const IntroSlider = ({ setIntroSlider }) => {
   };
 
   const renderSlides = ({ item }) => {
-    const env = Constants.manifest.releaseChannel;
+    const env = Constants.expoConfig.releaseChannel;
     return (
       <View style={styles.screenContainer}>
         {item.title ? <Text style={styles.title}>{item.title}</Text> : null}

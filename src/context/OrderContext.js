@@ -296,13 +296,13 @@ const updateDeliveryExtraProductsQuantities =
           );
         } else {
           const delivery = deliveryDoc.data();
-          console.log(
-            `[Order Context] delivery before.${JSON.stringify(
-              delivery.extraProducts,
-              null,
-              2
-            )}`
-          );
+          // console.log(
+          //   `[Order Context] delivery before.${JSON.stringify(
+          //     delivery.extraProducts,
+          //     null,
+          //     2
+          //   )}`
+          // );
           delivery.extraProducts.forEach((product, index) => {
             const extraToUpdateArr = extraProductsToUpdate.filter(
               (extra) => extra.productId === product.id
@@ -341,13 +341,13 @@ const updateDeliveryExtraProductsQuantities =
           transaction.update(deliveryRef, {
             extraProducts: delivery.extraProducts,
           });
-          console.log(
-            `[Order Context] delivery before.${JSON.stringify(
-              delivery.extraProducts,
-              null,
-              2
-            )}`
-          );
+          // console.log(
+          //   `[Order Context] delivery before.${JSON.stringify(
+          //     delivery.extraProducts,
+          //     null,
+          //     2
+          //   )}`
+          // );
         }
       });
       console.log('Transaction successfully committed!');
