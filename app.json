@@ -4,7 +4,7 @@
     "description": "Aplicativo para gerenciamento de vendas das cestas de produtos orgânicos da cooperativa Cooperflora",
     "slug": "cestascooperflora",
     "platforms": ["ios", "android"],
-    "version": "3.1.2",
+    "version": "3.1.3",
     "orientation": "portrait",
     "backgroundColor": "#ffffff",
     "icon": "./assets/images/icon.png",
@@ -27,12 +27,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "br.pro.bordignon",
-      "buildNumber": "3.1.2"
+      "buildNumber": "3.1.3"
     },
     "android": {
       "package": "br.pro.bordignon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 31,
+      "versionCode": 32,
       "permissions": ["CAMERA", "WRITE_EXTERNAL_STORAGE"]
     },
     "hooks": {
