@@ -148,10 +148,10 @@ const AddDeliveryExtraItemsScreen = ({ navigation }) => {
       deliveryFee: groupInfo.deliveryFee,
     };
 
-    console.log(
-      '[Add Delivery Item Screen] delivery',
-      JSON.stringify(delivery, null, 2)
-    );
+    // console.log(
+    //   '[Add Delivery Item Screen] delivery',
+    //   JSON.stringify(delivery, null, 2)
+    // );
 
     if (state.nextDelivery) {
       updateDelivery({ deliveryId: state.nextDelivery.id, delivery });

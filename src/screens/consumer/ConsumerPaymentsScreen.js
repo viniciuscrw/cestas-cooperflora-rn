@@ -30,7 +30,7 @@ import RenderImageReceipt from '../../components/RenderImageReceipt';
 import RenderPdfReceipt from '../../components/RenderPdfReceipt';
 
 const ConsumerPaymentsScreen = ({ route, navigation }) => {
-  console.log('[ConsumerPaymentsScreen started] specific user');
+  // console.log('[ConsumerPaymentsScreen started] specific user');
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState();
   const [userPayments, setUserPayments] = useState([]);
