@@ -8,6 +8,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
+  Platform
 } from 'react-native';
 import FormInput from '../components/FormInput';
 import Button from '../components/Button';

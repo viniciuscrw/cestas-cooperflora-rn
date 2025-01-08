@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableHighlight,
   View,
+  Platform
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import FormInput from '../components/FormInput';

@@ -1,5 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Keyboard, StyleSheet, Image, View, Text, KeyboardAvoidingView } from 'react-native';
+import {
+  Keyboard,
+  StyleSheet,
+  Image,
+  View,
+  Text,
+  KeyboardAvoidingView,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
@@ -13,9 +20,12 @@ import ifspLogo from '../../assets/images/logoifspcampinas.png';
 import cooperfloraLogo from '../../assets/images/logocooperflora.png';
 import Colors from '../constants/Colors';
 import Globals from '../Globals';
+import Constants from 'expo-constants';
+
+const appJson = require('../../app.json');
 
 const SigninScreen = ({ navigation }) => {
-  console.log('[SignIn Screen started]');
+  // console.log('[SignIn Screen started]');
   const { state, signin, checkAuthOrUser, clearUserInfo, clearError } =
     useContext(AuthContext);
   const [email, setEmail] = useState('');
@@ -23,6 +33,8 @@ const SigninScreen = ({ navigation }) => {
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+
+  const env = Constants.expoConfig.releaseChannel;
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -124,7 +136,7 @@ const SigninScreen = ({ navigation }) => {
                   width: 305,
                   alignSelf: 'center',
                 }}
-                label="Confimar senha:"
+                label="Confirmar senha:"
                 value={passwordConfirmation}
                 // eslint-disable-next-line no-shadow
                 onChangeText={(passwordConfirmation) => {
@@ -210,6 +222,16 @@ const SigninScreen = ({ navigation }) => {
           <Text style={styles.descriptionText}>
             {Globals.APP.INITIALSCREEN_TEXT}
           </Text>
+        </View>
+        <View>
+          <Text style={{ textAlign: 'center' }}>
+            Versão {appJson.expo.version}
+          </Text>
+          {__DEV__ || env === 'dev' ? (
+            <Text style={{ textAlign: 'center' }}>
+              Configuração de Desenvolvimento
+            </Text>
+          ) : null}
         </View>
         <View style={styles.logosContainer}>
           <Image style={styles.logoImage} source={cooperfloraLogo} />
@@ -307,7 +329,7 @@ const styles = StyleSheet.create({
   },
   logosContainer: {
     flex: 0,
-    height: 300,
+    height: 200,
     justifyContent: 'space-around',
     flexDirection: 'row',
     alignItems: 'flex-end',

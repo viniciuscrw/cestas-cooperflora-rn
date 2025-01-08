@@ -9,7 +9,6 @@ import {
 import { format } from 'date-fns';
 import {
   StyleSheet,
-  Text,
   View,
   ActivityIndicator,
   Alert,
@@ -17,6 +16,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from 'react-native';
 import HeaderTitle from '../../components/HeaderTitle';
 import BackArrow from '../../components/BackArrow';

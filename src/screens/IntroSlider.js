@@ -7,6 +7,8 @@ import Button from '../components/Button';
 import logoCooperflora from '../../assets/images/logo.png';
 import logoIfsp from '../../assets/images/logoifspcampinas.png';
 
+const appJson = require('../../app.json');
+
 const slides = [
   {
     key: '1',
@@ -14,7 +16,7 @@ const slides = [
     subtitle: 'Barão Geraldo',
     text1:
       'Bem vindo, bem vinda ao aplicativo  de gestão das cestas Cooperflora do grupo de consumo de Barão Geraldo',
-    text2: 'Versão 3.1.5',
+    text2: `Versão ${appJson.expo.version}`,
     image1: logoCooperflora,
     image2: logoIfsp,
   },

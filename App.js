@@ -3,7 +3,6 @@ import { LogBox } from 'react-native';
 // import firebase from 'firebase';
 import firebase from 'firebase/compat/app';
 
-// import * as Sentry from 'sentry-expo';
 import { Provider as AuthProvider } from './src/context/AuthContext';
 import { Provider as UserProvider } from './src/context/UserContext';
 import { Provider as ConsumerGroupProvider } from './src/context/ConsumerGroupContext';
