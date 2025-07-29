@@ -11,7 +11,7 @@ import Card from '../components/Card';
 import CardSection from '../components/CardSection';
 import Input from '../components/Input';
 import { Context as AuthContext } from '../context/AuthContext';
-import { Text } from 'react-native-elements';
+import { Text } from '@rneui/themed';
 import TextCardSection from '../components/TextCardSection';
 import PasswordInput from '../components/PasswordInput';
 import TextLink from '../components/TextLink';

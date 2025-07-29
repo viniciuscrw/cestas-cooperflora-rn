@@ -7,7 +7,7 @@
       "ios",
       "android"
     ],
-    "version": "3.1.6",
+    "version": "3.1.7",
     "orientation": "portrait",
     "backgroundColor": "#ffffff",
     "icon": "./assets/images/icon.png",
@@ -26,16 +26,18 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "br.pro.bordignon",
-      "buildNumber": "3.1.6"
+      "buildNumber": "3.1.7"
     },
     "android": {
       "package": "br.pro.bordignon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 35,
+      "versionCode": 36,
       "permissions": [
         "CAMERA",
         "WRITE_EXTERNAL_STORAGE"
@@ -45,6 +47,9 @@
       "eas": {
         "projectId": "0ee452b5-ed8e-48f7-8214-8be5cc32cfa4"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

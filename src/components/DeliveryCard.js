@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Card, Divider } from 'react-native-elements';
+import { Card, Divider } from '@rneui/themed';
 import { format } from 'date-fns';
 import { Feather } from '@expo/vector-icons';
 import GLOBALS from '../Globals';

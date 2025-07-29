@@ -100,8 +100,15 @@ const tryLocalSignin = (dispatch) => async () => {
     console.log(`Local sign in for auth: ${authId}`);
     dispatch({ type: 'signin', payload: authId });
     console.log('[AuthContext] Navegando para Deliveries');
-    // navigate('Deliveries');
-    navigate('DeliveriesScreen');
+
+    navigation.navigate('Entregas');
+
+    // navigate('Entregas', {
+    //   screen: 'DeliveryNavigator',
+    //   params: {
+    //     screen: 'DeliveriesScreen',
+    //   },
+    // });
   } else {
     console.log('[AuthContext], Se não existir authId e user.');
     navigate('SigninScreen');
@@ -156,7 +163,8 @@ const onSigninSuccess = (dispatch) => async (email) => {
 
     dispatch({ type: 'signin', payload: authId });
     // navigate('Deliveries');
-    navigate('DeliveriesScreen');
+    // navigate('DeliveriesScreen');
+    navigation.navigate('Entregas');
   } else {
     console.log(`Error retrieving user for auth: ${authId}`);
     dispatch({

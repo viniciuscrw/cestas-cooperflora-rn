@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Input, Text } from 'react-native-elements';
+import { Input, Text } from '@rneui/themed';
 import { accessibilityLabel } from '../utils';
 
 const FormInput = ({

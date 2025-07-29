@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import Checkbox from 'expo-checkbox';
-import { Divider } from 'react-native-elements';
+import { Divider } from '@rneui/themed';
 import { Context as AuthContext } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
 import HeaderTitle from '../components/HeaderTitle';

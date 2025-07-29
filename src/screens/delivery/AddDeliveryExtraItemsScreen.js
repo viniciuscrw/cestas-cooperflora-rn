@@ -12,7 +12,7 @@ import {
 import Checkbox from 'expo-checkbox';
 import { AntDesign } from '@expo/vector-icons';
 import endOfDay from 'date-fns/endOfDay';
-import { Input } from 'react-native-elements';
+import { Input } from '@rneui/themed';
 import { useFocusEffect } from '@react-navigation/native';
 import { Context as UserContext } from '../../context/UserContext';
 import { Context as ProductContext } from '../../context/ProductContext';

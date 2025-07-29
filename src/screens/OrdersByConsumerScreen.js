@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { format } from 'date-fns';
-import { Input } from 'react-native-elements';
+import { Input } from '@rneui/themed';
 import { useFocusEffect } from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import GLOBALS from '../Globals';

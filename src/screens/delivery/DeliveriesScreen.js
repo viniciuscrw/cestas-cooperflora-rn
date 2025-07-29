@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
-import { Divider } from 'react-native-elements';
+import { Divider } from '@rneui/themed';
 import { useFocusEffect } from '@react-navigation/native';
 import { isAfter } from 'date-fns';
 import Spinner from '../../components/Spinner';

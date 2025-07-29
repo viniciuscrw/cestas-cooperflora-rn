@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Input, ListItem } from 'react-native-elements';
+import { Input, ListItem } from '@rneui/themed';
 import { Feather } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { Context as OrderContext } from '../context/OrderContext';
