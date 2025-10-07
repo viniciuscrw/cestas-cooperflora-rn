@@ -26,6 +26,8 @@
     "@react-navigation/material-top-tabs": "^6.6.13",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/stack": "^6.3.29",
+    "@rneui/base": "4.0.0-rc.7",
+    "@rneui/themed": "4.0.0-rc.8",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "expo": "^53.0.20",
@@ -63,9 +65,7 @@
     "react-native-simple-dialogs": "^1.4.0",
     "react-native-swipe-list-view": "^3.2.5",
     "react-native-tab-view": "^4.1.2",
-    "react-native-web": "^0.20.0",
-    "@rneui/base": "4.0.0-rc.7",
-    "@rneui/themed": "4.0.0-rc.8"
+    "react-native-web": "^0.20.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",

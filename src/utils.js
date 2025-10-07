@@ -1,4 +1,5 @@
-import Constants from 'expo-constants';
+//import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import { Alert, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
@@ -16,7 +17,8 @@ export const setPushNotificationToken = async () => {
   console.log('[Utils - setPushNotification]');
 
   let token;
-  if (Constants.isDevice) {
+  console.log ("Device.isDevice", Device.isDevice);
+  if (Device.isDevice) {
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
