@@ -1,4 +1,5 @@
 //import Constants from 'expo-constants';
+import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import { Alert, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
@@ -15,34 +16,48 @@ export const accessibilityLabel = (id) => {
 
 export const setPushNotificationToken = async () => {
   console.log('[Utils - setPushNotification]');
-
   let token;
-  console.log ("Device.isDevice", Device.isDevice);
-  if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
+
+  const isRunningInExpoGo = Constants.executionEnvironment === 'storeClient';
+
+  // ✅ Só tenta obter token se for um build real, não o Expo Go
+  if (Device.isDevice && !isRunningInExpoGo) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
+
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
+
     if (finalStatus !== 'granted') {
-      Alert.alert('Falha para conseguir permissão para notificação!');
+      Alert.alert('Falha ao conseguir permissão para notificações!');
       return;
     }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
+
+    try {
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log('Expo Push Token:', token);
+    } catch (error) {
+      console.log('Erro ao obter token de push:', error);
+      Alert.alert('Erro ao obter token de push.');
+    }
   } else {
-    Alert.alert('Esse recurso não funciona para emuladores.');
+    // 🚫 Evita erro: não chama o método no Expo Go
+    console.log('Executando no Expo Go — notificações push desativadas.');
+    Alert.alert('Notificações push não funcionam no Expo Go.');
   }
 
+  // 🔔 Configura canal Android (isso pode rodar em qualquer ambiente)
   if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
+    await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#FF231F7C',
     });
   }
+
   return token;
 };
 
